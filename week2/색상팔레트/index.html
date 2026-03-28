@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>색상 팔레트 생성기</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #888;
+      margin-bottom: 32px;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .color-picker-wrapper {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid #333;
+      cursor: pointer;
+    }
+
+    .color-picker-wrapper input[type="color"] {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      width: 72px;
+      height: 72px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .hex-input {
+      background: #16213e;
+      border: 2px solid #333;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1.2rem;
+      color: #eee;
+      width: 180px;
+      text-align: center;
+      font-family: 'Consolas', monospace;
+      transition: border-color 0.2s;
+    }
+
+    .hex-input:focus {
+      outline: none;
+      border-color: #0f3460;
+    }
+
+    .btn {
+      background: #0f3460;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: #1a4f8a; }
+
+    /* 팔레트 출력 영역 */
+    .palette-section {
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 32px;
+    }
+
+    .palette-section h2 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: #aaa;
+    }
+
+    .palette-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .swatch {
+      flex: 1;
+      min-width: 120px;
+      height: 100px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+    }
+
+    .swatch:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .swatch .hex-label {
+      font-family: 'Consolas', monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .swatch .rgb-label {
+      font-size: 0.75rem;
+      margin-top: 2px;
+      opacity: 0.8;
+    }
+
+    .swatch .copy-toast {
+      position: absolute;
+      top: -28px;
+      background: #222;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+
+    .swatch .copy-toast.show { opacity: 1; }
+
+    /* 원본 강조 */
+    .swatch.origin {
+      border: 3px solid #fff;
+      height: 110px;
+    }
+
+    /* CSS 코드 출력 */
+    .code-section {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 8px;
+    }
+
+    .code-section h2 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: #aaa;
+    }
+
+    .code-block {
+      background: #16213e;
+      border-radius: 12px;
+      padding: 20px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      white-space: pre;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .copy-code-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #0f3460;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .copy-code-btn:hover { background: #1a4f8a; }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <h1>색상 팔레트 생성기</h1>
+  <p class="subtitle">HEX 코드를 입력하거나 Color Picker로 색상을 선택하세요</p>
+
+  <div class="input-area">
+    <div class="color-picker-wrapper">
+      <input type="color" id="colorPicker" value="#3498db">
+    </div>
+    <input type="text" id="hexInput" class="hex-input" value="#3498db" placeholder="#3498db" maxlength="7">
+    <button class="btn" id="generateBtn">팔레트 생성</button>
+  </div>
+
+  <!-- 밝은 변형 -->
+  <div class="palette-section">
+    <h2>밝은 변형 (Tints)</h2>
+    <div class="palette-row" id="tintRow"></div>
+  </div>
+
+  <!-- 원본 + 어두운 변형 -->
+  <div class="palette-section">
+    <h2>어두운 변형 (Shades)</h2>
+    <div class="palette-row" id="shadeRow"></div>
+  </div>
+
+  <!-- CSS 변수 코드 -->
+  <div class="code-section hidden" id="codeSection">
+    <h2>CSS 변수 코드</h2>
+    <div class="code-block" id="codeBlock">
+      <button class="copy-code-btn" id="copyCodeBtn">복사</button>
+    </div>
+  </div>
+
+  <script>
+    const colorPicker = document.getElementById('colorPicker');
+    const hexInput = document.getElementById('hexInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const tintRow = document.getElementById('tintRow');
+    const shadeRow = document.getElementById('shadeRow');
+    const codeSection = document.getElementById('codeSection');
+    const codeBlock = document.getElementById('codeBlock');
+    const copyCodeBtn = document.getElementById('copyCodeBtn');
+
+    // HEX ↔ RGB 변환
+    function hexToRgb(hex) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      const num = parseInt(hex, 16);
+      return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+    }
+
+    function rgbToHex(r, g, b) {
+      return '#' + [r, g, b].map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+    }
+
+    // 밝게 (흰색 방향으로 섞기)
+    function tint(rgb, factor) {
+      return {
+        r: rgb.r + (255 - rgb.r) * factor,
+        g: rgb.g + (255 - rgb.g) * factor,
+        b: rgb.b + (255 - rgb.b) * factor
+      };
+    }
+
+    // 어둡게 (검정 방향으로 섞기)
+    function shade(rgb, factor) {
+      return {
+        r: rgb.r * (1 - factor),
+        g: rgb.g * (1 - factor),
+        b: rgb.b * (1 - factor)
+      };
+    }
+
+    // 텍스트 색상 자동 결정 (밝은 배경 → 검정, 어두운 배경 → 흰색)
+    function textColor(rgb) {
+      const lum = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+      return lum > 0.55 ? '#1a1a2e' : '#ffffff';
+    }
+
+    // 스와치 생성
+    function createSwatch(hex, rgb, isOrigin = false) {
+      const div = document.createElement('div');
+      div.className = 'swatch' + (isOrigin ? ' origin' : '');
+      div.style.background = hex;
+      const fg = textColor(rgb);
+      div.style.color = fg;
+
+      const r = Math.round(rgb.r), g = Math.round(rgb.g), b = Math.round(rgb.b);
+      div.innerHTML = `
+        <span class="hex-label">${hex.toUpperCase()}</span>
+        <span class="rgb-label">rgb(${r}, ${g}, ${b})</span>
+        <span class="copy-toast">복사됨!</span>
+      `;
+
+      div.addEventListener('click', () => {
+        navigator.clipboard.writeText(hex.toUpperCase());
+        const toast = div.querySelector('.copy-toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 800);
+      });
+
+      return div;
+    }
+
+    // 팔레트 생성
+    function generate() {
+      let hex = hexInput.value.trim();
+      if (!hex.startsWith('#')) hex = '#' + hex;
+      if (!/^#[0-9a-fA-F]{6}$/.test(hex) && !/^#[0-9a-fA-F]{3}$/.test(hex)) {
+        hexInput.style.borderColor = '#e74c3c';
+        return;
+      }
+      hexInput.style.borderColor = '#333';
+
+      const baseRgb = hexToRgb(hex);
+      const factors = [0.8, 0.6, 0.4, 0.2, 0.1];
+
+      // 밝은 변형 (가장 밝은 → 원본에 가까운 순)
+      tintRow.innerHTML = '';
+      const tints = factors.map(f => {
+        const rgb = tint(baseRgb, f);
+        return { hex: rgbToHex(rgb.r, rgb.g, rgb.b), rgb };
+      });
+      tints.forEach(t => tintRow.appendChild(createSwatch(t.hex, t.rgb)));
+
+      // 원본 + 어두운 변형
+      shadeRow.innerHTML = '';
+      shadeRow.appendChild(createSwatch(hex, baseRgb, true));
+      const shadeFacs = [0.1, 0.2, 0.4, 0.6, 0.8];
+      const shades = shadeFacs.map(f => {
+        const rgb = shade(baseRgb, f);
+        return { hex: rgbToHex(rgb.r, rgb.g, rgb.b), rgb };
+      });
+      shades.forEach(s => shadeRow.appendChild(createSwatch(s.hex, s.rgb)));
+
+      // CSS 변수 코드 생성
+      codeSection.classList.remove('hidden');
+      const lines = [':root {'];
+      tints.forEach((t, i) => lines.push(`  --color-tint-${5 - i}: ${t.hex.toUpperCase()};`));
+      lines.push(`  --color-base: ${hex.toUpperCase()};`);
+      shades.forEach((s, i) => lines.push(`  --color-shade-${i + 1}: ${s.hex.toUpperCase()};`));
+      lines.push('}');
+      codeBlock.firstChild.textContent = lines.join('\n');
+    }
+
+    // 이벤트 연결
+    colorPicker.addEventListener('input', () => {
+      hexInput.value = colorPicker.value;
+      generate();
+    });
+
+    hexInput.addEventListener('input', () => {
+      let v = hexInput.value.trim();
+      if (!v.startsWith('#')) v = '#' + v;
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) colorPicker.value = v;
+    });
+
+    hexInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') generate();
+    });
+
+    generateBtn.addEventListener('click', generate);
+
+    copyCodeBtn.addEventListener('click', () => {
+      const text = codeBlock.firstChild.textContent;
+      navigator.clipboard.writeText(text);
+      copyCodeBtn.textContent = '복사됨!';
+      setTimeout(() => copyCodeBtn.textContent = '복사', 1000);
+    });
+
+    // 초기 생성
+    generate();
+  </script>
+</body>
+</html>

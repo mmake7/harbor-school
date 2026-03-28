@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML 기본 태그 5가지</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --white: #ffffff;
+      --bg: #000000;
+      --gray-50: #fafafa;
+      --gray-100: #f5f5f7;
+      --gray-200: #e8e8ed;
+      --gray-400: #a1a1a6;
+      --gray-500: #86868b;
+      --gray-600: #6e6e73;
+      --gray-800: #1d1d1f;
+      --blue: #0071e3;
+      --blue-hover: #0077ed;
+      --blue-light: #e8f2ff;
+      --purple: #bf5af2;
+      --green: #30d158;
+      --orange: #ff9f0a;
+      --red: #ff453a;
+      --code-bg: #1d1d1f;
+      --code-text: #f5f5f7;
+      --card-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: var(--bg);
+      color: var(--gray-800);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ===== 슬라이드 공통 ===== */
+    .slide {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide-inner {
+      max-width: 980px;
+      width: 100%;
+    }
+
+    /* ===== 네비게이션 ===== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 0.5px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      height: 48px;
+    }
+
+    .nav-logo {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-100);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 12px;
+      color: var(--gray-400);
+      text-decoration: none;
+      transition: color 0.3s;
+      font-weight: 400;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--white);
+    }
+
+    /* ===== 슬라이드 1: 히어로 ===== */
+    .hero {
+      background: var(--bg);
+      text-align: center;
+      padding-top: 120px;
+    }
+
+    .hero-label {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-500);
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.2s;
+    }
+
+    .hero-title {
+      font-size: clamp(48px, 8vw, 80px);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      background: linear-gradient(135deg, #fff 0%, #a1a1a6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.4s;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(18px, 2.5vw, 24px);
+      font-weight: 300;
+      color: var(--gray-500);
+      line-height: 1.5;
+      max-width: 600px;
+      margin: 0 auto 48px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.6s;
+    }
+
+    .hero-tags {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.8s;
+    }
+
+    .hero-tag {
+      padding: 10px 24px;
+      border-radius: 980px;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, monospace;
+      font-size: 15px;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--gray-100);
+      background: rgba(255,255,255,0.04);
+      transition: all 0.3s;
+    }
+
+    .hero-tag:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--gray-600);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 1.2s;
+    }
+
+    .scroll-arrow {
+      width: 24px;
+      height: 24px;
+      border-right: 1.5px solid var(--gray-600);
+      border-bottom: 1.5px solid var(--gray-600);
+      transform: rotate(45deg);
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: rotate(45deg) translateY(0); }
+      50% { transform: rotate(45deg) translateY(6px); }
+    }
+
+    /* ===== 태그 슬라이드 (공통) ===== */
+    .tag-slide {
+      background: var(--gray-100);
+    }
+
+    .tag-slide:nth-child(odd) {
+      background: var(--white);
+    }
+
+    .tag-number {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .tag-name {
+      font-family: 'SF Mono', SFMono-Regular, Consolas, monospace;
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 900;
+      color: var(--gray-800);
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .tag-desc {
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--gray-600);
+      margin-bottom: 48px;
+      line-height: 1.5;
+    }
+
+    .tag-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* 코드 블록 */
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .code-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .code-dot.red { background: #ff5f57; }
+    .code-dot.yellow { background: #febc2e; }
+    .code-dot.green { background: #28c840; }
+
+    .code-label {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-left: 8px;
+      font-family: 'SF Mono', Consolas, monospace;
+    }
+
+    .code-body {
+      padding: 20px 24px;
+      overflow-x: auto;
+    }
+
+    .code-body pre {
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--code-text);
+      white-space: pre;
+    }
+
+    .code-body .tag { color: #ff7b72; }
+    .code-body .attr { color: #79c0ff; }
+    .code-body .val { color: #a5d6ff; }
+    .code-body .str { color: #a5d6ff; }
+    .code-body .cmt { color: #8b949e; }
+
+    /* 결과 / 정보 카드 */
+    .info-card {
+      background: var(--white);
+      border-radius: 16px;
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+    }
+
+    .tag-slide:nth-child(odd) .info-card {
+      background: var(--gray-50);
+    }
+
+    .info-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .info-body {
+      padding: 24px;
+    }
+
+    /* 미리보기 */
+    .preview h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--gray-800); }
+    .preview h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; color: var(--gray-800); }
+    .preview h3 { font-size: 17px; font-weight: 600; color: var(--gray-800); }
+
+    .preview p {
+      font-size: 15px;
+      color: var(--gray-600);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .preview a {
+      color: var(--blue);
+      text-decoration: underline;
+      text-decoration-color: rgba(0,113,227,0.3);
+      text-underline-offset: 3px;
+    }
+
+    .preview ul {
+      padding-left: 20px;
+      list-style: disc;
+    }
+
+    .preview ul li {
+      font-size: 15px;
+      color: var(--gray-800);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .preview ol {
+      padding-left: 20px;
+    }
+
+    .preview ol li {
+      font-size: 15px;
+      color: var(--gray-800);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .preview .img-placeholder {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, var(--gray-200), var(--gray-100));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-500);
+      font-size: 14px;
+    }
+
+    /* 속성 리스트 */
+    .attr-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .attr-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .attr-badge {
+      padding: 5px 14px;
+      background: var(--gray-800);
+      color: var(--white);
+      border-radius: 8px;
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .attr-desc {
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+
+    /* 포인트 */
+    .points {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .point {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+
+    .point-icon {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    .point-icon.warn {
+      background: var(--orange);
+    }
+
+    /* ===== 요약 슬라이드 ===== */
+    .summary-slide {
+      background: var(--white);
+    }
+
+    .summary-title {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 900;
+      color: var(--gray-800);
+      letter-spacing: -0.03em;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .summary-sub {
+      font-size: 17px;
+      color: var(--gray-500);
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+
+    .summary-card {
+      background: var(--gray-100);
+      border-radius: 20px;
+      padding: 28px 20px;
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      cursor: default;
+    }
+
+    .summary-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    }
+
+    .summary-card-tag {
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .summary-card:nth-child(1) .summary-card-tag { color: var(--blue); }
+    .summary-card:nth-child(2) .summary-card-tag { color: var(--purple); }
+    .summary-card:nth-child(3) .summary-card-tag { color: var(--green); }
+    .summary-card:nth-child(4) .summary-card-tag { color: var(--orange); }
+    .summary-card:nth-child(5) .summary-card-tag { color: var(--red); }
+
+    .summary-card-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 6px;
+    }
+
+    .summary-card-desc {
+      font-size: 12px;
+      color: var(--gray-500);
+      line-height: 1.5;
+    }
+
+    /* ===== 엔딩 ===== */
+    .ending {
+      background: var(--bg);
+      text-align: center;
+    }
+
+    .ending-title {
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+
+    .ending-sub {
+      font-size: 18px;
+      color: var(--gray-500);
+      font-weight: 300;
+    }
+
+    /* ===== 스크롤 애니메이션 ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 반응형 ===== */
+    @media (max-width: 768px) {
+      .slide { padding: 60px 24px; }
+      .tag-content { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .summary-grid .summary-card:last-child { grid-column: span 2; }
+      .nav-links { display: none; }
+      .hero-tags { gap: 8px; }
+      .hero-tag { font-size: 13px; padding: 8px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 네비게이션 -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-logo">HTML Basics</div>
+      <ul class="nav-links">
+        <li><a href="#hero">소개</a></li>
+        <li><a href="#h1">h1</a></li>
+        <li><a href="#p">p</a></li>
+        <li><a href="#a">a</a></li>
+        <li><a href="#img">img</a></li>
+        <li><a href="#ul">ul</a></li>
+        <li><a href="#summary">요약</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- 1. 히어로 -->
+  <section id="hero" class="slide hero">
+    <div class="slide-inner">
+      <p class="hero-label">2주차 학습</p>
+      <h1 class="hero-title">HTML 기본 태그<br>5가지.</h1>
+      <p class="hero-subtitle">웹 페이지의 뼈대를 만드는<br>가장 핵심적인 태그를 알아봅니다.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">&lt;h1&gt;</span>
+        <span class="hero-tag">&lt;p&gt;</span>
+        <span class="hero-tag">&lt;a&gt;</span>
+        <span class="hero-tag">&lt;img&gt;</span>
+        <span class="hero-tag">&lt;ul&gt;</span>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <span>스크롤하여 시작</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- 2. <h1> 제목 태그 -->
+  <section id="h1" class="slide tag-slide">
+    <div class="slide-inner">
+      <p class="tag-number reveal">Tag 01</p>
+      <h2 class="tag-name reveal reveal-delay-1">&lt;h1&gt; ~ &lt;h6&gt;</h2>
+      <p class="tag-desc reveal reveal-delay-2">페이지의 제목과 구조를 정의하는 핵심 태그</p>
+      <div class="tag-content">
+        <div class="code-block reveal reveal-delay-3">
+          <div class="code-header">
+            <span class="code-dot red"></span>
+            <span class="code-dot yellow"></span>
+            <span class="code-dot green"></span>
+            <span class="code-label">index.html</span>
+          </div>
+          <div class="code-body"><pre><span class="tag">&lt;h1&gt;</span>가장 큰 제목<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;h2&gt;</span>두 번째 제목<span class="tag">&lt;/h2&gt;</span>
+<span class="tag">&lt;h3&gt;</span>세 번째 제목<span class="tag">&lt;/h3&gt;</span></pre>
+          </div>
+        </div>
+        <div class="info-card reveal reveal-delay-4">
+          <div class="info-header">Result</div>
+          <div class="info-body preview">
+            <h1>가장 큰 제목</h1>
+            <h2>두 번째 제목</h2>
+            <h3>세 번째 제목</h3>
+          </div>
+        </div>
+      </div>
+      <div class="points reveal">
+        <div class="point">
+          <span class="point-icon">✓</span>
+          <span>h1은 페이지당 하나만 사용하는 것이 SEO에 유리합니다.</span>
+        </div>
+        <div class="point">
+          <span class="point-icon">✓</span>
+          <span>검색엔진이 제목 태그를 통해 페이지 구조를 파악합니다.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. <p> 문단 태그 -->
+  <section id="p" class="slide tag-slide">
+    <div class="slide-inner">
+      <p class="tag-number reveal">Tag 02</p>
+      <h2 class="tag-name reveal reveal-delay-1">&lt;p&gt;</h2>
+      <p class="tag-desc reveal reveal-delay-2">본문 텍스트를 담는 가장 기본적인 태그</p>
+      <div class="tag-content">
+        <div class="code-block reveal reveal-delay-3">
+          <div class="code-header">
+            <span class="code-dot red"></span>
+            <span class="code-dot yellow"></span>
+            <span class="code-dot green"></span>
+            <span class="code-label">index.html</span>
+          </div>
+          <div class="code-body"><pre><span class="tag">&lt;p&gt;</span>첫 번째 문단입니다.<span class="tag">&lt;/p&gt;</span>
+
+<span class="tag">&lt;p&gt;</span>두 번째 문단입니다.
+   줄바꿈은 무시됩니다.<span class="tag">&lt;/p&gt;</span></pre>
+          </div>
+        </div>
+        <div class="info-card reveal reveal-delay-4">
+          <div class="info-header">Result</div>
+          <div class="info-body preview">
+            <p>첫 번째 문단입니다.</p>
+            <p>두 번째 문단입니다. 줄바꿈은 무시됩니다.</p>
+          </div>
+        </div>
+      </div>
+      <div class="points reveal">
+        <div class="point">
+          <span class="point-icon">✓</span>
+          <span>HTML에서 줄바꿈은 &lt;br&gt; 태그를 사용해야 합니다.</span>
+        </div>
+        <div class="point">
+          <span class="point-icon">✓</span>
+          <span>&lt;p&gt; 태그는 블록 요소로, 자동으로 위아래 여백이 생깁니다.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. <a> 링크 태그 -->
+  <section id="a" class="slide tag-slide">
+    <div class="slide-inner">
+      <p class="tag-number reveal">Tag 03</p>
+      <h2 class="tag-name reveal reveal-delay-1">&lt;a&gt;</h2>
+      <p class="tag-desc reveal reveal-delay-2">다른 페이지나 사이트로 이동하는 하이퍼링크</p>
+      <div class="tag-content">
+        <div class="code-block reveal reveal-delay-3">
+          <div class="code-header">
+            <span class="code-dot red"></span>
+            <span class="code-dot yellow"></span>
+            <span class="code-dot green"></span>
+            <span class="code-label">index.html</span>
+          </div>
+          <div class="code-body"><pre><span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://naver.com"</span><span class="tag">&gt;</span>
+  네이버로 이동
+<span class="tag">&lt;/a&gt;</span>
+
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"page2.html"</span>
+   <span class="attr">target</span>=<span class="val">"_blank"</span><span class="tag">&gt;</span>
+  새 탭에서 열기
+<span class="tag">&lt;/a&gt;</span></pre>
+          </div>
+        </div>
+        <div class="info-card reveal reveal-delay-4">
+          <div class="info-header">Attributes</div>
+          <div class="info-body">
+            <div class="attr-list">
+              <div class="attr-item">
+                <span class="attr-badge">href</span>
+                <span class="attr-desc">이동할 URL 주소</span>
+              </div>
+              <div class="attr-item">
+                <span class="attr-badge">target="_blank"</span>
+                <span class="attr-desc">새 탭에서 열기</span>
+              </div>
+              <div class="attr-item">
+                <span class="attr-badge">target="_self"</span>
+                <span class="attr-desc">현재 탭에서 열기 (기본값)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="points reveal">
+        <div class="point">
+          <span class="point-icon">✓</span>
+          <span>외부 링크에는 보안을 위해 rel="noopener"를 함께 사용합니다.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. <img> 이미지 태그 -->
+  <section id="img" class="slide tag-slide">
+    <div class="slide-inner">
+      <p class="tag-number reveal">Tag 04</p>
+      <h2 class="tag-name reveal reveal-delay-1">&lt;img&gt;</h2>
+      <p class="tag-desc reveal reveal-delay-2">웹 페이지에 이미지를 삽입하는 태그</p>
+      <div class="tag-content">
+        <div class="code-block reveal reveal-delay-3">
+          <div class="code-header">
+            <span class="code-dot red"></span>
+            <span class="code-dot yellow"></span>
+            <span class="code-dot green"></span>
+            <span class="code-label">index.html</span>
+          </div>
+          <div class="code-body"><pre><span class="tag">&lt;img</span>
+  <span class="attr">src</span>=<span class="val">"photo.jpg"</span>
+  <span class="attr">alt</span>=<span class="val">"사진 설명"</span>
+  <span class="attr">width</span>=<span class="val">"300"</span>
+  <span class="attr">height</span>=<span class="val">"200"</span>
+<span class="tag">&gt;</span></pre>
+          </div>
+        </div>
+        <div class="info-card reveal reveal-delay-4">
+          <div class="info-header">Attributes</div>
+          <div class="info-body">
+            <div class="attr-list">
+              <div class="attr-item">
+                <span class="attr-badge">src</span>
+                <span class="attr-desc">이미지 파일 경로 (필수)</span>
+              </div>
+              <div class="attr-item">
+                <span class="attr-badge">alt</span>
+                <span class="attr-desc">대체 텍스트 — 접근성 (필수)</span>
+              </div>
+              <div class="attr-item">
+                <span class="attr-badge">width / height</span>
+                <span class="attr-desc">이미지 크기 지정</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="points reveal">
+        <div class="point">
+          <span class="point-icon warn">!</span>
+          <span>alt 속성은 시각장애인 스크린리더와 SEO에 매우 중요합니다.</span>
+        </div>
+        <div class="point">
+          <span class="point-icon">✓</span>
+          <span>&lt;img&gt;는 닫는 태그 없이 단독으로 사용하는 빈 요소(void element)입니다.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. <ul> / <li> 목록 태그 -->
+  <section id="ul" class="slide tag-slide">
+    <div class="slide-inner">
+      <p class="tag-number reveal">Tag 05</p>
+      <h2 class="tag-name reveal reveal-delay-1">&lt;ul&gt; / &lt;li&gt;</h2>
+      <p class="tag-desc reveal reveal-delay-2">항목을 나열할 때 사용하는 목록 태그</p>
+      <div class="tag-content">
+        <div class="code-block reveal reveal-delay-3">
+          <div class="code-header">
+            <span class="code-dot red"></span>
+            <span class="code-dot yellow"></span>
+            <span class="code-dot green"></span>
+            <span class="code-label">순서 없는 목록</span>
+          </div>
+          <div class="code-body"><pre><span class="tag">&lt;ul&gt;</span>
+  <span class="tag">&lt;li&gt;</span>HTML<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>CSS<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>JavaScript<span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ul&gt;</span></pre>
+          </div>
+        </div>
+        <div class="info-card reveal reveal-delay-4">
+          <div class="info-header">Result</div>
+          <div class="info-body preview">
+            <p style="font-size:12px; color:var(--gray-400); margin-bottom:8px;">&lt;ul&gt; 순서 없는 목록</p>
+            <ul style="margin-bottom:20px;">
+              <li>HTML</li>
+              <li>CSS</li>
+              <li>JavaScript</li>
+            </ul>
+            <p style="font-size:12px; color:var(--gray-400); margin-bottom:8px;">&lt;ol&gt; 순서 있는 목록</p>
+            <ol>
+              <li>첫 번째</li>
+              <li>두 번째</li>
+              <li>세 번째</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <div class="points reveal">
+        <div class="point">
+          <span class="point-icon">✓</span>
+          <span>&lt;ul&gt;은 순서 없는 목록(Unordered), &lt;ol&gt;은 순서 있는 목록(Ordered)입니다.</span>
+        </div>
+        <div class="point">
+          <span class="point-icon">✓</span>
+          <span>네비게이션 메뉴도 &lt;ul&gt; + &lt;li&gt;로 만드는 경우가 많습니다.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. 요약 -->
+  <section id="summary" class="slide summary-slide">
+    <div class="slide-inner">
+      <h2 class="summary-title reveal">한눈에 보기.</h2>
+      <p class="summary-sub reveal reveal-delay-1">이 5가지 태그면 기본 웹 페이지를 만들 수 있습니다.</p>
+      <div class="summary-grid">
+        <div class="summary-card reveal reveal-delay-1">
+          <div class="summary-card-tag">&lt;h1&gt;</div>
+          <div class="summary-card-name">제목</div>
+          <div class="summary-card-desc">Heading</div>
+        </div>
+        <div class="summary-card reveal reveal-delay-2">
+          <div class="summary-card-tag">&lt;p&gt;</div>
+          <div class="summary-card-name">문단</div>
+          <div class="summary-card-desc">Paragraph</div>
+        </div>
+        <div class="summary-card reveal reveal-delay-3">
+          <div class="summary-card-tag">&lt;a&gt;</div>
+          <div class="summary-card-name">링크</div>
+          <div class="summary-card-desc">Anchor</div>
+        </div>
+        <div class="summary-card reveal reveal-delay-4">
+          <div class="summary-card-tag">&lt;img&gt;</div>
+          <div class="summary-card-name">이미지</div>
+          <div class="summary-card-desc">Image</div>
+        </div>
+        <div class="summary-card reveal" style="transition-delay:0.5s;">
+          <div class="summary-card-tag">&lt;ul&gt;</div>
+          <div class="summary-card-name">목록</div>
+          <div class="summary-card-desc">List</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. 엔딩 -->
+  <section class="slide ending">
+    <div class="slide-inner">
+      <h2 class="ending-title reveal">Start Building.</h2>
+      <p class="ending-sub reveal reveal-delay-1">이제 직접 만들어 보세요.</p>
+    </div>
+  </section>
+
+  <script>
+    // 스크롤 애니메이션
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // 네비게이션 활성 링크
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (window.scrollY >= section.offsetTop - 100) {
+          current = section.id;
+        }
+      });
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+      });
+    });
+  </script>
+</body>
+</html>
