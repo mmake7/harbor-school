@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D-day 카운터</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #fff;
+    }
+
+    .container {
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 30px;
+      font-weight: 300;
+      letter-spacing: 2px;
+    }
+
+    .date-input-group {
+      margin-bottom: 40px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    input[type="date"] {
+      padding: 12px 20px;
+      font-size: 1.1rem;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+
+    input[type="date"]:focus {
+      border-color: #7c5cfc;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
+
+    .countdown {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .time-box {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 24px 20px;
+      min-width: 100px;
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    .time-box:hover {
+      transform: translateY(-4px);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .time-box .number {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1;
+      background: linear-gradient(135deg, #7c5cfc, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .time-box .label {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .d-day-text {
+      font-size: 1.4rem;
+      color: #a78bfa;
+      font-weight: 300;
+      min-height: 2em;
+    }
+
+    .d-day-text.past {
+      color: #f87171;
+    }
+
+    .d-day-text.today {
+      color: #34d399;
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    .now {
+      margin-top: 40px;
+      font-size: 0.85rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>D-DAY COUNTER</h1>
+
+    <div class="date-input-group">
+      <label for="target-date">목표 날짜를 선택하세요</label>
+      <input type="date" id="target-date">
+    </div>
+
+    <div class="countdown">
+      <div class="time-box">
+        <div class="number" id="days">0</div>
+        <div class="label">Days</div>
+      </div>
+      <div class="time-box">
+        <div class="number" id="hours">0</div>
+        <div class="label">Hours</div>
+      </div>
+      <div class="time-box">
+        <div class="number" id="minutes">0</div>
+        <div class="label">Min</div>
+      </div>
+      <div class="time-box">
+        <div class="number" id="seconds">0</div>
+        <div class="label">Sec</div>
+      </div>
+    </div>
+
+    <div class="d-day-text" id="d-day-text"></div>
+    <div class="now" id="current-time"></div>
+  </div>
+
+  <script>
+    const targetInput = document.getElementById('target-date');
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+    const ddayText = document.getElementById('d-day-text');
+    const currentTimeEl = document.getElementById('current-time');
+
+    // 저장된 목표 날짜 불러오기
+    const saved = localStorage.getItem('dday-target');
+    if (saved) {
+      targetInput.value = saved;
+    }
+
+    targetInput.addEventListener('change', () => {
+      localStorage.setItem('dday-target', targetInput.value);
+    });
+
+    function update() {
+      const now = new Date();
+
+      // 현재 시각 표시
+      currentTimeEl.textContent = `현재: ${now.toLocaleString('ko-KR')}`;
+
+      const targetValue = targetInput.value;
+      if (!targetValue) {
+        daysEl.textContent = '-';
+        hoursEl.textContent = '-';
+        minutesEl.textContent = '-';
+        secondsEl.textContent = '-';
+        ddayText.textContent = '날짜를 선택해주세요';
+        ddayText.className = 'd-day-text';
+        return;
+      }
+
+      // 목표 날짜의 자정(00:00:00)을 기준으로 계산
+      const target = new Date(targetValue + 'T00:00:00');
+      const diff = target.getTime() - now.getTime();
+
+      if (diff > 0) {
+        // 미래: 남은 시간 계산
+        const totalSeconds = Math.floor(diff / 1000);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        daysEl.textContent = days;
+        hoursEl.textContent = String(hours).padStart(2, '0');
+        minutesEl.textContent = String(minutes).padStart(2, '0');
+        secondsEl.textContent = String(seconds).padStart(2, '0');
+
+        ddayText.textContent = `D-${days + 1}`;
+        ddayText.className = 'd-day-text';
+      } else if (diff > -86400000) {
+        // 오늘이 D-day
+        daysEl.textContent = '0';
+        hoursEl.textContent = '00';
+        minutesEl.textContent = '00';
+        secondsEl.textContent = '00';
+
+        ddayText.textContent = 'D-DAY!';
+        ddayText.className = 'd-day-text today';
+      } else {
+        // 과거: 지난 일수 계산
+        const absDiff = Math.abs(diff);
+        const daysPassed = Math.floor(absDiff / 86400000);
+
+        daysEl.textContent = daysPassed;
+        hoursEl.textContent = '00';
+        minutesEl.textContent = '00';
+        secondsEl.textContent = '00';
+
+        ddayText.textContent = `D+${daysPassed}`;
+        ddayText.className = 'd-day-text past';
+      }
+    }
+
+    // 1초마다 실시간 업데이트
+    update();
+    setInterval(update, 1000);
+  </script>
+</body>
+</html>
