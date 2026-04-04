@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세금 시뮬레이터 - 프리랜서 vs 직장인</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #e0e0e0; min-height: 100vh; }
+.app { max-width: 640px; margin: 0 auto; padding: 16px; }
+h1 { text-align: center; font-size: 1.4rem; padding: 20px 0 8px; color: #fff; }
+h1 span { font-size: 2rem; }
+.subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 20px; }
+h2 { font-size: 1rem; margin-bottom: 12px; color: #a0a0ff; }
+.card { background: #1a1a2e; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.slider-group { margin-bottom: 16px; }
+.slider-label { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px; }
+.slider-value { color: #6c63ff; font-weight: 700; font-size: 1.1rem; }
+input[type="range"] { width: 100%; height: 6px; -webkit-appearance: none; background: #333; border-radius: 3px; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #6c63ff; border-radius: 50%; cursor: pointer; }
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+.tab { flex: 1; text-align: center; padding: 10px 4px; border-radius: 8px; cursor: pointer; background: #16213e; border: 1px solid #333; font-weight: 600; font-size: 13px; transition: all .2s; }
+.tab.active { background: #6c63ff; border-color: #6c63ff; color: #fff; }
+.row-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ffffff08; font-size: 14px; }
+.row-item.indent { padding-left: 16px; color: #aaa; font-size: 13px; }
+.row-item.total { font-weight: 700; font-size: 15px; border-top: 1px solid #333; border-bottom: none; padding-top: 12px; margin-top: 4px; }
+.row-item .amount { font-weight: 600; }
+.row-item .amount.negative { color: #e74c3c; }
+.row-item .amount.positive { color: #2ecc71; }
+.highlight { color: #6c63ff; }
+.section-title { font-size: 13px; color: #6c63ff; font-weight: 700; margin: 12px 0 4px; }
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.compare-card { background: #16213e; border-radius: 10px; padding: 14px; text-align: center; }
+.compare-card h3 { font-size: 13px; margin-bottom: 8px; }
+.compare-card .big { font-size: 1.3rem; font-weight: 700; margin: 4px 0; }
+.compare-card .sub { font-size: 12px; color: #aaa; }
+.compare-card.employee { border: 1px solid #3498db44; }
+.compare-card.employee .big { color: #3498db; }
+.compare-card.freelancer { border: 1px solid #e67e2244; }
+.compare-card.freelancer .big { color: #e67e22; }
+.winner { background: #27ae6022; border-radius: 8px; padding: 12px; text-align: center; margin-top: 12px; font-weight: 700; color: #2ecc71; }
+.flow-step { background: #16213e; border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+.flow-step .arrow { color: #6c63ff; font-size: 11px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.badge-refund { background: #2ecc7133; color: #2ecc71; }
+.badge-pay { background: #e74c3c33; color: #e74c3c; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+// 2024 소득세 구간
+const TAX_BRACKETS = [
+  { limit: 14000000, rate: 0.06, deduction: 0 },
+  { limit: 50000000, rate: 0.15, deduction: 1260000 },
+  { limit: 88000000, rate: 0.24, deduction: 5760000 },
+  { limit: 150000000, rate: 0.35, deduction: 15440000 },
+  { limit: 300000000, rate: 0.38, deduction: 19940000 },
+  { limit: 500000000, rate: 0.40, deduction: 25940000 },
+  { limit: 1000000000, rate: 0.42, deduction: 35940000 },
+  { limit: Infinity, rate: 0.45, deduction: 65940000 },
+];
+
+function calcIncomeTax(taxableIncome) {
+  if (taxableIncome <= 0) return { tax: 0, bracket: null, steps: [] };
+  const steps = [];
+  let remaining = taxableIncome;
+  let totalTax = 0;
+  let prevLimit = 0;
+  let appliedBracket = null;
+
+  for (const b of TAX_BRACKETS) {
+    if (remaining <= 0) break;
+    const rangeMax = b.limit - prevLimit;
+    const taxable = Math.min(remaining, rangeMax);
+    const tax = taxable * b.rate;
+    steps.push({ from: prevLimit, to: Math.min(b.limit, taxableIncome), rate: b.rate, taxable, tax });
+    totalTax += tax;
+    remaining -= taxable;
+    appliedBracket = b;
+    prevLimit = b.limit;
+  }
+  return { tax: Math.round(totalTax), bracket: appliedBracket, steps };
+}
+
+function calcEmployee(salary) {
+  const monthly = salary / 12;
+  // 4대보험 (근로자 부담분)
+  const nationalPension = Math.min(monthly, 5900000) * 0.045;
+  const healthInsurance = monthly * 0.03545;
+  const longTermCare = healthInsurance * 0.1281;
+  const employmentInsurance = monthly * 0.009;
+
+  const annualNP = Math.round(nationalPension * 12);
+  const annualHI = Math.round(healthInsurance * 12);
+  const annualLTC = Math.round(longTermCare * 12);
+  const annualEI = Math.round(employmentInsurance * 12);
+  const totalInsurance = annualNP + annualHI + annualLTC + annualEI;
+
+  // 근로소득공제
+  let earnedDeduction = 0;
+  if (salary <= 5000000) earnedDeduction = salary * 0.7;
+  else if (salary <= 15000000) earnedDeduction = 3500000 + (salary - 5000000) * 0.4;
+  else if (salary <= 45000000) earnedDeduction = 7500000 + (salary - 15000000) * 0.15;
+  else if (salary <= 100000000) earnedDeduction = 12000000 + (salary - 45000000) * 0.05;
+  else earnedDeduction = 14750000 + (salary - 100000000) * 0.02;
+  earnedDeduction = Math.round(earnedDeduction);
+
+  // 인적공제 (본인)
+  const personalDeduction = 1500000;
+  // 4대보험 소득공제
+  const taxableIncome = Math.max(0, salary - earnedDeduction - personalDeduction - totalInsurance);
+  const { tax: incomeTax, steps } = calcIncomeTax(taxableIncome);
+  const localTax = Math.round(incomeTax * 0.1);
+  const totalTax = incomeTax + localTax;
+  const netIncome = salary - totalInsurance - totalTax;
+
+  return {
+    salary, totalInsurance, annualNP, annualHI, annualLTC, annualEI,
+    earnedDeduction, personalDeduction, taxableIncome,
+    incomeTax, localTax, totalTax, netIncome, steps
+  };
+}
+
+function calcFreelancer(revenue, expenseRate) {
+  const expenses = Math.round(revenue * expenseRate / 100);
+  const income = revenue - expenses;
+  // 인적공제
+  const personalDeduction = 1500000;
+  const taxableIncome = Math.max(0, income - personalDeduction);
+  const { tax: incomeTax, steps } = calcIncomeTax(taxableIncome);
+  const localTax = Math.round(incomeTax * 0.1);
+  const totalTax = incomeTax + localTax;
+  // 3.3% 원천징수
+  const withheld = Math.round(revenue * 0.033);
+  const finalTax = totalTax - withheld;
+  const netIncome = revenue - expenses - totalTax;
+
+  return {
+    revenue, expenses, income, personalDeduction, taxableIncome,
+    incomeTax, localTax, totalTax, withheld, finalTax, netIncome, steps
+  };
+}
+
+const fmt = (n) => Math.round(n).toLocaleString();
+const fmtMan = (n) => {
+  if (n >= 100000000) return `${(n / 100000000).toFixed(1)}억`;
+  if (n >= 10000) return `${Math.round(n / 10000).toLocaleString()}만`;
+  return n.toLocaleString();
+};
+
+function App() {
+  const [salary, setSalary] = useState(50000000);
+  const [expenseRate, setExpenseRate] = useState(40);
+  const [tab, setTab] = useState('compare');
+
+  const emp = useMemo(() => calcEmployee(salary), [salary]);
+  const frl = useMemo(() => calcFreelancer(salary, expenseRate), [salary, expenseRate]);
+
+  const renderSteps = (steps) => (
+    steps.map((s, i) => (
+      <div key={i} className="flow-step">
+        <span>{fmtMan(s.taxable)}원 × {(s.rate * 100).toFixed(0)}%</span>
+        <span className="amount">{fmt(s.tax)}원</span>
+      </div>
+    ))
+  );
+
+  return (
+    <div className="app">
+      <h1><span>🧮</span> 세금 시뮬레이터</h1>
+      <div className="subtitle">프리랜서 vs 직장인 실수령액 비교</div>
+
+      <div className="card">
+        <div className="slider-group">
+          <div className="slider-label">
+            <span>연간 수입</span>
+            <span className="slider-value">{fmt(salary)}원</span>
+          </div>
+          <input type="range" min={10000000} max={200000000} step={1000000}
+            value={salary} onChange={e => setSalary(Number(e.target.value))} />
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:11,color:'#666',marginTop:4}}>
+            <span>1,000만</span><span>2억</span>
+          </div>
+        </div>
+        {(tab === 'compare' || tab === 'freelancer') && (
+          <div className="slider-group">
+            <div className="slider-label">
+              <span>필요경비율 (프리랜서)</span>
+              <span className="slider-value">{expenseRate}%</span>
+            </div>
+            <input type="range" min={0} max={80} step={5}
+              value={expenseRate} onChange={e => setExpenseRate(Number(e.target.value))} />
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:11,color:'#666',marginTop:4}}>
+              <span>0%</span><span>80%</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="tabs">
+        <div className={`tab ${tab === 'compare' ? 'active' : ''}`} onClick={() => setTab('compare')}>비교</div>
+        <div className={`tab ${tab === 'employee' ? 'active' : ''}`} onClick={() => setTab('employee')}>직장인</div>
+        <div className={`tab ${tab === 'freelancer' ? 'active' : ''}`} onClick={() => setTab('freelancer')}>프리랜서</div>
+      </div>
+
+      {tab === 'compare' && (
+        <div className="card">
+          <h2>실수령액 비교</h2>
+          <div className="compare-grid">
+            <div className="compare-card employee">
+              <h3>💼 직장인</h3>
+              <div className="big">{fmtMan(emp.netIncome)}원</div>
+              <div className="sub">월 약 {fmtMan(Math.round(emp.netIncome / 12))}원</div>
+              <div className="sub" style={{marginTop:4}}>세금+보험 {fmtMan(emp.totalTax + emp.totalInsurance)}원</div>
+            </div>
+            <div className="compare-card freelancer">
+              <h3>💻 프리랜서</h3>
+              <div className="big">{fmtMan(frl.netIncome)}원</div>
+              <div className="sub">월 약 {fmtMan(Math.round(frl.netIncome / 12))}원</div>
+              <div className="sub" style={{marginTop:4}}>세금 {fmtMan(frl.totalTax)}원 / 경비 {fmtMan(frl.expenses)}원</div>
+            </div>
+          </div>
+          <div className="winner">
+            {emp.netIncome > frl.netIncome
+              ? `💼 직장인이 ${fmtMan(emp.netIncome - frl.netIncome)}원 더 유리`
+              : emp.netIncome < frl.netIncome
+              ? `💻 프리랜서가 ${fmtMan(frl.netIncome - emp.netIncome)}원 더 유리`
+              : '동일한 실수령액'}
+          </div>
+
+          <div className="section-title" style={{marginTop:16}}>항목별 비교</div>
+          <div className="row-item"><span>총 수입</span><span className="amount">{fmt(salary)}원</span></div>
+          <div className="row-item"><span>직장인 공제·보험</span><span className="amount negative">-{fmt(emp.totalInsurance + emp.totalTax)}원</span></div>
+          <div className="row-item"><span>프리랜서 경비·세금</span><span className="amount negative">-{fmt(frl.expenses + frl.totalTax)}원</span></div>
+          <div className="row-item total">
+            <span>차이</span>
+            <span className={`amount ${emp.netIncome >= frl.netIncome ? 'positive' : 'negative'}`}>
+              {emp.netIncome >= frl.netIncome ? '+' : ''}{fmt(emp.netIncome - frl.netIncome)}원 (직장인 기준)
+            </span>
+          </div>
+        </div>
+      )}
+
+      {tab === 'employee' && (
+        <>
+          <div className="card">
+            <h2>💼 직장인 상세</h2>
+            <div className="row-item"><span>연봉 (총급여)</span><span className="amount">{fmt(salary)}원</span></div>
+
+            <div className="section-title">4대보험 (근로자 부담)</div>
+            <div className="row-item indent"><span>국민연금 (4.5%)</span><span className="amount">-{fmt(emp.annualNP)}원</span></div>
+            <div className="row-item indent"><span>건강보험 (3.545%)</span><span className="amount">-{fmt(emp.annualHI)}원</span></div>
+            <div className="row-item indent"><span>장기요양 (건보의 12.81%)</span><span className="amount">-{fmt(emp.annualLTC)}원</span></div>
+            <div className="row-item indent"><span>고용보험 (0.9%)</span><span className="amount">-{fmt(emp.annualEI)}원</span></div>
+            <div className="row-item"><span>4대보험 합계</span><span className="amount negative">-{fmt(emp.totalInsurance)}원</span></div>
+
+            <div className="section-title">소득공제</div>
+            <div className="row-item indent"><span>근로소득공제</span><span className="amount">-{fmt(emp.earnedDeduction)}원</span></div>
+            <div className="row-item indent"><span>인적공제 (본인)</span><span className="amount">-{fmt(emp.personalDeduction)}원</span></div>
+            <div className="row-item indent"><span>4대보험 공제</span><span className="amount">-{fmt(emp.totalInsurance)}원</span></div>
+            <div className="row-item"><span>과세표준</span><span className="amount highlight">{fmt(emp.taxableIncome)}원</span></div>
+          </div>
+
+          <div className="card">
+            <h2>소득세 계산 흐름</h2>
+            {renderSteps(emp.steps)}
+            <div className="row-item total"><span>산출세액</span><span className="amount">{fmt(emp.incomeTax)}원</span></div>
+            <div className="row-item"><span>지방소득세 (10%)</span><span className="amount">{fmt(emp.localTax)}원</span></div>
+            <div className="row-item total"><span>총 세금</span><span className="amount negative">-{fmt(emp.totalTax)}원</span></div>
+          </div>
+
+          <div className="card">
+            <div className="row-item total" style={{borderTop:'none'}}>
+              <span>연간 실수령액</span><span className="amount positive">{fmt(emp.netIncome)}원</span>
+            </div>
+            <div className="row-item"><span>월 실수령액</span><span className="amount positive">{fmt(Math.round(emp.netIncome / 12))}원</span></div>
+          </div>
+        </>
+      )}
+
+      {tab === 'freelancer' && (
+        <>
+          <div className="card">
+            <h2>💻 프리랜서 상세</h2>
+            <div className="row-item"><span>연간 수입</span><span className="amount">{fmt(salary)}원</span></div>
+            <div className="row-item"><span>필요경비 ({expenseRate}%)</span><span className="amount negative">-{fmt(frl.expenses)}원</span></div>
+            <div className="row-item"><span>소득금액</span><span className="amount">{fmt(frl.income)}원</span></div>
+
+            <div className="section-title">소득공제</div>
+            <div className="row-item indent"><span>인적공제 (본인)</span><span className="amount">-{fmt(frl.personalDeduction)}원</span></div>
+            <div className="row-item"><span>과세표준</span><span className="amount highlight">{fmt(frl.taxableIncome)}원</span></div>
+          </div>
+
+          <div className="card">
+            <h2>소득세 계산 흐름</h2>
+            {renderSteps(frl.steps)}
+            <div className="row-item total"><span>산출세액</span><span className="amount">{fmt(frl.incomeTax)}원</span></div>
+            <div className="row-item"><span>지방소득세 (10%)</span><span className="amount">{fmt(frl.localTax)}원</span></div>
+            <div className="row-item total"><span>총 결정세액</span><span className="amount negative">-{fmt(frl.totalTax)}원</span></div>
+          </div>
+
+          <div className="card">
+            <h2>3.3% 원천징수 정산</h2>
+            <div className="row-item"><span>연간 원천징수액 (3.3%)</span><span className="amount">{fmt(frl.withheld)}원</span></div>
+            <div className="row-item"><span>결정세액</span><span className="amount">{fmt(frl.totalTax)}원</span></div>
+            <div className="row-item total">
+              <span>{frl.finalTax < 0 ? '환급액' : '추가 납부액'}</span>
+              <span className="amount">
+                {frl.finalTax < 0
+                  ? <><span className="badge badge-refund">환급</span> {fmt(Math.abs(frl.finalTax))}원</>
+                  : <><span className="badge badge-pay">추가납부</span> {fmt(frl.finalTax)}원</>
+                }
+              </span>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="row-item total" style={{borderTop:'none'}}>
+              <span>연간 실수령액</span><span className="amount positive">{fmt(frl.netIncome)}원</span>
+            </div>
+            <div className="row-item"><span>월 실수령액</span><span className="amount positive">{fmt(Math.round(frl.netIncome / 12))}원</span></div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

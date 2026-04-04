@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회식 생존기 - 더치페이 계산기</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #e0e0e0; min-height: 100vh; }
+.app { max-width: 600px; margin: 0 auto; padding: 16px; }
+h1 { text-align: center; font-size: 1.5rem; padding: 20px 0; color: #fff; }
+h1 span { font-size: 2rem; }
+h2 { font-size: 1.1rem; margin-bottom: 12px; color: #a0a0ff; }
+.card { background: #1a1a2e; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; }
+input, select, button { font-size: 14px; padding: 8px 12px; border-radius: 8px; border: 1px solid #333; background: #16213e; color: #e0e0e0; outline: none; }
+input:focus, select:focus { border-color: #6c63ff; }
+input { flex: 1; min-width: 0; }
+button { cursor: pointer; background: #6c63ff; border: none; color: #fff; font-weight: 600; white-space: nowrap; }
+button:hover { background: #5a52d5; }
+button.danger { background: #e74c3c; }
+button.danger:hover { background: #c0392b; }
+button.secondary { background: #2d2d44; border: 1px solid #444; }
+button.secondary:hover { background: #3d3d54; }
+button.success { background: #27ae60; }
+button.success:hover { background: #219a52; }
+.tag { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.tag-부장 { background: #e74c3c33; color: #e74c3c; }
+.tag-과장 { background: #e67e2233; color: #e67e22; }
+.tag-대리 { background: #3498db33; color: #3498db; }
+.tag-사원 { background: #2ecc7133; color: #2ecc71; }
+.tag-손님 { background: #9b59b633; color: #9b59b6; }
+.member-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ffffff10; gap: 8px; flex-wrap: wrap; }
+.member-info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.member-controls { display: flex; align-items: center; gap: 6px; }
+.checkbox-label { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #aaa; cursor: pointer; white-space: nowrap; }
+.checkbox-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: #6c63ff; }
+.menu-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #ffffff10; }
+.preset-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.preset-btn { font-size: 12px; padding: 6px 10px; background: #16213e; border: 1px solid #333; }
+.preset-btn:hover { border-color: #6c63ff; }
+.tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+.tab { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; background: #16213e; border: 1px solid #333; font-weight: 600; font-size: 13px; }
+.tab.active { background: #6c63ff; border-color: #6c63ff; color: #fff; }
+.result-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ffffff10; align-items: center; }
+.result-name { font-weight: 600; }
+.result-amount { font-size: 1.2rem; color: #6c63ff; font-weight: 700; }
+.total-bar { display: flex; justify-content: space-between; padding: 12px; background: #6c63ff22; border-radius: 8px; margin-top: 8px; font-weight: 700; }
+.copy-area { background: #16213e; border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; margin-top: 8px; border: 1px solid #333; }
+.empty { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+const RANKS = ['부장', '과장', '대리', '사원', '손님'];
+const RANK_RATIO = { '부장': 1.5, '과장': 1.2, '대리': 1.0, '사원': 0.7, '손님': 0 };
+const PRESETS = [
+  { name: '소주', price: 5000 }, { name: '맥주', price: 6000 },
+  { name: '삼겹살', price: 16000 }, { name: '목살', price: 15000 },
+  { name: '된장찌개', price: 8000 }, { name: '김치찌개', price: 8000 },
+  { name: '공기밥', price: 1000 }, { name: '음료수', price: 2000 },
+];
+
+function App() {
+  const [members, setMembers] = useState([]);
+  const [menus, setMenus] = useState([]);
+  const [name, setName] = useState('');
+  const [rank, setRank] = useState('사원');
+  const [menuName, setMenuName] = useState('');
+  const [menuPrice, setMenuPrice] = useState('');
+  const [menuQty, setMenuQty] = useState('1');
+  const [menuIsAlcohol, setMenuIsAlcohol] = useState(false);
+  const [mode, setMode] = useState('equal');
+
+  const addMember = () => {
+    const n = name.trim();
+    if (!n) return;
+    setMembers(prev => [...prev, { id: Date.now(), name: n, rank, noDrink: false }]);
+    setName('');
+  };
+
+  const removeMember = (id) => setMembers(prev => prev.filter(m => m.id !== id));
+
+  const toggleNoDrink = (id) => {
+    setMembers(prev => prev.map(m => m.id === id ? { ...m, noDrink: !m.noDrink } : m));
+  };
+
+  const addMenu = (mName, mPrice, qty, isAlcohol) => {
+    const mn = (mName || menuName).trim();
+    const mp = Number(mPrice || menuPrice);
+    const mq = Number(qty || menuQty) || 1;
+    const alc = isAlcohol !== undefined ? isAlcohol : menuIsAlcohol;
+    if (!mn || !mp) return;
+    setMenus(prev => [...prev, { id: Date.now(), name: mn, price: mp, qty: mq, isAlcohol: alc }]);
+    setMenuName(''); setMenuPrice(''); setMenuQty('1'); setMenuIsAlcohol(false);
+  };
+
+  const removeMenu = (id) => setMenus(prev => prev.filter(m => m.id !== id));
+
+  const totalAmount = menus.reduce((s, m) => s + m.price * m.qty, 0);
+  const alcoholTotal = menus.filter(m => m.isAlcohol).reduce((s, m) => s + m.price * m.qty, 0);
+  const foodTotal = totalAmount - alcoholTotal;
+
+  const results = useMemo(() => {
+    if (members.length === 0) return [];
+    const paying = members.filter(m => RANK_RATIO[m.rank] > 0);
+    if (paying.length === 0) return members.map(m => ({ ...m, amount: 0 }));
+
+    if (mode === 'equal') {
+      const drinkers = paying.filter(m => !m.noDrink);
+      const nonDrinkers = paying.filter(m => m.noDrink);
+      return members.map(m => {
+        if (RANK_RATIO[m.rank] === 0) return { ...m, amount: 0 };
+        let share = foodTotal / paying.length;
+        if (m.noDrink) {
+          if (drinkers.length > 0) share = foodTotal / paying.length;
+          else share = totalAmount / paying.length;
+        } else {
+          if (nonDrinkers.length > 0 && drinkers.length > 0) {
+            share = foodTotal / paying.length + alcoholTotal / drinkers.length;
+          } else {
+            share = totalAmount / paying.length;
+          }
+        }
+        return { ...m, amount: Math.round(share) };
+      });
+    }
+
+    if (mode === 'rank') {
+      const drinkers = paying.filter(m => !m.noDrink);
+      const foodRatioSum = paying.reduce((s, m) => s + RANK_RATIO[m.rank], 0);
+      const alcRatioSum = drinkers.reduce((s, m) => s + RANK_RATIO[m.rank], 0);
+      return members.map(m => {
+        if (RANK_RATIO[m.rank] === 0) return { ...m, amount: 0 };
+        const foodShare = foodRatioSum > 0 ? (foodTotal * RANK_RATIO[m.rank]) / foodRatioSum : 0;
+        const alcShare = (!m.noDrink && alcRatioSum > 0) ? (alcoholTotal * RANK_RATIO[m.rank]) / alcRatioSum : 0;
+        return { ...m, amount: Math.round(foodShare + alcShare) };
+      });
+    }
+
+    // individual - placeholder, same as equal for now
+    return members.map(m => {
+      if (RANK_RATIO[m.rank] === 0) return { ...m, amount: 0 };
+      const share = totalAmount / paying.length;
+      return { ...m, amount: Math.round(share) };
+    });
+  }, [members, menus, mode, totalAmount, alcoholTotal, foodTotal]);
+
+  const resultTotal = results.reduce((s, r) => s + r.amount, 0);
+  const diff = totalAmount - resultTotal;
+
+  const copyText = useMemo(() => {
+    if (results.length === 0) return '';
+    const lines = [`[회식 정산 안내]`, `총액: ${totalAmount.toLocaleString()}원`, ''];
+    const modeLabel = mode === 'equal' ? '균등 분배' : mode === 'rank' ? '직급별 차등' : '개별 정산';
+    lines.push(`정산 방식: ${modeLabel}`, '');
+    results.filter(r => r.amount > 0).forEach(r => {
+      lines.push(`${r.name}(${r.rank}): ${r.amount.toLocaleString()}원`);
+    });
+    const guests = results.filter(r => r.amount === 0);
+    if (guests.length > 0) {
+      lines.push('', `손님: ${guests.map(g => g.name).join(', ')} (면제)`);
+    }
+    return lines.join('\n');
+  }, [results, totalAmount, mode]);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(copyText).then(() => alert('복사되었습니다!'));
+  };
+
+  return (
+    <div className="app">
+      <h1><span>🍻</span> 회식 생존기<br/>더치페이 계산기</h1>
+
+      <div className="card">
+        <h2>👥 멤버 추가</h2>
+        <div className="row">
+          <input placeholder="이름" value={name} onChange={e => setName(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addMember()} />
+          <select value={rank} onChange={e => setRank(e.target.value)}>
+            {RANKS.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+          <button onClick={addMember}>추가</button>
+        </div>
+        {members.length === 0 ? <div className="empty">멤버를 추가해주세요</div> :
+          members.map(m => (
+            <div key={m.id} className="member-item">
+              <div className="member-info">
+                <span className={`tag tag-${m.rank}`}>{m.rank}</span>
+                <span>{m.name}</span>
+              </div>
+              <div className="member-controls">
+                <label className="checkbox-label">
+                  <input type="checkbox" checked={m.noDrink} onChange={() => toggleNoDrink(m.id)} />
+                  금주
+                </label>
+                <button className="danger" onClick={() => removeMember(m.id)} style={{padding:'4px 8px',fontSize:12}}>✕</button>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div className="card">
+        <h2>🍽️ 메뉴 입력</h2>
+        <div className="preset-grid">
+          {PRESETS.map(p => (
+            <button key={p.name} className="preset-btn"
+              onClick={() => addMenu(p.name, p.price, 1, ['소주','맥주'].includes(p.name))}>
+              {p.name} {p.price.toLocaleString()}
+            </button>
+          ))}
+        </div>
+        <div className="row">
+          <input placeholder="메뉴명" value={menuName} onChange={e => setMenuName(e.target.value)} style={{flex:2}} />
+          <input placeholder="가격" type="number" value={menuPrice} onChange={e => setMenuPrice(e.target.value)} style={{flex:1}} />
+          <input placeholder="수량" type="number" value={menuQty} onChange={e => setMenuQty(e.target.value)} style={{width:50,flex:'none'}} />
+        </div>
+        <div className="row">
+          <label className="checkbox-label">
+            <input type="checkbox" checked={menuIsAlcohol} onChange={e => setMenuIsAlcohol(e.target.checked)} />
+            주류
+          </label>
+          <button onClick={() => addMenu()} style={{marginLeft:'auto'}}>메뉴 추가</button>
+        </div>
+        {menus.length === 0 ? <div className="empty">메뉴를 추가해주세요</div> :
+          menus.map(m => (
+            <div key={m.id} className="menu-item">
+              <span>{m.name} {m.isAlcohol ? '🍺' : '🍽️'} × {m.qty}</span>
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <span>{(m.price * m.qty).toLocaleString()}원</span>
+                <button className="danger" onClick={() => removeMenu(m.id)} style={{padding:'4px 8px',fontSize:12}}>✕</button>
+              </div>
+            </div>
+          ))
+        }
+        {menus.length > 0 && (
+          <div className="total-bar">
+            <span>총액</span>
+            <span>{totalAmount.toLocaleString()}원 (음식 {foodTotal.toLocaleString()} + 주류 {alcoholTotal.toLocaleString()})</span>
+          </div>
+        )}
+      </div>
+
+      <div className="card">
+        <h2>💰 정산</h2>
+        <div className="tabs">
+          <div className={`tab ${mode === 'equal' ? 'active' : ''}`} onClick={() => setMode('equal')}>균등 분배</div>
+          <div className={`tab ${mode === 'rank' ? 'active' : ''}`} onClick={() => setMode('rank')}>직급별 차등</div>
+          <div className={`tab ${mode === 'individual' ? 'active' : ''}`} onClick={() => setMode('individual')}>개별 정산</div>
+        </div>
+        {mode === 'rank' && (
+          <div style={{fontSize:12,color:'#888',marginBottom:12}}>
+            비율: 부장×1.5 / 과장×1.2 / 대리×1.0 / 사원×0.7 / 손님×0
+          </div>
+        )}
+        {results.length === 0 ? <div className="empty">멤버와 메뉴를 추가하면 정산 결과가 표시됩니다</div> :
+          results.map(r => (
+            <div key={r.id} className="result-item">
+              <div>
+                <span className="result-name">{r.name}</span>
+                <span className={`tag tag-${r.rank}`} style={{marginLeft:8,fontSize:11}}>{r.rank}</span>
+                {r.noDrink && <span style={{fontSize:11,color:'#e67e22',marginLeft:4}}>금주</span>}
+              </div>
+              <span className="result-amount">{r.amount.toLocaleString()}원</span>
+            </div>
+          ))
+        }
+        {results.length > 0 && (
+          <>
+            <div className="total-bar">
+              <span>정산 합계</span>
+              <span>{resultTotal.toLocaleString()}원 {diff !== 0 && `(차이 ${diff > 0 ? '+' : ''}${diff.toLocaleString()}원)`}</span>
+            </div>
+            <div style={{marginTop:12}}>
+              <button className="success" onClick={handleCopy} style={{width:'100%',padding:12}}>
+                📋 송금 안내 복사
+              </button>
+              <div className="copy-area">{copyText}</div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
