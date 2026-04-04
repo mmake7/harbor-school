@@ -51,6 +51,12 @@ button.success:hover { background: #219a52; }
 .total-bar { display: flex; justify-content: space-between; padding: 12px; background: #6c63ff22; border-radius: 8px; margin-top: 8px; font-weight: 700; }
 .copy-area { background: #16213e; border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; margin-top: 8px; border: 1px solid #333; }
 .empty { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+.discount-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.discount-row select { flex: none; width: auto; }
+.discount-row input { flex: 1; min-width: 80px; }
+.discount-summary { background: #e67e2222; border: 1px solid #e67e2244; border-radius: 8px; padding: 10px 12px; margin-top: 10px; font-size: 13px; }
+.discount-summary .line { display: flex; justify-content: space-between; padding: 2px 0; }
+.discount-summary .line.final { font-weight: 700; font-size: 14px; color: #e67e22; margin-top: 4px; padding-top: 6px; border-top: 1px solid #e67e2244; }
 </style>
 </head>
 <body>
@@ -77,6 +83,8 @@ function App() {
   const [menuQty, setMenuQty] = useState('1');
   const [menuIsAlcohol, setMenuIsAlcohol] = useState(false);
   const [mode, setMode] = useState('equal');
+  const [discountType, setDiscountType] = useState('none');
+  const [discountValue, setDiscountValue] = useState('');
 
   const addMember = () => {
     const n = name.trim();
@@ -107,6 +115,19 @@ function App() {
   const alcoholTotal = menus.filter(m => m.isAlcohol).reduce((s, m) => s + m.price * m.qty, 0);
   const foodTotal = totalAmount - alcoholTotal;
 
+  const discountAmount = useMemo(() => {
+    const v = Number(discountValue) || 0;
+    if (discountType === 'fixed') return Math.min(v, totalAmount);
+    if (discountType === 'percent') return Math.round(totalAmount * Math.min(v, 100) / 100);
+    if (discountType === 'card') return Math.round(totalAmount * Math.min(v, 100) / 100);
+    return 0;
+  }, [discountType, discountValue, totalAmount]);
+
+  const discountedTotal = totalAmount - discountAmount;
+  const discountRatio = totalAmount > 0 ? discountedTotal / totalAmount : 1;
+  const dFoodTotal = Math.round(foodTotal * discountRatio);
+  const dAlcoholTotal = Math.round(alcoholTotal * discountRatio);
+
   const results = useMemo(() => {
     if (members.length === 0) return [];
     const paying = members.filter(m => RANK_RATIO[m.rank] > 0);
@@ -117,15 +138,15 @@ function App() {
       const nonDrinkers = paying.filter(m => m.noDrink);
       return members.map(m => {
         if (RANK_RATIO[m.rank] === 0) return { ...m, amount: 0 };
-        let share = foodTotal / paying.length;
+        let share = dFoodTotal / paying.length;
         if (m.noDrink) {
-          if (drinkers.length > 0) share = foodTotal / paying.length;
-          else share = totalAmount / paying.length;
+          if (drinkers.length > 0) share = dFoodTotal / paying.length;
+          else share = discountedTotal / paying.length;
         } else {
           if (nonDrinkers.length > 0 && drinkers.length > 0) {
-            share = foodTotal / paying.length + alcoholTotal / drinkers.length;
+            share = dFoodTotal / paying.length + dAlcoholTotal / drinkers.length;
           } else {
-            share = totalAmount / paying.length;
+            share = discountedTotal / paying.length;
           }
         }
         return { ...m, amount: Math.round(share) };
@@ -138,8 +159,8 @@ function App() {
       const alcRatioSum = drinkers.reduce((s, m) => s + RANK_RATIO[m.rank], 0);
       return members.map(m => {
         if (RANK_RATIO[m.rank] === 0) return { ...m, amount: 0 };
-        const foodShare = foodRatioSum > 0 ? (foodTotal * RANK_RATIO[m.rank]) / foodRatioSum : 0;
-        const alcShare = (!m.noDrink && alcRatioSum > 0) ? (alcoholTotal * RANK_RATIO[m.rank]) / alcRatioSum : 0;
+        const foodShare = foodRatioSum > 0 ? (dFoodTotal * RANK_RATIO[m.rank]) / foodRatioSum : 0;
+        const alcShare = (!m.noDrink && alcRatioSum > 0) ? (dAlcoholTotal * RANK_RATIO[m.rank]) / alcRatioSum : 0;
         return { ...m, amount: Math.round(foodShare + alcShare) };
       });
     }
@@ -147,17 +168,27 @@ function App() {
     // individual - placeholder, same as equal for now
     return members.map(m => {
       if (RANK_RATIO[m.rank] === 0) return { ...m, amount: 0 };
-      const share = totalAmount / paying.length;
+      const share = discountedTotal / paying.length;
       return { ...m, amount: Math.round(share) };
     });
-  }, [members, menus, mode, totalAmount, alcoholTotal, foodTotal]);
+  }, [members, menus, mode, discountedTotal, dAlcoholTotal, dFoodTotal]);
 
   const resultTotal = results.reduce((s, r) => s + r.amount, 0);
-  const diff = totalAmount - resultTotal;
+  const diff = discountedTotal - resultTotal;
+
+  const discountLabel = discountType === 'fixed' ? '쿠폰 할인' : discountType === 'percent' ? '퍼센트 할인' : discountType === 'card' ? '카드 할인' : '';
 
   const copyText = useMemo(() => {
     if (results.length === 0) return '';
-    const lines = [`[회식 정산 안내]`, `총액: ${totalAmount.toLocaleString()}원`, ''];
+    const lines = [`[회식 정산 안내]`];
+    if (discountAmount > 0) {
+      lines.push(`할인 전: ${totalAmount.toLocaleString()}원`);
+      lines.push(`${discountLabel}: -${discountAmount.toLocaleString()}원`);
+      lines.push(`할인 후: ${discountedTotal.toLocaleString()}원`);
+    } else {
+      lines.push(`총액: ${totalAmount.toLocaleString()}원`);
+    }
+    lines.push('');
     const modeLabel = mode === 'equal' ? '균등 분배' : mode === 'rank' ? '직급별 차등' : '개별 정산';
     lines.push(`정산 방식: ${modeLabel}`, '');
     results.filter(r => r.amount > 0).forEach(r => {
@@ -168,7 +199,7 @@ function App() {
       lines.push('', `손님: ${guests.map(g => g.name).join(', ')} (면제)`);
     }
     return lines.join('\n');
-  }, [results, totalAmount, mode]);
+  }, [results, totalAmount, discountedTotal, discountAmount, discountLabel, mode]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(copyText).then(() => alert('복사되었습니다!'));
@@ -246,6 +277,36 @@ function App() {
             <span>{totalAmount.toLocaleString()}원 (음식 {foodTotal.toLocaleString()} + 주류 {alcoholTotal.toLocaleString()})</span>
           </div>
         )}
+
+        {menus.length > 0 && (
+          <>
+            <h2 style={{marginTop:16}}>🏷️ 할인</h2>
+            <div className="discount-row">
+              <select value={discountType} onChange={e => { setDiscountType(e.target.value); setDiscountValue(''); }}>
+                <option value="none">할인 없음</option>
+                <option value="fixed">쿠폰 할인 (정액)</option>
+                <option value="percent">퍼센트 할인</option>
+                <option value="card">카드 할인</option>
+              </select>
+              {discountType !== 'none' && (
+                <input type="number" value={discountValue}
+                  onChange={e => setDiscountValue(e.target.value)}
+                  placeholder={discountType === 'fixed' ? '할인 금액 (원)' : '할인율 (%)'}
+                  style={{flex:1}} />
+              )}
+              {discountType !== 'none' && discountType !== 'fixed' && (
+                <span style={{fontSize:13,color:'#aaa',flexShrink:0}}>%</span>
+              )}
+            </div>
+            {discountAmount > 0 && (
+              <div className="discount-summary">
+                <div className="line"><span>할인 전 금액</span><span>{totalAmount.toLocaleString()}원</span></div>
+                <div className="line"><span>{discountLabel}</span><span style={{color:'#e67e22'}}>-{discountAmount.toLocaleString()}원</span></div>
+                <div className="line final"><span>할인 후 금액</span><span>{discountedTotal.toLocaleString()}원</span></div>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <div className="card">
@@ -274,6 +335,13 @@ function App() {
         }
         {results.length > 0 && (
           <>
+            {discountAmount > 0 && (
+              <div className="discount-summary" style={{marginBottom:8}}>
+                <div className="line"><span>할인 전</span><span>{totalAmount.toLocaleString()}원</span></div>
+                <div className="line"><span>{discountLabel}</span><span style={{color:'#e67e22'}}>-{discountAmount.toLocaleString()}원</span></div>
+                <div className="line final"><span>정산 기준액</span><span>{discountedTotal.toLocaleString()}원</span></div>
+              </div>
+            )}
             <div className="total-bar">
               <span>정산 합계</span>
               <span>{resultTotal.toLocaleString()}원 {diff !== 0 && `(차이 ${diff > 0 ? '+' : ''}${diff.toLocaleString()}원)`}</span>
