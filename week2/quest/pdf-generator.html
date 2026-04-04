@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF 생성기 - 회의록 / 업무보고서</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans KR',sans-serif;background:#0f0f23;color:#e0e0e0;min-height:100vh}
+.app{max-width:700px;margin:0 auto;padding:16px}
+h1{text-align:center;font-size:1.4rem;padding:20px 0 4px;color:#fff}
+h1 span{font-size:2rem}
+.subtitle{text-align:center;color:#888;font-size:13px;margin-bottom:20px}
+h2{font-size:1rem;margin-bottom:12px;color:#a0a0ff}
+.card{background:#1a1a2e;border-radius:12px;padding:16px;margin-bottom:16px}
+.tabs{display:flex;gap:4px;margin-bottom:16px}
+.tab{flex:1;text-align:center;padding:10px 4px;border-radius:8px;cursor:pointer;background:#16213e;border:1px solid #333;font-weight:600;font-size:13px;transition:all .2s}
+.tab.active{background:#6c63ff;border-color:#6c63ff;color:#fff}
+label{display:block;font-size:13px;color:#aaa;margin-bottom:4px;margin-top:10px}
+label:first-child{margin-top:0}
+input,select,textarea{width:100%;font-size:14px;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#16213e;color:#e0e0e0;outline:none;font-family:inherit}
+input:focus,select:focus,textarea:focus{border-color:#6c63ff}
+textarea{resize:vertical;min-height:80px}
+button{cursor:pointer;background:#6c63ff;border:none;color:#fff;font-weight:600;font-size:14px;padding:10px 16px;border-radius:8px;width:100%}
+button:hover{background:#5a52d5}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+.download-btn{background:#27ae60;margin-top:8px}
+.download-btn:hover{background:#219a52}
+.add-btn{background:#16213e;border:1px solid #444;margin-top:8px;font-size:13px}
+.add-btn:hover{background:#1f2f4e}
+.item-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #ffffff08}
+.item-row input,.item-row textarea{flex:1}
+.remove-btn{background:#e74c3c;width:32px;height:32px;padding:0;font-size:14px;flex-shrink:0;border-radius:6px}
+
+/* Preview styles */
+.preview-scroll{max-height:600px;overflow-y:auto;border-radius:8px;margin:12px 0}
+.preview{background:#fff;color:#000;padding:40px;font-family:'Noto Sans KR',sans-serif;font-size:13px;line-height:1.8;min-height:500px}
+.preview h3{font-size:20px;text-align:center;margin-bottom:24px;padding-bottom:12px;border-bottom:3px solid #333;font-weight:700}
+.preview .meta-table{width:100%;border-collapse:collapse;margin-bottom:20px}
+.preview .meta-table td,.preview .meta-table th{border:1px solid #ccc;padding:8px 12px;text-align:left}
+.preview .meta-table th{background:#f5f5f5;width:100px;font-weight:700;white-space:nowrap}
+.preview .section-title{font-size:15px;font-weight:700;margin:20px 0 8px;padding-left:8px;border-left:4px solid #333}
+.preview .content-box{background:#fafafa;border:1px solid #eee;border-radius:4px;padding:12px;margin-bottom:12px;white-space:pre-wrap}
+.preview ul{margin:0;padding-left:20px}
+.preview ul li{margin-bottom:4px}
+.preview .footer{margin-top:30px;padding-top:12px;border-top:1px solid #ccc;text-align:center;font-size:11px;color:#999}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useRef}=React;
+
+const TODAY=new Date().toISOString().slice(0,10);
+const TEMPLATES={
+  meeting:{label:'📋 회의록',fields:{
+    title:'',date:TODAY,time:'10:00',place:'',attendees:'',agenda:'',decisions:'',actions:''
+  }},
+  daily:{label:'📝 업무일지',fields:{
+    date:TODAY,todayWork:'',tomorrowWork:'',notes:''
+  }},
+  weekly:{label:'📊 주간보고서',fields:{
+    week:'',period:'',achievements:'',nextPlan:'',issues:''
+  }}
+};
+
+function App(){
+  const [template,setTemplate]=useState('meeting');
+  const [data,setData]=useState({...TEMPLATES.meeting.fields});
+  const [generating,setGenerating]=useState(false);
+  const previewRef=useRef(null);
+
+  const switchTemplate=(t)=>{
+    setTemplate(t);
+    setData({...TEMPLATES[t].fields});
+  };
+  const update=(key,val)=>setData(prev=>({...prev,[key]:val}));
+
+  const generatePDF=async()=>{
+    const el=previewRef.current;
+    if(!el)return;
+    setGenerating(true);
+    try{
+      const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+      const imgData=canvas.toDataURL('image/png');
+      const pdf=new jspdf.jsPDF('p','mm','a4');
+      const pageW=pdf.internal.pageSize.getWidth();
+      const pageH=pdf.internal.pageSize.getHeight();
+      const margin=10;
+      const contentW=pageW-margin*2;
+      const contentH=(canvas.height*contentW)/canvas.width;
+
+      if(contentH<=pageH-margin*2){
+        pdf.addImage(imgData,'PNG',margin,margin,contentW,contentH);
+      }else{
+        let y=0;
+        const sliceH=Math.floor(canvas.width*((pageH-margin*2)/contentW));
+        let page=0;
+        while(y<canvas.height){
+          if(page>0) pdf.addPage();
+          const sc=document.createElement('canvas');
+          sc.width=canvas.width;
+          const h=Math.min(sliceH,canvas.height-y);
+          sc.height=h;
+          sc.getContext('2d').drawImage(canvas,0,y,canvas.width,h,0,0,canvas.width,h);
+          const sliceData=sc.toDataURL('image/png');
+          const sliceRenderedH=(h*contentW)/canvas.width;
+          pdf.addImage(sliceData,'PNG',margin,margin,contentW,sliceRenderedH);
+          y+=h;page++;
+        }
+      }
+      const labels={meeting:'회의록',daily:'업무일지',weekly:'주간보고서'};
+      pdf.save(`${labels[template]}_${TODAY}.pdf`);
+    }catch(e){console.error(e);alert('PDF 생성 중 오류가 발생했습니다.')}
+    setGenerating(false);
+  };
+
+  const renderForm=()=>{
+    switch(template){
+      case 'meeting': return(
+        <>
+          <label>회의명</label>
+          <input value={data.title} onChange={e=>update('title',e.target.value)} placeholder="2024년 1분기 기획회의"/>
+          <div className="row">
+            <div><label>일시</label><input type="date" value={data.date} onChange={e=>update('date',e.target.value)}/></div>
+            <div><label>시간</label><input type="time" value={data.time} onChange={e=>update('time',e.target.value)}/></div>
+          </div>
+          <label>장소</label>
+          <input value={data.place} onChange={e=>update('place',e.target.value)} placeholder="3층 대회의실"/>
+          <label>참석자 (쉼표로 구분)</label>
+          <input value={data.attendees} onChange={e=>update('attendees',e.target.value)} placeholder="김부장, 이과장, 박대리"/>
+          <label>안건</label>
+          <textarea value={data.agenda} onChange={e=>update('agenda',e.target.value)} placeholder={"1. 프로젝트 진행 현황 공유\n2. 일정 조정 논의\n3. 리소스 배분"}/>
+          <label>결정사항</label>
+          <textarea value={data.decisions} onChange={e=>update('decisions',e.target.value)} placeholder={"1. 마감일 4/15로 확정\n2. 디자인팀 추가 투입"}/>
+          <label>후속조치</label>
+          <textarea value={data.actions} onChange={e=>update('actions',e.target.value)} placeholder={"1. [박대리] 일정표 업데이트 - 4/5까지\n2. [이과장] 디자인팀 미팅 잡기"}/>
+        </>
+      );
+      case 'daily': return(
+        <>
+          <label>날짜</label>
+          <input type="date" value={data.date} onChange={e=>update('date',e.target.value)}/>
+          <label>오늘 한 일</label>
+          <textarea value={data.todayWork} onChange={e=>update('todayWork',e.target.value)} placeholder={"- API 연동 개발 완료\n- 코드리뷰 3건 처리\n- 기획팀 미팅 참석"} rows={5}/>
+          <label>내일 할 일</label>
+          <textarea value={data.tomorrowWork} onChange={e=>update('tomorrowWork',e.target.value)} placeholder={"- 테스트 코드 작성\n- 배포 준비\n- 주간회의 자료 정리"} rows={5}/>
+          <label>특이사항</label>
+          <textarea value={data.notes} onChange={e=>update('notes',e.target.value)} placeholder="외부 API 응답 지연 이슈 발생 → 인프라팀 전달 완료" rows={3}/>
+        </>
+      );
+      case 'weekly': return(
+        <>
+          <div className="row">
+            <div><label>주차</label><input value={data.week} onChange={e=>update('week',e.target.value)} placeholder="2024년 14주차"/></div>
+            <div><label>기간</label><input value={data.period} onChange={e=>update('period',e.target.value)} placeholder="4/1 ~ 4/5"/></div>
+          </div>
+          <label>금주 실적</label>
+          <textarea value={data.achievements} onChange={e=>update('achievements',e.target.value)} placeholder={"- 사용자 인증 모듈 개발 완료 (100%)\n- 관리자 대시보드 UI 구현 (80%)\n- QA 버그 12건 수정"} rows={6}/>
+          <label>차주 계획</label>
+          <textarea value={data.nextPlan} onChange={e=>update('nextPlan',e.target.value)} placeholder={"- 관리자 대시보드 마무리\n- 통합 테스트 수행\n- 사용자 가이드 문서 작성"} rows={5}/>
+          <label>이슈사항</label>
+          <textarea value={data.issues} onChange={e=>update('issues',e.target.value)} placeholder={"- 외부 결제 API 연동 지연 (업체 측 일정 변경)\n- 서버 증설 필요 → 인프라팀 요청 예정"} rows={4}/>
+        </>
+      );
+    }
+  };
+
+  const renderPreview=()=>{
+    const formatLines=(text)=>{
+      if(!text)return null;
+      const lines=text.split('\n').filter(l=>l.trim());
+      return <ul>{lines.map((l,i)=><li key={i}>{l.replace(/^[-•]\s*/,'')}</li>)}</ul>;
+    };
+
+    switch(template){
+      case 'meeting': return(
+        <div className="preview" ref={previewRef}>
+          <h3>📋 회의록</h3>
+          <table className="meta-table">
+            <tbody>
+              <tr><th>회의명</th><td>{data.title||'-'}</td></tr>
+              <tr><th>일 시</th><td>{data.date} {data.time}</td></tr>
+              <tr><th>장 소</th><td>{data.place||'-'}</td></tr>
+              <tr><th>참석자</th><td>{data.attendees||'-'}</td></tr>
+            </tbody>
+          </table>
+          <div className="section-title">안건</div>
+          <div className="content-box">{data.agenda?formatLines(data.agenda):<span style={{color:'#999'}}>내용 없음</span>}</div>
+          <div className="section-title">결정사항</div>
+          <div className="content-box">{data.decisions?formatLines(data.decisions):<span style={{color:'#999'}}>내용 없음</span>}</div>
+          <div className="section-title">후속조치</div>
+          <div className="content-box">{data.actions?formatLines(data.actions):<span style={{color:'#999'}}>내용 없음</span>}</div>
+          <div className="footer">Generated by PDF 생성기 · {TODAY}</div>
+        </div>
+      );
+      case 'daily': return(
+        <div className="preview" ref={previewRef}>
+          <h3>📝 업무일지</h3>
+          <table className="meta-table">
+            <tbody>
+              <tr><th>날 짜</th><td>{data.date}</td></tr>
+              <tr><th>작성자</th><td>-</td></tr>
+            </tbody>
+          </table>
+          <div className="section-title">오늘 한 일</div>
+          <div className="content-box">{data.todayWork?formatLines(data.todayWork):<span style={{color:'#999'}}>내용 없음</span>}</div>
+          <div className="section-title">내일 할 일</div>
+          <div className="content-box">{data.tomorrowWork?formatLines(data.tomorrowWork):<span style={{color:'#999'}}>내용 없음</span>}</div>
+          <div className="section-title">특이사항</div>
+          <div className="content-box">{data.notes||<span style={{color:'#999'}}>없음</span>}</div>
+          <div className="footer">Generated by PDF 생성기 · {TODAY}</div>
+        </div>
+      );
+      case 'weekly': return(
+        <div className="preview" ref={previewRef}>
+          <h3>📊 주간보고서</h3>
+          <table className="meta-table">
+            <tbody>
+              <tr><th>주 차</th><td>{data.week||'-'}</td></tr>
+              <tr><th>기 간</th><td>{data.period||'-'}</td></tr>
+              <tr><th>작성자</th><td>-</td></tr>
+            </tbody>
+          </table>
+          <div className="section-title">금주 실적</div>
+          <div className="content-box">{data.achievements?formatLines(data.achievements):<span style={{color:'#999'}}>내용 없음</span>}</div>
+          <div className="section-title">차주 계획</div>
+          <div className="content-box">{data.nextPlan?formatLines(data.nextPlan):<span style={{color:'#999'}}>내용 없음</span>}</div>
+          <div className="section-title">이슈사항</div>
+          <div className="content-box">{data.issues||<span style={{color:'#999'}}>없음</span>}</div>
+          <div className="footer">Generated by PDF 생성기 · {TODAY}</div>
+        </div>
+      );
+    }
+  };
+
+  return(
+    <div className="app">
+      <h1><span>📄</span> PDF 생성기</h1>
+      <div className="subtitle">회의록 · 업무일지 · 주간보고서</div>
+
+      <div className="tabs">
+        {Object.entries(TEMPLATES).map(([k,v])=>(
+          <div key={k} className={`tab ${template===k?'active':''}`} onClick={()=>switchTemplate(k)}>{v.label}</div>
+        ))}
+      </div>
+
+      <div className="card">
+        <h2>입력</h2>
+        {renderForm()}
+      </div>
+
+      <div className="card">
+        <h2>미리보기</h2>
+        <div className="preview-scroll">
+          {renderPreview()}
+        </div>
+        <button className="download-btn" onClick={generatePDF} disabled={generating}>
+          {generating?'⏳ 생성 중...':'📥 PDF 다운로드'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

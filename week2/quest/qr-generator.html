@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR 코드 생성기</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0f0f23;color:#e0e0e0;min-height:100vh}
+.app{max-width:600px;margin:0 auto;padding:16px}
+h1{text-align:center;font-size:1.4rem;padding:20px 0 4px;color:#fff}
+h1 span{font-size:2rem}
+.subtitle{text-align:center;color:#888;font-size:13px;margin-bottom:20px}
+h2{font-size:1rem;margin-bottom:12px;color:#a0a0ff}
+.card{background:#1a1a2e;border-radius:12px;padding:16px;margin-bottom:16px}
+.tabs{display:flex;gap:4px;margin-bottom:16px}
+.tab{flex:1;text-align:center;padding:10px 4px;border-radius:8px;cursor:pointer;background:#16213e;border:1px solid #333;font-weight:600;font-size:13px;transition:all .2s}
+.tab.active{background:#6c63ff;border-color:#6c63ff;color:#fff}
+label{display:block;font-size:13px;color:#aaa;margin-bottom:4px;margin-top:10px}
+label:first-child{margin-top:0}
+input,select{width:100%;font-size:14px;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#16213e;color:#e0e0e0;outline:none}
+input:focus,select:focus{border-color:#6c63ff}
+.row{display:flex;gap:10px;align-items:flex-end}
+.row>*{flex:1}
+button{cursor:pointer;background:#6c63ff;border:none;color:#fff;font-weight:600;font-size:14px;padding:10px 16px;border-radius:8px;width:100%}
+button:hover{background:#5a52d5}
+.color-row{display:flex;gap:12px;align-items:center;margin-top:10px}
+.color-row label{margin:0;flex:1}
+.color-pick{display:flex;align-items:center;gap:8px}
+.color-pick input[type="color"]{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0}
+.slider-group{margin-top:10px}
+.slider-label{display:flex;justify-content:space-between;font-size:13px;color:#aaa;margin-bottom:4px}
+.slider-label .val{color:#6c63ff;font-weight:700}
+input[type="range"]{height:6px;-webkit-appearance:none;background:#333;border-radius:3px;outline:none;padding:0;border:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:#6c63ff;border-radius:50%;cursor:pointer}
+.qr-preview{display:flex;justify-content:center;padding:24px;background:#fff;border-radius:12px;margin:16px 0}
+.qr-preview canvas,.qr-preview img{max-width:100%!important;height:auto!important}
+.download-btn{background:#27ae60;margin-top:8px}
+.download-btn:hover{background:#219a52}
+.empty{text-align:center;padding:30px;color:#666;font-size:14px}
+.info{background:#6c63ff15;border:1px solid #6c63ff33;border-radius:8px;padding:10px;font-size:12px;color:#aaa;margin-top:10px;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback} = React;
+
+const MODES = [
+  {key:'url',label:'🔗 URL'},
+  {key:'text',label:'📝 텍스트'},
+  {key:'wifi',label:'📶 Wi-Fi'},
+  {key:'vcard',label:'📇 명함'},
+];
+
+function App(){
+  const [mode,setMode]=useState('url');
+  const [url,setUrl]=useState('https://');
+  const [text,setText]=useState('');
+  const [wifi,setWifi]=useState({ssid:'',password:'',encryption:'WPA'});
+  const [vcard,setVcard]=useState({name:'',company:'',title:'',phone:'',email:'',address:''});
+  const [fgColor,setFgColor]=useState('#000000');
+  const [bgColor,setBgColor]=useState('#ffffff');
+  const [size,setSize]=useState(256);
+  const qrRef=useRef(null);
+  const qrInstance=useRef(null);
+
+  const getQRData=useCallback(()=>{
+    switch(mode){
+      case 'url': return url.trim()||null;
+      case 'text': return text.trim()||null;
+      case 'wifi': {
+        if(!wifi.ssid) return null;
+        return `WIFI:T:${wifi.encryption};S:${wifi.ssid};P:${wifi.password};;`;
+      }
+      case 'vcard': {
+        if(!vcard.name) return null;
+        const lines=['BEGIN:VCARD','VERSION:3.0'];
+        lines.push(`FN:${vcard.name}`);
+        if(vcard.company) lines.push(`ORG:${vcard.company}`);
+        if(vcard.title) lines.push(`TITLE:${vcard.title}`);
+        if(vcard.phone) lines.push(`TEL:${vcard.phone}`);
+        if(vcard.email) lines.push(`EMAIL:${vcard.email}`);
+        if(vcard.address) lines.push(`ADR:;;${vcard.address};;;;`);
+        lines.push('END:VCARD');
+        return lines.join('\n');
+      }
+      default: return null;
+    }
+  },[mode,url,text,wifi,vcard]);
+
+  useEffect(()=>{
+    const data=getQRData();
+    const container=qrRef.current;
+    if(!container) return;
+    container.innerHTML='';
+    qrInstance.current=null;
+    if(!data) return;
+    try{
+      qrInstance.current=new QRCode(container,{
+        text:data,width:size,height:size,
+        colorDark:fgColor,colorLight:bgColor,
+        correctLevel:QRCode.CorrectLevel.M
+      });
+    }catch(e){console.error(e)}
+  },[getQRData,fgColor,bgColor,size]);
+
+  const handleDownload=()=>{
+    const container=qrRef.current;
+    if(!container) return;
+    const canvas=container.querySelector('canvas');
+    if(!canvas) return;
+    const link=document.createElement('a');
+    link.download=`qr-${mode}-${Date.now()}.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  };
+
+  const data=getQRData();
+
+  return(
+    <div className="app">
+      <h1><span>📱</span> QR 코드 생성기</h1>
+      <div className="subtitle">URL · 텍스트 · Wi-Fi · 명함(vCard)</div>
+
+      <div className="tabs">
+        {MODES.map(m=>(
+          <div key={m.key} className={`tab ${mode===m.key?'active':''}`} onClick={()=>setMode(m.key)}>{m.label}</div>
+        ))}
+      </div>
+
+      <div className="card">
+        <h2>입력</h2>
+        {mode==='url'&&(
+          <>
+            <label>URL 주소</label>
+            <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://example.com"/>
+          </>
+        )}
+        {mode==='text'&&(
+          <>
+            <label>텍스트</label>
+            <input value={text} onChange={e=>setText(e.target.value)} placeholder="QR에 담을 텍스트를 입력하세요"/>
+          </>
+        )}
+        {mode==='wifi'&&(
+          <>
+            <label>SSID (네트워크 이름)</label>
+            <input value={wifi.ssid} onChange={e=>setWifi({...wifi,ssid:e.target.value})} placeholder="MyWiFi"/>
+            <label>비밀번호</label>
+            <input value={wifi.password} onChange={e=>setWifi({...wifi,password:e.target.value})} placeholder="비밀번호" type="password"/>
+            <label>암호화 방식</label>
+            <select value={wifi.encryption} onChange={e=>setWifi({...wifi,encryption:e.target.value})}>
+              <option value="WPA">WPA/WPA2</option>
+              <option value="WEP">WEP</option>
+              <option value="nopass">없음 (Open)</option>
+            </select>
+            <div className="info">📶 생성된 QR을 스마트폰 카메라로 스캔하면 Wi-Fi에 자동 접속됩니다.</div>
+          </>
+        )}
+        {mode==='vcard'&&(
+          <>
+            <label>이름 *</label>
+            <input value={vcard.name} onChange={e=>setVcard({...vcard,name:e.target.value})} placeholder="홍길동"/>
+            <div className="row">
+              <div><label>회사</label><input value={vcard.company} onChange={e=>setVcard({...vcard,company:e.target.value})} placeholder="(주)회사"/></div>
+              <div><label>직함</label><input value={vcard.title} onChange={e=>setVcard({...vcard,title:e.target.value})} placeholder="과장"/></div>
+            </div>
+            <div className="row">
+              <div><label>전화번호</label><input value={vcard.phone} onChange={e=>setVcard({...vcard,phone:e.target.value})} placeholder="010-1234-5678"/></div>
+              <div><label>이메일</label><input value={vcard.email} onChange={e=>setVcard({...vcard,email:e.target.value})} placeholder="email@company.com"/></div>
+            </div>
+            <label>주소</label>
+            <input value={vcard.address} onChange={e=>setVcard({...vcard,address:e.target.value})} placeholder="서울시 강남구 테헤란로 123"/>
+            <div className="info">📇 명함 QR을 스캔하면 연락처가 자동으로 저장됩니다.</div>
+          </>
+        )}
+      </div>
+
+      <div className="card">
+        <h2>스타일</h2>
+        <div className="color-row">
+          <div className="color-pick">
+            <label>전경색</label>
+            <input type="color" value={fgColor} onChange={e=>setFgColor(e.target.value)}/>
+          </div>
+          <div className="color-pick">
+            <label>배경색</label>
+            <input type="color" value={bgColor} onChange={e=>setBgColor(e.target.value)}/>
+          </div>
+        </div>
+        <div className="slider-group">
+          <div className="slider-label"><span>QR 크기</span><span className="val">{size}px</span></div>
+          <input type="range" min={128} max={512} step={16} value={size} onChange={e=>setSize(Number(e.target.value))}/>
+        </div>
+      </div>
+
+      <div className="card">
+        <h2>미리보기</h2>
+        {data?(
+          <>
+            <div className="qr-preview"><div ref={qrRef}/></div>
+            <button className="download-btn" onClick={handleDownload}>📥 PNG 다운로드</button>
+          </>
+        ):(
+          <div className="empty">데이터를 입력하면 QR 코드가 생성됩니다</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

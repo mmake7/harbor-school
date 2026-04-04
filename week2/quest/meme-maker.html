@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>짤 생성기 - 밈 메이커</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0f0f23;color:#e0e0e0;min-height:100vh}
+.app{max-width:600px;margin:0 auto;padding:16px}
+h1{text-align:center;font-size:1.4rem;padding:20px 0 4px;color:#fff}
+h1 span{font-size:2rem}
+.subtitle{text-align:center;color:#888;font-size:13px;margin-bottom:20px}
+h2{font-size:1rem;margin-bottom:12px;color:#a0a0ff}
+.card{background:#1a1a2e;border-radius:12px;padding:16px;margin-bottom:16px}
+label{display:block;font-size:13px;color:#aaa;margin-bottom:4px;margin-top:10px}
+label:first-child{margin-top:0}
+input,select,textarea{width:100%;font-size:14px;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#16213e;color:#e0e0e0;outline:none;font-family:inherit}
+input:focus,select:focus,textarea:focus{border-color:#6c63ff}
+textarea{resize:vertical;min-height:60px}
+button{cursor:pointer;background:#6c63ff;border:none;color:#fff;font-weight:600;font-size:14px;padding:10px 16px;border-radius:8px}
+button:hover{background:#5a52d5}
+.row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.preset-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.preset-btn{font-size:12px;padding:8px 12px;background:#16213e;border:1px solid #333;cursor:pointer;color:#e0e0e0;border-radius:8px}
+.preset-btn:hover{border-color:#6c63ff}
+.preset-btn.active{background:#6c63ff;border-color:#6c63ff;color:#fff}
+.bg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.bg-option{height:48px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.bg-option:hover{border-color:#6c63ff88}
+.bg-option.active{border-color:#6c63ff}
+.canvas-wrap{position:relative;display:flex;justify-content:center;background:#222;border-radius:12px;padding:8px;margin:12px 0;overflow:hidden}
+.canvas-wrap canvas{max-width:100%;height:auto;cursor:move;border-radius:8px}
+.color-pick{display:flex;align-items:center;gap:8px}
+.color-pick input[type="color"]{width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0}
+input[type="range"]{height:6px;-webkit-appearance:none;background:#333;border-radius:3px;outline:none;padding:0;border:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:#6c63ff;border-radius:50%;cursor:pointer}
+.slider-label{display:flex;justify-content:space-between;font-size:13px;color:#aaa;margin-bottom:4px}
+.slider-label .val{color:#6c63ff;font-weight:700}
+.download-btn{background:#27ae60;width:100%;padding:12px}
+.download-btn:hover{background:#219a52}
+.upload-zone{border:2px dashed #333;border-radius:8px;padding:20px;text-align:center;cursor:pointer;color:#666;font-size:13px;transition:border-color .2s}
+.upload-zone:hover{border-color:#6c63ff}
+.phrase-grid{display:flex;flex-wrap:wrap;gap:6px}
+.phrase-btn{font-size:11px;padding:6px 10px;background:#16213e;border:1px solid #333;cursor:pointer;color:#e0e0e0;border-radius:6px}
+.phrase-btn:hover{border-color:#6c63ff}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback}=React;
+
+const GRADIENTS=[
+  ['#ff6b6b','#feca57'],
+  ['#a29bfe','#6c5ce7'],
+  ['#00cec9','#0984e3'],
+  ['#fd79a8','#e84393'],
+  ['#55efc4','#00b894'],
+];
+const PHRASES=[
+  '퇴근 5분전','월요병','점심 뭐먹지','야근각','불금이다!',
+  '회의 또?','칼퇴 성공','버그 발견','배포 완료','코드리뷰 해주세요',
+  '커피 한잔','오늘도 화이팅','금요일까지','급한건 아닌데','잠깐 통화 돼?',
+];
+
+const CANVAS_W=500,CANVAS_H=500;
+
+function App(){
+  const canvasRef=useRef(null);
+  const fileRef=useRef(null);
+  const [bgType,setBgType]=useState('white');
+  const [gradIdx,setGradIdx]=useState(0);
+  const [uploadImg,setUploadImg]=useState(null);
+  const [topText,setTopText]=useState('');
+  const [bottomText,setBottomText]=useState('');
+  const [fontSize,setFontSize]=useState(42);
+  const [fontColor,setFontColor]=useState('#ffffff');
+  const [strokeColor,setStrokeColor]=useState('#000000');
+  const [strokeWidth,setStrokeWidth]=useState(3);
+  const [topPos,setTopPos]=useState({x:CANVAS_W/2,y:60});
+  const [bottomPos,setBottomPos]=useState({x:CANVAS_W/2,y:CANVAS_H-40});
+  const [dragging,setDragging]=useState(null);
+  const [layout,setLayout]=useState('single');
+
+  const drawCanvas=useCallback(()=>{
+    const canvas=canvasRef.current;
+    if(!canvas)return;
+    const ctx=canvas.getContext('2d');
+    canvas.width=CANVAS_W;canvas.height=CANVAS_H;
+
+    // background
+    if(bgType==='upload'&&uploadImg){
+      const img=uploadImg;
+      const scale=Math.max(CANVAS_W/img.width,CANVAS_H/img.height);
+      const w=img.width*scale,h=img.height*scale;
+      ctx.drawImage(img,(CANVAS_W-w)/2,(CANVAS_H-h)/2,w,h);
+    }else if(bgType==='gradient'){
+      const g=GRADIENTS[gradIdx];
+      const grad=ctx.createLinearGradient(0,0,CANVAS_W,CANVAS_H);
+      grad.addColorStop(0,g[0]);grad.addColorStop(1,g[1]);
+      ctx.fillStyle=grad;ctx.fillRect(0,0,CANVAS_W,CANVAS_H);
+    }else if(bgType==='bubble'){
+      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,CANVAS_W,CANVAS_H);
+      // speech bubble
+      ctx.fillStyle='#f0f0f0';
+      ctx.beginPath();
+      ctx.moveTo(50,60);ctx.quadraticCurveTo(50,30,100,30);
+      ctx.lineTo(400,30);ctx.quadraticCurveTo(450,30,450,60);
+      ctx.lineTo(450,200);ctx.quadraticCurveTo(450,230,400,230);
+      ctx.lineTo(150,230);ctx.lineTo(120,270);ctx.lineTo(130,230);
+      ctx.lineTo(100,230);ctx.quadraticCurveTo(50,230,50,200);
+      ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#ccc';ctx.lineWidth=2;ctx.stroke();
+    }else if(bgType==='4panel'){
+      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,CANVAS_W,CANVAS_H);
+      ctx.strokeStyle='#333';ctx.lineWidth=3;
+      ctx.strokeRect(5,5,CANVAS_W/2-8,CANVAS_H/2-8);
+      ctx.strokeRect(CANVAS_W/2+3,5,CANVAS_W/2-8,CANVAS_H/2-8);
+      ctx.strokeRect(5,CANVAS_H/2+3,CANVAS_W/2-8,CANVAS_H/2-8);
+      ctx.strokeRect(CANVAS_W/2+3,CANVAS_H/2+3,CANVAS_W/2-8,CANVAS_H/2-8);
+    }else{
+      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,CANVAS_W,CANVAS_H);
+    }
+
+    // draw text helper
+    const drawText=(txt,x,y)=>{
+      if(!txt)return;
+      ctx.font=`bold ${fontSize}px 'Segoe UI',sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      if(strokeWidth>0){
+        ctx.strokeStyle=strokeColor;ctx.lineWidth=strokeWidth*2;
+        ctx.lineJoin='round';ctx.miterLimit=2;
+        ctx.strokeText(txt,x,y);
+      }
+      ctx.fillStyle=fontColor;
+      ctx.fillText(txt,x,y);
+    };
+
+    drawText(topText,topPos.x,topPos.y);
+    drawText(bottomText,bottomPos.x,bottomPos.y);
+  },[bgType,gradIdx,uploadImg,topText,bottomText,fontSize,fontColor,strokeColor,strokeWidth,topPos,bottomPos,layout]);
+
+  useEffect(()=>{drawCanvas()},[drawCanvas]);
+
+  const handleFile=(e)=>{
+    const file=e.target.files?.[0];
+    if(!file)return;
+    const img=new Image();
+    img.onload=()=>{setUploadImg(img);setBgType('upload')};
+    img.src=URL.createObjectURL(file);
+  };
+
+  const getCanvasCoords=(e)=>{
+    const canvas=canvasRef.current;
+    const rect=canvas.getBoundingClientRect();
+    const scaleX=CANVAS_W/rect.width,scaleY=CANVAS_H/rect.height;
+    const clientX=e.touches?e.touches[0].clientX:e.clientX;
+    const clientY=e.touches?e.touches[0].clientY:e.clientY;
+    return{x:(clientX-rect.left)*scaleX,y:(clientY-rect.top)*scaleY};
+  };
+
+  const handlePointerDown=(e)=>{
+    const{x,y}=getCanvasCoords(e);
+    const distTop=Math.hypot(x-topPos.x,y-topPos.y);
+    const distBot=Math.hypot(x-bottomPos.x,y-bottomPos.y);
+    if(distTop<80&&topText) setDragging('top');
+    else if(distBot<80&&bottomText) setDragging('bottom');
+  };
+  const handlePointerMove=(e)=>{
+    if(!dragging)return;
+    e.preventDefault();
+    const{x,y}=getCanvasCoords(e);
+    if(dragging==='top') setTopPos({x,y});
+    else setBottomPos({x,y});
+  };
+  const handlePointerUp=()=>setDragging(null);
+
+  const handleDownload=()=>{
+    const canvas=canvasRef.current;
+    if(!canvas)return;
+    const link=document.createElement('a');
+    link.download=`meme-${Date.now()}.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  };
+
+  return(
+    <div className="app">
+      <h1><span>😂</span> 짤 생성기</h1>
+      <div className="subtitle">직장인 밈 메이커</div>
+
+      <div className="card">
+        <h2>🖼️ 배경 선택</h2>
+        <div className="bg-grid">
+          <div className={`bg-option ${bgType==='white'?'active':''}`} style={{background:'#fff'}} onClick={()=>setBgType('white')}/>
+          {GRADIENTS.map((g,i)=>(
+            <div key={i} className={`bg-option ${bgType==='gradient'&&gradIdx===i?'active':''}`}
+              style={{background:`linear-gradient(135deg,${g[0]},${g[1]})`}}
+              onClick={()=>{setBgType('gradient');setGradIdx(i)}}/>
+          ))}
+          <div className={`bg-option ${bgType==='bubble'?'active':''}`}
+            style={{background:'#f0f0f0',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}
+            onClick={()=>setBgType('bubble')}>💬</div>
+          <div className={`bg-option ${bgType==='4panel'?'active':''}`}
+            style={{background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16}}
+            onClick={()=>setBgType('4panel')}>⊞</div>
+        </div>
+        <div className="upload-zone" onClick={()=>fileRef.current?.click()}>
+          {uploadImg?'✅ 이미지 업로드 완료 (클릭하여 변경)':'📁 이미지 업로드 (클릭)'}
+          <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{display:'none'}}/>
+        </div>
+        {uploadImg&&<button style={{marginTop:8,fontSize:12,padding:'6px 12px'}} onClick={()=>setBgType('upload')}>업로드 이미지 사용</button>}
+      </div>
+
+      <div className="card">
+        <h2>✏️ 텍스트</h2>
+        <label>상단 텍스트</label>
+        <input value={topText} onChange={e=>setTopText(e.target.value)} placeholder="상단에 넣을 텍스트"/>
+        <label>하단 텍스트</label>
+        <input value={bottomText} onChange={e=>setBottomText(e.target.value)} placeholder="하단에 넣을 텍스트"/>
+
+        <label style={{marginTop:12}}>프리셋 문구 (클릭하여 추가)</label>
+        <div className="phrase-grid">
+          {PHRASES.map(p=>(
+            <button key={p} className="phrase-btn" onClick={()=>{
+              if(!topText) setTopText(p);
+              else if(!bottomText) setBottomText(p);
+            }}>{p}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="card">
+        <h2>🎨 스타일</h2>
+        <div className="slider-label"><span>폰트 크기</span><span className="val">{fontSize}px</span></div>
+        <input type="range" min={16} max={80} value={fontSize} onChange={e=>setFontSize(Number(e.target.value))}/>
+
+        <div style={{display:'flex',gap:16,marginTop:12}}>
+          <div className="color-pick"><label>글자색</label><input type="color" value={fontColor} onChange={e=>setFontColor(e.target.value)}/></div>
+          <div className="color-pick"><label>테두리</label><input type="color" value={strokeColor} onChange={e=>setStrokeColor(e.target.value)}/></div>
+        </div>
+
+        <div style={{marginTop:10}}>
+          <div className="slider-label"><span>테두리 두께</span><span className="val">{strokeWidth}px</span></div>
+          <input type="range" min={0} max={10} value={strokeWidth} onChange={e=>setStrokeWidth(Number(e.target.value))}/>
+        </div>
+      </div>
+
+      <div className="card">
+        <h2>미리보기</h2>
+        <div style={{fontSize:11,color:'#666',marginBottom:4}}>텍스트를 드래그하여 위치를 이동할 수 있습니다</div>
+        <div className="canvas-wrap">
+          <canvas ref={canvasRef}
+            onMouseDown={handlePointerDown} onMouseMove={handlePointerMove} onMouseUp={handlePointerUp} onMouseLeave={handlePointerUp}
+            onTouchStart={handlePointerDown} onTouchMove={handlePointerMove} onTouchEnd={handlePointerUp}/>
+        </div>
+        <button className="download-btn" onClick={handleDownload}>📥 PNG 다운로드</button>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
