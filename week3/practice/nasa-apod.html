@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NASA APOD · Astronomy Picture of the Day</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;900&display=swap" rel="stylesheet" />
+
+<!-- React CDN -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+  :root {
+    --bg: #0a0a1a;
+    --bg-2: #111128;
+    --fg: #ecebf5;
+    --muted: #9b9bb5;
+    --accent: #ffcf4a;
+    --accent-2: #6aa7ff;
+    --card: rgba(255, 255, 255, 0.04);
+    --border: rgba(255, 255, 255, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); }
+  body {
+    font-family: 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+    font-weight: 300;
+    line-height: 1.75;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ——— Starfield background ——— */
+  .stars, .stars::before, .stars::after {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .stars {
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(106,167,255,.12), transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(255,207,74,.06), transparent 50%),
+      var(--bg);
+  }
+  .stars::before, .stars::after {
+    content: "";
+    background-repeat: repeat;
+    background-size: 400px 400px;
+  }
+  .stars::before {
+    background-image:
+      radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+      radial-gradient(1px 1px at 40px 70px, #fff, transparent),
+      radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 130px 80px, #fff, transparent),
+      radial-gradient(1px 1px at 160px 120px, #fff, transparent),
+      radial-gradient(1px 1px at 200px 50px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 260px 150px, #fff, transparent),
+      radial-gradient(1px 1px at 320px 100px, #fff, transparent),
+      radial-gradient(1px 1px at 360px 200px, #fff, transparent);
+    animation: twinkle 6s ease-in-out infinite alternate;
+    opacity: .85;
+  }
+  .stars::after {
+    background-image:
+      radial-gradient(1px 1px at 50px 160px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 110px 220px, #fff, transparent),
+      radial-gradient(1px 1px at 180px 300px, #fff, transparent),
+      radial-gradient(1px 1px at 240px 360px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 300px 260px, #fff, transparent),
+      radial-gradient(1px 1px at 360px 340px, #fff, transparent);
+    animation: twinkle 4s ease-in-out infinite alternate-reverse;
+    opacity: .6;
+  }
+  @keyframes twinkle {
+    0%   { opacity: .3; }
+    50%  { opacity: .85; }
+    100% { opacity: .4; }
+  }
+
+  main { position: relative; z-index: 1; }
+
+  /* ——— Header ——— */
+  header.nav {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .brand {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 900;
+    letter-spacing: .02em;
+    font-size: 22px;
+  }
+  .brand .dot { color: var(--accent); }
+  .controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .controls label {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .controls input[type="date"],
+  .controls button {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  .controls input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: .7; }
+  .controls button:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ——— Article ——— */
+  article.magazine {
+    max-width: 1100px;
+    margin: 40px auto 80px;
+    padding: 0 24px;
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .eyebrow .sep { color: var(--muted); margin: 0 10px; }
+  h1.title {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 900;
+    font-size: clamp(32px, 5vw, 64px);
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -.01em;
+  }
+  .byline {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 28px;
+  }
+
+  /* Full-bleed hero media */
+  .hero {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: 16px;
+    margin-bottom: 40px;
+    background: #000;
+    overflow: hidden;
+  }
+  .hero img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 85vh;
+    object-fit: cover;
+    cursor: zoom-in;
+    transition: transform .6s ease;
+  }
+  .hero img:hover { transform: scale(1.01); }
+  .hero .video-wrap {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    background: #000;
+  }
+  .hero .video-wrap iframe {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    border: 0;
+  }
+  .hero .hint {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(6px);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--fg);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+  .hero .img-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* Body */
+  .body-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  @media (min-width: 860px) {
+    .body-grid { grid-template-columns: 2fr 1fr; gap: 60px; }
+  }
+  .explanation p {
+    font-size: 17px;
+    margin: 0 0 1.2em;
+    color: #e2e1f0;
+  }
+  .explanation p::first-letter {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 3.2em;
+    float: left;
+    line-height: .9;
+    margin-right: 10px;
+    margin-top: 6px;
+    color: var(--accent);
+    font-weight: 900;
+  }
+  .explanation p + p::first-letter {
+    font-size: inherit;
+    float: none;
+    margin: 0;
+    color: inherit;
+    font-weight: inherit;
+    font-family: inherit;
+  }
+
+  aside.meta {
+    border-left: 1px solid var(--border);
+    padding-left: 28px;
+  }
+  aside.meta h3 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+  aside.meta .meta-block { margin-bottom: 24px; }
+  aside.meta p { margin: 0; font-size: 14px; color: var(--muted); }
+
+  /* Toggle */
+  .toggle-row {
+    margin: 10px 0 22px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .toggle-row button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .2s ease;
+  }
+  .toggle-row button.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255,207,74,.06);
+  }
+  .toggle-row button:hover { color: var(--fg); }
+
+  /* Notice */
+  .notice {
+    max-width: 1100px;
+    margin: 0 auto 20px;
+    padding: 12px 24px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .notice code { color: var(--accent); background: rgba(255,207,74,.08); padding: 1px 6px; border-radius: 4px; }
+
+  /* Loading & error */
+  .center-state {
+    max-width: 700px;
+    margin: 120px auto;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .spinner {
+    width: 44px; height: 44px;
+    border: 3px solid rgba(255,255,255,.12);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-box {
+    border: 1px solid rgba(255, 120, 120, .3);
+    background: rgba(255, 120, 120, .05);
+    padding: 24px;
+    border-radius: 12px;
+    color: #ffb4b4;
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.92);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: fadeIn .2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-backdrop img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: zoom-out;
+    box-shadow: 0 20px 80px rgba(0,0,0,.8);
+  }
+  .modal-close {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-close:hover { background: rgba(255,255,255,.18); }
+
+  footer.foot {
+    text-align: center;
+    padding: 30px 20px 60px;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: .08em;
+  }
+  footer.foot a { color: var(--accent-2); text-decoration: none; }
+</style>
+</head>
+
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <main>
+    <div id="root"></div>
+  </main>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+
+const API_KEY = "DEMO_KEY"; // 발급받은 키로 교체 가능
+const API_URL = "https://api.nasa.gov/planetary/apod";
+
+// 오늘 날짜 (YYYY-MM-DD)
+const todayISO = () => {
+  const d = new Date();
+  const off = d.getTimezoneOffset();
+  const local = new Date(d.getTime() - off * 60000);
+  return local.toISOString().slice(0, 10);
+};
+
+// 매우 간단한 사전(데모) — 전체 번역은 사용자가 별도 번역 API 연결 시 사용
+// 실제 번역은 하지 않고, 원문 존중 원칙에 따라 "번역 보기" 토글 시 안내만 표시
+const koreanFallbackNotice =
+  "※ 실시간 한국어 자동 번역은 연결되어 있지 않습니다. 브라우저의 페이지 번역 기능(우클릭 → 한국어로 번역)을 사용하시면 전체 설명을 한국어로 감상할 수 있습니다.";
+
+function formatDate(iso) {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  return `${y}년 ${parseInt(m, 10)}월 ${parseInt(d, 10)}일`;
+}
+
+function App() {
+  const [date, setDate] = useState(todayISO());
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showKorean, setShowKorean] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
+  const fetchAPOD = useCallback(async (targetDate) => {
+    setLoading(true);
+    setError(null);
+    setImgError(false);
+    try {
+      const url = `${API_URL}?api_key=${API_KEY}&date=${targetDate}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        if (res.status === 429) {
+          throw new Error("요청 한도 초과 (DEMO_KEY는 시간당 30회, 하루 50회 제한). 잠시 후 다시 시도하거나 api.nasa.gov 에서 무료 키를 발급받으세요.");
+        }
+        throw new Error(`API 오류 (${res.status}): ${res.statusText}`);
+      }
+      const json = await res.json();
+      setData(json);
+    } catch (err) {
+      setError(err.message || "알 수 없는 오류가 발생했습니다.");
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAPOD(date);
+  }, [date, fetchAPOD]);
+
+  // ESC 로 모달 닫기
+  useEffect(() => {
+    if (!modalOpen) return;
+    const onKey = (e) => { if (e.key === "Escape") setModalOpen(false); };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [modalOpen]);
+
+  // —— 렌더 ——
+  return (
+    <>
+      <header className="nav">
+        <div className="brand">NASA <span className="dot">·</span> APOD</div>
+        <div className="controls">
+          <label htmlFor="date-picker">DATE</label>
+          <input
+            id="date-picker"
+            type="date"
+            value={date}
+            max={todayISO()}
+            min="1995-06-16"
+            onChange={(e) => setDate(e.target.value)}
+          />
+          <button onClick={() => setDate(todayISO())}>오늘</button>
+        </div>
+      </header>
+
+      <div className="notice">
+        <code>DEMO_KEY</code> 는 시간당 30회, 하루 50회까지 호출할 수 있습니다. 더 많이 사용하려면 <a href="https://api.nasa.gov" target="_blank" rel="noreferrer" style={{color:"var(--accent-2)"}}>api.nasa.gov</a> 에서 무료 키를 발급하세요.
+      </div>
+
+      {loading && (
+        <div className="center-state">
+          <div className="spinner" />
+          <p style={{color:"var(--muted)"}}>우주로부터 오늘의 사진을 가져오는 중…</p>
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className="center-state">
+          <div className="error-box">
+            <h3 style={{marginTop:0}}>불러오기 실패</h3>
+            <p style={{margin:0}}>{error}</p>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && data && (
+        <article className="magazine">
+          <div className="eyebrow">
+            Astronomy Picture of the Day
+            <span className="sep">·</span>
+            {formatDate(data.date)}
+          </div>
+          <h1 className="title">{data.title}</h1>
+          <div className="byline">
+            {data.copyright
+              ? <>© {data.copyright.replace(/\n/g, " ")}</>
+              : <>Public Domain · NASA</>}
+          </div>
+
+          <div className="hero">
+            {data.media_type === "video" ? (
+              <div className="video-wrap">
+                <iframe
+                  src={data.url}
+                  title={data.title}
+                  allow="encrypted-media"
+                  allowFullScreen
+                />
+              </div>
+            ) : imgError ? (
+              <div className="img-error">
+                <p>이미지를 불러올 수 없습니다.</p>
+                <p>
+                  <a href={data.hdurl || data.url} target="_blank" rel="noreferrer" style={{color:"var(--accent-2)"}}>
+                    원본 링크 열기 →
+                  </a>
+                </p>
+              </div>
+            ) : (
+              <>
+                <img
+                  src={data.url}
+                  alt={data.title}
+                  onClick={() => setModalOpen(true)}
+                  onError={() => setImgError(true)}
+                />
+                {data.hdurl && <div className="hint">Click for HD</div>}
+              </>
+            )}
+          </div>
+
+          <div className="toggle-row">
+            <button
+              className={!showKorean ? "active" : ""}
+              onClick={() => setShowKorean(false)}
+            >
+              English (Original)
+            </button>
+            <button
+              className={showKorean ? "active" : ""}
+              onClick={() => setShowKorean(true)}
+            >
+              한국어 안내
+            </button>
+          </div>
+
+          <div className="body-grid">
+            <div className="explanation">
+              {showKorean ? (
+                <>
+                  <p>{koreanFallbackNotice}</p>
+                  <p style={{opacity:.85}}>{data.explanation}</p>
+                </>
+              ) : (
+                <p>{data.explanation}</p>
+              )}
+            </div>
+
+            <aside className="meta">
+              <div className="meta-block">
+                <h3>Date</h3>
+                <p>{formatDate(data.date)}</p>
+              </div>
+              <div className="meta-block">
+                <h3>Media Type</h3>
+                <p>{data.media_type === "video" ? "비디오" : "이미지"}</p>
+              </div>
+              {data.copyright && (
+                <div className="meta-block">
+                  <h3>Copyright</h3>
+                  <p>{data.copyright.replace(/\n/g, " ")}</p>
+                </div>
+              )}
+              {data.hdurl && data.media_type === "image" && (
+                <div className="meta-block">
+                  <h3>Original</h3>
+                  <p>
+                    <a href={data.hdurl} target="_blank" rel="noreferrer" style={{color:"var(--accent-2)"}}>
+                      HD 원본 열기 →
+                    </a>
+                  </p>
+                </div>
+              )}
+            </aside>
+          </div>
+        </article>
+      )}
+
+      {modalOpen && data && data.media_type === "image" && (
+        <div className="modal-backdrop" onClick={() => setModalOpen(false)}>
+          <button className="modal-close" onClick={(e) => { e.stopPropagation(); setModalOpen(false); }}>×</button>
+          <img
+            src={data.hdurl || data.url}
+            alt={data.title}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
+      <footer className="foot">
+        Data · <a href="https://apod.nasa.gov/apod/astropix.html" target="_blank" rel="noreferrer">NASA APOD</a>
+      </footer>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
