@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenWeatherMap 날씨 앱</title>
+  <style>
+    :root {
+      --bg: #0f1724;
+      --card: #1b2433;
+      --card-border: #283244;
+      --text: #e6edf7;
+      --muted: #8b97a8;
+      --accent: #4aa3ff;
+      --accent-hover: #66b3ff;
+      --danger: #ff6b6b;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR",
+        sans-serif;
+      background: radial-gradient(circle at top, #18233a 0%, var(--bg) 60%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0 0 20px;
+      text-align: center;
+      letter-spacing: -0.3px;
+    }
+
+    .search {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .search input {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 15px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .search input:focus { border-color: var(--accent); }
+
+    .search button {
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .search button:hover { background: var(--accent-hover); }
+    .search button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .placeholder,
+    .loading,
+    .error {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .error { color: var(--danger); }
+
+    .weather { width: 100%; }
+
+    .city {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+
+    .desc {
+      color: var(--muted);
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+
+    .icon {
+      width: 140px;
+      height: 140px;
+      margin: 4px auto;
+    }
+
+    .temp {
+      font-size: 56px;
+      font-weight: 300;
+      margin: 0 0 4px;
+      letter-spacing: -2px;
+    }
+
+    .temp .unit { font-size: 28px; color: var(--muted); margin-left: 2px; }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .meta-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .meta-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 20px; }
+      .card { padding: 22px 18px; }
+      .temp { font-size: 48px; }
+      .icon { width: 120px; height: 120px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>🌤️ 날씨 검색</h1>
+
+    <form class="search" id="searchForm">
+      <input
+        type="text"
+        id="cityInput"
+        placeholder="도시 이름 (예: Seoul, Tokyo)"
+        autocomplete="off"
+        required
+      />
+      <button type="submit" id="searchBtn">검색</button>
+    </form>
+
+    <div class="card" id="result">
+      <p class="placeholder">도시 이름을 입력하고 검색하세요.</p>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ 학습용 프로젝트 - API 키 노출 주의
+    const API_KEY = "여기에_키";
+    const API_URL = "https://api.openweathermap.org/data/2.5/weather";
+
+    const form = document.getElementById("searchForm");
+    const input = document.getElementById("cityInput");
+    const button = document.getElementById("searchBtn");
+    const result = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const city = input.value.trim();
+      if (!city) return;
+      await fetchWeather(city);
+    });
+
+    async function fetchWeather(city) {
+      setLoading();
+      button.disabled = true;
+
+      try {
+        const url = `${API_URL}?q=${encodeURIComponent(
+          city
+        )}&appid=${API_KEY}&units=metric&lang=kr`;
+
+        const res = await fetch(url);
+
+        if (res.status === 404) {
+          showError("도시를 찾을 수 없습니다.");
+          return;
+        }
+        if (res.status === 401) {
+          showError("API 키가 올바르지 않습니다. 코드 상단의 API_KEY를 확인하세요.");
+          return;
+        }
+        if (!res.ok) {
+          showError(`요청 실패: ${res.status}`);
+          return;
+        }
+
+        const data = await res.json();
+        renderWeather(data);
+      } catch (err) {
+        console.error(err);
+        showError("네트워크 오류가 발생했습니다. 연결을 확인해주세요.");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function setLoading() {
+      result.innerHTML = `<p class="loading">불러오는 중...</p>`;
+    }
+
+    function showError(msg) {
+      result.innerHTML = `<p class="error">⚠️ ${escapeHtml(msg)}</p>`;
+    }
+
+    function renderWeather(data) {
+      const { name, main, weather, sys } = data;
+      const w = weather && weather[0];
+      const iconUrl = w
+        ? `https://openweathermap.org/img/wn/${w.icon}@2x.png`
+        : "";
+
+      result.innerHTML = `
+        <div class="weather">
+          <h2 class="city">${escapeHtml(name)}${
+        sys && sys.country ? `, ${escapeHtml(sys.country)}` : ""
+      }</h2>
+          <p class="desc">${escapeHtml(w ? w.description : "")}</p>
+          ${
+            iconUrl
+              ? `<img class="icon" src="${iconUrl}" alt="${escapeHtml(
+                  w.description
+                )}" />`
+              : ""
+          }
+          <p class="temp">${Math.round(main.temp)}<span class="unit">°C</span></p>
+          <div class="meta">
+            <div class="meta-item">
+              <div class="meta-label">체감 온도</div>
+              <div class="meta-value">${Math.round(main.feels_like)}°C</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">습도</div>
+              <div class="meta-value">${main.humidity}%</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+  </script>
+</body>
+</html>
