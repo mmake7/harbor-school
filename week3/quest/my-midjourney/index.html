@@ -333,20 +333,40 @@
         }
         setLoading(true);
         setError('');
+        const t0 = performance.now();
+        console.group('[먹그림] 생성 시작');
+        console.log('프롬프트:', trimmed);
         try {
           const resp = await fetch('/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prompt: trimmed }),
           });
+          console.log(`/api/generate 응답 status: ${resp.status}`);
           const data = await resp.json();
+          console.log('응답 데이터:', data);
           if (!resp.ok) throw new Error(data.error || '생성 실패');
 
-          // 이미지 완전히 로드될 때까지 대기
+          console.log('Pollinations URL:', data.imageUrl);
+          console.log('→ 위 URL을 새 탭에 붙여넣어 직접 확인할 수 있습니다');
+
+          // 이미지 완전히 로드될 때까지 대기 (최대 60초)
           await new Promise((resolve, reject) => {
             const img = new Image();
-            img.onload = resolve;
-            img.onerror = reject;
+            const timeoutId = setTimeout(() => {
+              reject(new Error('이미지 로딩 60초 초과 (Pollinations 응답 지연 가능). 콘솔의 URL을 직접 확인해보세요.'));
+            }, 60000);
+            img.onload = () => {
+              clearTimeout(timeoutId);
+              const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+              console.log(`이미지 로드 완료 (${elapsed}초)`);
+              resolve();
+            };
+            img.onerror = (ev) => {
+              clearTimeout(timeoutId);
+              console.error('img.onerror 발생:', ev);
+              reject(new Error('이미지 로딩 실패. 콘솔의 URL을 직접 확인해보세요.'));
+            };
             img.src = data.imageUrl;
           });
 
@@ -354,7 +374,11 @@
             { id: Date.now(), imageUrl: data.imageUrl, prompt: trimmed },
             ...g,
           ]);
+          console.groupEnd();
         } catch (e) {
+          const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+          console.error(`생성 실패 (${elapsed}초):`, e);
+          console.groupEnd();
           setError(e.message);
         } finally {
           setLoading(false);
