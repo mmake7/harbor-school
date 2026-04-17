@@ -51,7 +51,7 @@ node server.js
 
 ## 📸 동작 화면
 
-`./screenshots/demo.png` 참고 (스크린샷 추가 예정)
+![AI 별명 공방 결과 화면](./screenshots/demo.png)
 
 ## 📂 프로젝트 구조
 

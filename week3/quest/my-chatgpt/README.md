@@ -51,7 +51,7 @@ node server.js
 
 ## 📸 동작 화면
 
-`./screenshots/demo.png` 참고 (스크린샷 추가 예정)
+![달빛 선녀 대화 장면](./screenshots/demo.png)
 
 ## 📂 프로젝트 구조
 

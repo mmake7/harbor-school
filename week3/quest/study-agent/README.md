@@ -52,7 +52,14 @@ node server.js
 
 ## 📸 동작 화면
 
-`./screenshots/demo.png` 참고 (스크린샷 추가 예정)
+### 텍스트 질문
+![수업 개념 질문](./screenshots/text-question.png)
+
+### 코드 질문
+![코드 예제 질문](./screenshots/code-question.png)
+
+### 메모리 기능
+![이전 대화 맥락 이어가기](./screenshots/memory.png)
 
 ## 📂 프로젝트 구조
 
