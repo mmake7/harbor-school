@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 별명 공방</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&family=Gaegu:wght@400;700&family=Noto+Serif+KR:wght@500;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f4ecdc;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(220, 180, 120, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 85% 80%, rgba(180, 140, 90, 0.15) 0%, transparent 50%),
+        repeating-linear-gradient(
+          45deg,
+          rgba(140, 100, 60, 0.02) 0px,
+          rgba(140, 100, 60, 0.02) 1px,
+          transparent 1px,
+          transparent 10px
+        );
+      min-height: 100vh;
+    }
+    .font-brush { font-family: 'Nanum Brush Script', cursive; }
+    .font-gaegu { font-family: 'Gaegu', cursive; }
+    .font-serif-kr { font-family: 'Noto Serif KR', serif; }
+
+    /* 스텝 인디케이터 */
+    .step-dot {
+      transition: all 0.3s;
+    }
+    .step-dot.active {
+      background: linear-gradient(135deg, #c0392b 0%, #922b21 100%);
+      color: #fbf6e9;
+      transform: scale(1.1);
+    }
+    .step-dot.done {
+      background: #5c3a1f;
+      color: #fbf6e9;
+    }
+
+    /* 스타일 카드 */
+    .style-card {
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .style-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(92, 58, 31, 0.25);
+    }
+    .style-card.selected {
+      border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.3), 0 12px 24px rgba(92, 58, 31, 0.3);
+      transform: translateY(-5px);
+    }
+
+    /* 별명 카드 */
+    .nickname-card {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: visible;
+    }
+    .nickname-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 32px rgba(92, 58, 31, 0.28);
+    }
+    .nickname-card.selected {
+      border: 3px solid transparent;
+      background:
+        linear-gradient(#fbf6e9, #fbf6e9) padding-box,
+        linear-gradient(135deg, #fbbf24, #f59e0b, #d97706, #fbbf24) border-box;
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.6), 0 16px 32px rgba(217, 119, 6, 0.3);
+      transform: scale(1.05) translateY(-4px);
+      z-index: 2;
+    }
+    .nickname-card.dimmed {
+      opacity: 0.35;
+      transform: scale(0.97);
+      filter: grayscale(40%);
+    }
+
+    /* 파티클 */
+    @keyframes particle-float {
+      0% {
+        transform: translate(0, 0) scale(0.4);
+        opacity: 0;
+      }
+      20% { opacity: 1; }
+      100% {
+        transform: translate(var(--dx), var(--dy)) scale(1.2);
+        opacity: 0;
+      }
+    }
+    .particle {
+      position: absolute;
+      pointer-events: none;
+      font-size: 28px;
+      animation: particle-float 1.2s ease-out forwards;
+      z-index: 100;
+    }
+
+    /* 붓 흔들림 로딩 */
+    @keyframes brush-swing {
+      0%, 100% { transform: rotate(-15deg); }
+      50% { transform: rotate(15deg); }
+    }
+    .brush-loader {
+      display: inline-block;
+      animation: brush-swing 1.2s ease-in-out infinite;
+      transform-origin: top center;
+      font-size: 48px;
+    }
+
+    /* 토스트 */
+    @keyframes toast-in {
+      0% { transform: translateY(20px); opacity: 0; }
+      20% { transform: translateY(0); opacity: 1; }
+      80% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-10px); opacity: 0; }
+    }
+    .toast {
+      animation: toast-in 1.5s ease-out forwards;
+    }
+
+    /* 접기/펼치기 */
+    .accordion-body {
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+    }
+
+    input[type="text"], select, textarea {
+      background: #fbf6e9;
+      border: 1.5px solid #c9b88f;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 15px;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+    input[type="text"]:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #5c3a1f;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, #c0392b 0%, #922b21 100%);
+      color: #fbf6e9;
+      font-family: 'Noto Serif KR', serif;
+      font-weight: 700;
+      letter-spacing: 3px;
+      box-shadow: 0 4px 10px rgba(146, 43, 33, 0.35);
+      transition: all 0.2s;
+    }
+    .primary-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(146, 43, 33, 0.45);
+    }
+    .primary-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .secondary-btn {
+      background: #fbf6e9;
+      color: #5c3a1f;
+      border: 1.5px solid #5c3a1f;
+      transition: all 0.2s;
+    }
+    .secondary-btn:hover {
+      background: #5c3a1f;
+      color: #fbf6e9;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+
+    const MBTI_OPTIONS = [
+      '', 'ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP',
+      'ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'
+    ];
+
+    const FANTASY_CLASSES = [
+      '', '마법사','전사','궁수','성직자','도적','음유시인','드루이드','소환사'
+    ];
+
+    const STYLE_CARDS = [
+      { id: 'cute', emoji: '🌸', name: '귀여운 스타일',
+        desc: '말랑이, 보들이, 뽀송뽀송',
+        bg: 'bg-pink-50', hoverBg: 'hover:bg-pink-100' },
+      { id: 'fantasy', emoji: '⚔️', name: '판타지/게임 스타일',
+        desc: '번개의 검사 민수, 그림자 마법사',
+        bg: 'bg-purple-50', hoverBg: 'hover:bg-purple-100' },
+      { id: 'joseon', emoji: '🏯', name: '조선시대 스타일',
+        desc: '박씨 선비, 청산 거사',
+        bg: 'bg-amber-50', hoverBg: 'hover:bg-amber-100' },
+      { id: 'animal', emoji: '🦁', name: '동물 별명 스타일',
+        desc: '냥냥이, 토끼왕자, 다람쥐 요정',
+        bg: 'bg-emerald-50', hoverBg: 'hover:bg-emerald-100' },
+      { id: 'office', emoji: '💼', name: '직장인 밈 스타일',
+        desc: '야근요정, 월급루팡, 퇴근부장',
+        bg: 'bg-slate-100', hoverBg: 'hover:bg-slate-200' },
+    ];
+
+    const PARTICLE_CHARS = ['💖','✨','⭐','🌟','💫','💗','🎉','🌸'];
+
+    function StepIndicator({ step }) {
+      const labels = ['정보 입력', '스타일 선택', '별명 확인'];
+      return (
+        <div className="flex items-center justify-center gap-3 mb-6">
+          {labels.map((label, i) => {
+            const n = i + 1;
+            const state = step === n ? 'active' : step > n ? 'done' : '';
+            return (
+              <React.Fragment key={n}>
+                <div className="flex items-center gap-2">
+                  <div className={`step-dot w-9 h-9 rounded-full flex items-center justify-center font-bold border-2 border-stone-700 bg-amber-50 text-stone-800 ${state}`}>
+                    {step > n ? '✓' : n}
+                  </div>
+                  <span className={`font-serif-kr text-sm ${step === n ? 'font-bold text-stone-900' : 'text-stone-500'}`}>
+                    {label}
+                  </span>
+                </div>
+                {n < 3 && <div className="w-6 h-0.5 bg-stone-400" />}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      );
+    }
+
+    function Step1Form({ profile, setProfile, onNext }) {
+      const [expanded, setExpanded] = useState(false);
+      const update = (key) => (e) => setProfile({ ...profile, [key]: e.target.value });
+      const update2 = (key, val) => setProfile({ ...profile, [key]: val });
+
+      const canGo = !!profile.name?.trim();
+
+      return (
+        <div className="bg-amber-50/80 border-2 border-stone-700 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+          <h2 className="font-serif-kr text-xl font-bold mb-4 text-stone-800">
+            ✦ 당신에 대해 알려주세요
+          </h2>
+
+          {/* 필수 */}
+          <div className="mb-4">
+            <label className="block text-sm font-bold text-stone-700 mb-1">
+              이름 <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              value={profile.name || ''}
+              onChange={update('name')}
+              placeholder="홍길동"
+              maxLength={20}
+            />
+          </div>
+
+          {/* 선택 항목 토글 */}
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="w-full text-left font-gaegu text-lg text-stone-600 hover:text-stone-900 py-2 border-t border-stone-300 flex justify-between items-center"
+          >
+            <span>더 많이 알려주면 더 재밌는 별명이 나와요 (선택)</span>
+            <span className="text-xl">{expanded ? '−' : '+'}</span>
+          </button>
+
+          <div
+            className="accordion-body"
+            style={{
+              maxHeight: expanded ? '1500px' : '0',
+              opacity: expanded ? 1 : 0,
+            }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3">
+              <Field label="성격">
+                <input type="text" value={profile.personality || ''} onChange={update('personality')}
+                  placeholder="차분한, 엉뚱한, 열정적인" maxLength={30} />
+              </Field>
+              <Field label="취미">
+                <input type="text" value={profile.hobby || ''} onChange={update('hobby')}
+                  placeholder="독서, 게임, 등산" maxLength={30} />
+              </Field>
+              <Field label="MBTI">
+                <select value={profile.mbti || ''} onChange={update('mbti')}>
+                  {MBTI_OPTIONS.map((m) => (
+                    <option key={m} value={m}>{m || '선택 안 함'}</option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="좋아하는 동물">
+                <input type="text" value={profile.favoriteAnimal || ''} onChange={update('favoriteAnimal')}
+                  placeholder="고양이, 늑대" maxLength={20} />
+              </Field>
+              <Field label="행운의 숫자/색깔">
+                <input type="text" value={profile.luckyThing || ''} onChange={update('luckyThing')}
+                  placeholder="7, 보라색" maxLength={20} />
+              </Field>
+              <Field label="직업/상황">
+                <input type="text" value={profile.job || ''} onChange={update('job')}
+                  placeholder="개발자, 학생" maxLength={30} />
+              </Field>
+              <Field label="한 단어 자기소개">
+                <input type="text" value={profile.oneWord || ''} onChange={update('oneWord')}
+                  placeholder="엉뚱한, 조용한" maxLength={15} />
+              </Field>
+              <Field label="판타지 직업">
+                <select value={profile.fantasyClass || ''} onChange={update('fantasyClass')}>
+                  {FANTASY_CLASSES.map((c) => (
+                    <option key={c} value={c}>{c || '선택 안 함'}</option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="낮/밤형">
+                <div className="flex gap-3 pt-1">
+                  {['아침형','저녁형'].map((v) => (
+                    <label key={v} className="flex items-center gap-1 cursor-pointer">
+                      <input type="radio" name="dayNight"
+                        checked={profile.dayNight === v}
+                        onChange={() => update2('dayNight', v)} />
+                      <span>{v}</span>
+                    </label>
+                  ))}
+                  {profile.dayNight && (
+                    <button type="button"
+                      className="text-xs text-stone-500 underline"
+                      onClick={() => update2('dayNight', '')}>
+                      지우기
+                    </button>
+                  )}
+                </div>
+              </Field>
+              <Field label="요즘 자주 하는 말">
+                <input type="text" value={profile.catchphrase || ''} onChange={update('catchphrase')}
+                  placeholder="대박, 화이팅" maxLength={30} />
+              </Field>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={onNext}
+              disabled={!canGo}
+              className="primary-btn px-8 py-3 rounded-lg"
+            >
+              다 음 →
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function Field({ label, children }) {
+      return (
+        <div>
+          <label className="block text-xs font-bold text-stone-700 mb-1">{label}</label>
+          {children}
+        </div>
+      );
+    }
+
+    function Step2Style({ selected, setSelected, onBack, onGenerate, loading, error }) {
+      return (
+        <div className="bg-amber-50/80 border-2 border-stone-700 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+          <h2 className="font-serif-kr text-xl font-bold mb-4 text-stone-800">
+            ✦ 어떤 스타일의 별명을 원하시나요?
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {STYLE_CARDS.map((card) => (
+              <div
+                key={card.id}
+                onClick={() => setSelected(card.id)}
+                className={`style-card ${card.bg} ${card.hoverBg} border-2 border-stone-500 rounded-xl p-5 ${selected === card.id ? 'selected' : ''}`}
+              >
+                <div className="text-5xl mb-2">{card.emoji}</div>
+                <div className="font-serif-kr text-lg font-bold text-stone-800">{card.name}</div>
+                <div className="font-gaegu text-stone-600 text-base mt-1">{card.desc}</div>
+              </div>
+            ))}
+          </div>
+
+          {error && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-300 text-red-800 rounded text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="mt-6 flex justify-between gap-3">
+            <button onClick={onBack} className="secondary-btn px-6 py-3 rounded-lg">
+              ← 이전
+            </button>
+            <button
+              onClick={onGenerate}
+              disabled={!selected || loading}
+              className="primary-btn px-8 py-3 rounded-lg"
+            >
+              {loading ? '작명 중…' : '별명 지어줘 ✨'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function Loading() {
+      return (
+        <div className="bg-amber-50/80 border-2 border-stone-700 rounded-xl p-12 shadow-lg text-center">
+          <div className="brush-loader">🖌️</div>
+          <p className="font-brush text-4xl text-stone-800 mt-4">
+            작명가가 고민 중이에요…
+          </p>
+          <p className="font-gaegu text-stone-600 text-lg mt-2">
+            좋은 별명을 정성껏 짓고 있습니다
+          </p>
+        </div>
+      );
+    }
+
+    function Step3Results({ nicknames, selectedId, onSelect, onCopy, onRestart, onRegenerate, loading }) {
+      return (
+        <div>
+          <div className="bg-amber-50/80 border-2 border-stone-700 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+            <h2 className="font-serif-kr text-xl font-bold mb-4 text-stone-800">
+              ✦ 당신을 위한 별명 다섯 가지
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {nicknames.map((nk, idx) => {
+                const id = `nk-${idx}`;
+                const isSelected = selectedId === id;
+                const isDimmed = selectedId && !isSelected;
+                return (
+                  <div
+                    key={id}
+                    className={`nickname-card bg-amber-50 border-2 border-stone-500 rounded-xl p-5 ${isSelected ? 'selected' : ''} ${isDimmed ? 'dimmed' : ''}`}
+                  >
+                    <div className="text-center">
+                      <div className="text-6xl mb-2">{nk.emoji || '✨'}</div>
+                      <div className="font-serif-kr text-2xl font-bold text-stone-800 mb-1">
+                        {nk.name}
+                      </div>
+                      <div className="font-gaegu text-stone-600 text-base min-h-[1.5rem]">
+                        {nk.meaning}
+                      </div>
+                    </div>
+                    <div className="mt-4 flex gap-2">
+                      <button
+                        onClick={(e) => onSelect(id, e)}
+                        className={`flex-1 text-sm py-2 rounded font-bold transition ${isSelected ? 'bg-amber-400 text-stone-900' : 'bg-stone-800 text-amber-50 hover:bg-stone-900'}`}
+                      >
+                        {isSelected ? '⭐ 선택됨' : '선 택'}
+                      </button>
+                      <button
+                        onClick={() => onCopy(nk.name)}
+                        className="text-sm py-2 px-3 bg-amber-50 border border-stone-500 rounded hover:bg-amber-100 transition"
+                        title="복사"
+                      >
+                        📋
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-3 justify-center">
+              <button onClick={onRegenerate} disabled={loading} className="secondary-btn px-5 py-2.5 rounded-lg">
+                🔄 다시 만들기
+              </button>
+              <button onClick={onRestart} className="secondary-btn px-5 py-2.5 rounded-lg">
+                ⏮ 처음부터
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [step, setStep] = useState(1);
+      const [profile, setProfile] = useState({ name: '' });
+      const [style, setStyle] = useState(null);
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState('');
+      const [nicknames, setNicknames] = useState([]);
+      const [selectedNickId, setSelectedNickId] = useState(null);
+      const [particles, setParticles] = useState([]);
+      const [toast, setToast] = useState('');
+
+      const generate = async () => {
+        setLoading(true); setError('');
+        try {
+          const resp = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ profile, style }),
+          });
+          const data = await resp.json();
+          if (!resp.ok) throw new Error(data.error || '생성 실패');
+          setNicknames(data.nicknames);
+          setSelectedNickId(null);
+          setStep(3);
+        } catch (e) {
+          setError(e.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const handleSelectNickname = (id, e) => {
+        setSelectedNickId(id);
+        // 파티클 스폰
+        const rect = e.currentTarget.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const now = Date.now();
+        const batch = Array.from({ length: 10 }).map((_, i) => {
+          const angle = (Math.PI * 2 * i) / 10 + Math.random() * 0.5;
+          const dist = 80 + Math.random() * 80;
+          return {
+            id: `${now}-${i}`,
+            x: cx,
+            y: cy,
+            dx: Math.cos(angle) * dist,
+            dy: Math.sin(angle) * dist - 20,
+            char: PARTICLE_CHARS[Math.floor(Math.random() * PARTICLE_CHARS.length)],
+          };
+        });
+        setParticles((p) => [...p, ...batch]);
+        // 1.3초 후 제거
+        setTimeout(() => {
+          setParticles((p) => p.filter((x) => !batch.find((b) => b.id === x.id)));
+        }, 1300);
+      };
+
+      const copyToClipboard = async (text) => {
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast('복사완료! ✅');
+        } catch (e) {
+          showToast('복사 실패 😢');
+        }
+      };
+
+      const showToast = (msg) => {
+        setToast(msg);
+        setTimeout(() => setToast(''), 1500);
+      };
+
+      const restart = () => {
+        setStep(1);
+        setStyle(null);
+        setNicknames([]);
+        setSelectedNickId(null);
+        setError('');
+      };
+
+      return (
+        <div className="min-h-screen py-8 px-4">
+          <header className="text-center mb-8">
+            <h1 className="font-brush text-6xl md:text-7xl text-stone-800">
+              AI 별명 공방
+            </h1>
+            <p className="font-gaegu text-xl text-stone-600 mt-2">
+              당신에게 꼭 맞는 별명, 정성껏 지어드립니다
+            </p>
+            <div className="w-24 h-0.5 bg-stone-700 mx-auto mt-4 opacity-50" />
+          </header>
+
+          <div className="max-w-4xl mx-auto">
+            <StepIndicator step={step} />
+
+            {step === 1 && (
+              <Step1Form
+                profile={profile}
+                setProfile={setProfile}
+                onNext={() => setStep(2)}
+              />
+            )}
+            {step === 2 && !loading && (
+              <Step2Style
+                selected={style}
+                setSelected={setStyle}
+                onBack={() => setStep(1)}
+                onGenerate={generate}
+                loading={loading}
+                error={error}
+              />
+            )}
+            {loading && <Loading />}
+            {step === 3 && !loading && (
+              <Step3Results
+                nicknames={nicknames}
+                selectedId={selectedNickId}
+                onSelect={handleSelectNickname}
+                onCopy={copyToClipboard}
+                onRestart={restart}
+                onRegenerate={generate}
+                loading={loading}
+              />
+            )}
+          </div>
+
+          <footer className="mt-12 text-center text-stone-600 text-sm">
+            <p className="font-gaegu">— harbor.school week3 quest · AI 별명 공방 —</p>
+          </footer>
+
+          {/* 파티클 */}
+          {particles.map((p) => (
+            <span
+              key={p.id}
+              className="particle"
+              style={{
+                left: `${p.x}px`,
+                top: `${p.y}px`,
+                '--dx': `${p.dx}px`,
+                '--dy': `${p.dy}px`,
+              }}
+            >
+              {p.char}
+            </span>
+          ))}
+
+          {/* 토스트 */}
+          {toast && (
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
+              <div className="toast bg-stone-900 text-amber-50 px-6 py-3 rounded-full shadow-xl font-bold">
+                {toast}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
