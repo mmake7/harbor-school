@@ -1,41 +1,64 @@
-# 🖼️ 한지 위의 먹그림 — AI 동양화 생성기
+# 🖼️ 한지 위의 먹그림
 
-김홍도·신윤복 스타일의 전통 한국화를 AI가 그려주는 웹앱
+김홍도·신윤복 스타일의 전통 한국화를 AI가 그려주는 웹앱. 한지·족자·낙관까지 동양화 분위기로 감상.
 
-## 사용법
+## ⚠️ 실행 전 필수 설정
 
-1. 카테고리 선택 (풍경/인물/동물/사물)
-2. 예시 프롬프트가 자동 채워짐 (수정 가능)
-3. "그리기" 버튼 클릭
-4. 족자 위에 올려진 그림 감상
+**API 키가 필요 없습니다.** [Pollinations.ai](https://pollinations.ai/)의 무료 API를 사용합니다.
 
-## 실행
+### 실행
 
 ```bash
 node server.js
 ```
 
-브라우저에서 http://localhost:3000 접속
+브라우저에서 http://localhost:3000 접속.
 
-## 기술 스택
+> 별도의 `npm install`이나 `.env` 설정이 필요 없습니다.
 
-- Node.js (http 모듈, 무의존성)
-- Pollinations.ai (무료, API 키 불필요)
-- React CDN + Babel Standalone
-- Tailwind CDN
+## 🎯 주요 기능
 
-## 구조
+- 🎨 **고정 화풍** — 사용자 입력 뒤에 김홍도·신윤복 스타일 프롬프트가 자동으로 붙음
+- 🏞️ **4개 카테고리 예시** — 풍경/인물/동물/사물 클릭 시 예시 프롬프트 랜덤 자동 채움
+- 📜 **족자 UI** — 상·하단 족자봉 + 한지 배경 + 빨간 끈 + 그림자 효과
+- 🔴 **낙관 도장** — 붓글씨 캡션 옆에 CSS로 구현한 "홍도" 도장
+- 🖼️ **갤러리** — 생성한 그림이 족자 형태로 쌓이고, 클릭 시 확대 모달
+- 💾 **다운로드 + 초기화**
+
+## 🛠️ 기술 스택
+
+- **Node.js** (내장 `http` 모듈, 무의존성)
+- **Pollinations.ai** (무료, API 키 불필요)
+- **React 18 CDN** + **Babel Standalone** + **Tailwind CDN**
+- 구글폰트 — Nanum Brush Script, Noto Serif KR, Gaegu
+
+## 📸 동작 화면
+
+`./screenshots/demo.png` 참고 (스크린샷 추가 예정)
+
+## 📂 프로젝트 구조
 
 ```
 my-midjourney/
-├── server.js     # Node http 서버 + Pollinations URL 생성
-├── index.html    # React CDN 단일 파일 UI
+├── server.js          # http 서버 + Pollinations URL 조립
+├── index.html         # React CDN 단일 파일 UI + 족자 CSS
 ├── .gitignore
-└── README.md
+├── README.md
+└── screenshots/       # 동작 화면 캡처 보관
 ```
 
-## 화풍 (고정)
+## 💡 사용 팁
 
-모든 이미지는 사용자 프롬프트 뒤에 아래 스타일 프롬프트가 붙어 Pollinations에 전달된다:
+- 카테고리 예시를 **그대로 써도 되고, 수정해도 됩니다**. "경회루와 달빛" → "경회루와 달빛, 잉어 세 마리"처럼 덧붙이면 재밌어집니다.
+- Pollinations는 같은 프롬프트라도 **seed** 값이 다르면 다른 그림이 나옵니다. 서버에서 자동으로 랜덤 seed를 붙이고 있어 같은 입력도 매번 달라집니다.
+- 인물보다 **풍경·동물**이 동양화 화풍에 더 잘 어울립니다.
 
-> Korean traditional ink painting on hanji paper, Kim Hong-do and Shin Yun-bok style, 18th century Joseon dynasty, black ink brush strokes with subtle color washes, elegant and minimal composition, traditional East Asian aesthetic, soft beige hanji paper background, refined brushwork, clear ink lines
+## ⚠️ 주의사항
+
+- Pollinations는 무료지만 응답이 느릴 수 있습니다 (1~15초).
+- 생성 결과는 AI 해석이라 실제 김홍도·신윤복 작품과는 다릅니다. 학습/감상 목적.
+- 학습용 프로젝트입니다.
+
+## 📝 라이선스
+
+MIT
