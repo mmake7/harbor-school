@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌙 달빛 서당</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&family=Gaegu:wght@400;700&family=Noto+Serif+KR:wght@500;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #e8e4f3;
+      background: linear-gradient(180deg, #1a1a3e 0%, #2d1b4e 50%, #1a1a3e 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .font-brush { font-family: 'Nanum Brush Script', cursive; }
+    .font-gaegu { font-family: 'Gaegu', cursive; }
+    .font-serif-kr { font-family: 'Noto Serif KR', serif; }
+
+    /* 별 배경 */
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+
+    /* 달 */
+    .moon {
+      position: fixed;
+      top: 40px;
+      right: 40px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fef3c7 0%, #fbbf24 40%, #d97706 100%);
+      box-shadow:
+        0 0 40px rgba(251, 191, 36, 0.5),
+        0 0 80px rgba(251, 191, 36, 0.3),
+        inset -10px -10px 20px rgba(217, 119, 6, 0.4);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* 채팅 버블 */
+    .bubble-user {
+      background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+      color: #f5f3ff;
+      border-radius: 18px 18px 4px 18px;
+      box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
+    }
+    .bubble-assistant {
+      background: rgba(251, 246, 233, 0.95);
+      color: #2d1b4e;
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(4px);
+    }
+    .bubble-assistant p { margin-bottom: 0.7em; }
+    .bubble-assistant p:last-child { margin-bottom: 0; }
+    .bubble-assistant strong { color: #5b21b6; }
+    .bubble-assistant code {
+      background: rgba(91, 33, 182, 0.1);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: #5b21b6;
+    }
+
+    /* 코드 블록 */
+    .code-block {
+      background: #0f0f1e;
+      color: #e8e4f3;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 8px 0;
+      font-family: 'Courier New', Menlo, monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      position: relative;
+      border: 1px solid #4c1d95;
+    }
+    .code-block pre { white-space: pre; margin: 0; }
+    .code-copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(139, 92, 246, 0.3);
+      color: #f5f3ff;
+      border: 1px solid rgba(139, 92, 246, 0.5);
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .code-copy-btn:hover {
+      background: rgba(139, 92, 246, 0.6);
+    }
+
+    /* 타이핑 인디케이터 */
+    .typing-dots span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #c4b5fd;
+      margin: 0 2px;
+      animation: typing-bounce 1.2s ease-in-out infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing-bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* 입력 */
+    .input-area textarea {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(196, 181, 253, 0.4);
+      color: #f5f3ff;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      resize: none;
+      transition: all 0.2s;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .input-area textarea:focus {
+      outline: none;
+      border-color: #c4b5fd;
+      background: rgba(255, 255, 255, 0.12);
+    }
+    .input-area textarea::placeholder { color: rgba(196, 181, 253, 0.5); }
+
+    .send-btn {
+      background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+      color: #1a1a3e;
+      font-weight: 900;
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+      transition: all 0.2s;
+    }
+    .send-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(251, 191, 36, 0.5);
+    }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .quick-btn {
+      background: rgba(139, 92, 246, 0.15);
+      color: #e9d5ff;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 13px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .quick-btn:hover {
+      background: rgba(139, 92, 246, 0.35);
+      transform: translateY(-1px);
+    }
+
+    /* 토스트 */
+    @keyframes toast-in {
+      0% { transform: translateY(20px); opacity: 0; }
+      20% { transform: translateY(0); opacity: 1; }
+      80% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-10px); opacity: 0; }
+    }
+    .toast-anim { animation: toast-in 1.5s ease-out forwards; }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+  <div class="moon"></div>
+  <div id="root" style="position: relative; z-index: 2;"></div>
+
+  <script>
+    // 별 생성
+    (function() {
+      const container = document.getElementById('stars');
+      for (let i = 0; i < 80; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 2 + 1;
+        s.style.width = `${size}px`;
+        s.style.height = `${size}px`;
+        s.style.top = `${Math.random() * 100}%`;
+        s.style.left = `${Math.random() * 100}%`;
+        s.style.animationDelay = `${Math.random() * 3}s`;
+        container.appendChild(s);
+      }
+    })();
+  </script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const SESSION_KEY = 'study-agent-session-id';
+
+    const GREETING = `어서 오세요... 여기는 **달빛 서당**이에요.
+
+제가 형이 배운 수업의 기록을 모두 갖고 있어요. 무엇이든 물어보세요.
+1주차 고블린부터 3주차 서버까지, 마음의 눈으로 살펴드릴게요. 🌙
+
+아래 빠른 질문을 눌러봐도 좋고, 직접 질문해도 돼요.`;
+
+    const QUICK_QUESTIONS = {
+      '1주차': [
+        '1주차에 뭘 배웠어?',
+        '삼국시대 음식 복원 퀘스트 알려줘',
+        'K-Drama 일기 변환 퀘스트는 뭐였어?',
+      ],
+      '2주차': [
+        '앱의 10가지 유형 중 뭘 실습했어?',
+        'Calculation이랑 Transform 차이가 뭐야?',
+        'React CDN이랑 Vite 차이가 뭐야?',
+      ],
+      '3주차': [
+        '3주차 프로젝트 순서대로 설명해줘',
+        'API 키 왜 서버에 숨겨야 해?',
+        'mental-chat v1, v2 차이 알려줘',
+        'Express app.use(express.json())은 뭐야?',
+        'Claude API랑 OpenAI API 차이 알려줘',
+      ],
+    };
+
+    // ---- 마크다운/코드블록 간단 렌더러 ----
+    function renderMarkdown(text) {
+      const parts = [];
+      const regex = /```(\w+)?\n?([\s\S]*?)```/g;
+      let lastIndex = 0;
+      let match;
+      let keyIdx = 0;
+
+      while ((match = regex.exec(text)) !== null) {
+        if (match.index > lastIndex) {
+          parts.push({ type: 'text', value: text.slice(lastIndex, match.index), key: keyIdx++ });
+        }
+        parts.push({ type: 'code', lang: match[1] || '', value: match[2], key: keyIdx++ });
+        lastIndex = regex.lastIndex;
+      }
+      if (lastIndex < text.length) {
+        parts.push({ type: 'text', value: text.slice(lastIndex), key: keyIdx++ });
+      }
+      return parts;
+    }
+
+    function TextWithFormatting({ text }) {
+      // **bold**, `inline code`, 줄바꿈 → <br/>
+      const nodes = [];
+      const lines = text.split('\n');
+      lines.forEach((line, li) => {
+        const boldRegex = /\*\*([^*]+)\*\*/g;
+        const inlineCodeRegex = /`([^`]+)`/g;
+        // 토큰 단위 파싱
+        let working = line;
+        const tokens = [];
+        // 매우 간단: 먼저 코드 → 볼드 순으로 대체
+        working.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).forEach((part, i) => {
+          if (/^\*\*[^*]+\*\*$/.test(part)) {
+            tokens.push(<strong key={`${li}-${i}`}>{part.slice(2, -2)}</strong>);
+          } else if (/^`[^`]+`$/.test(part)) {
+            tokens.push(<code key={`${li}-${i}`}>{part.slice(1, -1)}</code>);
+          } else if (part) {
+            tokens.push(<span key={`${li}-${i}`}>{part}</span>);
+          }
+        });
+        nodes.push(<React.Fragment key={li}>{tokens}{li < lines.length - 1 && <br />}</React.Fragment>);
+      });
+      return <>{nodes}</>;
+    }
+
+    function CodeBlock({ code, lang, onCopy }) {
+      return (
+        <div className="code-block">
+          <button className="code-copy-btn" onClick={() => onCopy(code)}>복사</button>
+          {lang && <div className="text-xs text-purple-300 mb-1">{lang}</div>}
+          <pre>{code}</pre>
+        </div>
+      );
+    }
+
+    function AssistantBubble({ text, onCopyCode }) {
+      const parts = renderMarkdown(text);
+      return (
+        <div className="bubble-assistant px-5 py-4 max-w-[85%] text-[15px] leading-relaxed">
+          {parts.map((p) =>
+            p.type === 'code'
+              ? <CodeBlock key={p.key} code={p.value} lang={p.lang} onCopy={onCopyCode} />
+              : <TextWithFormatting key={p.key} text={p.value} />
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      const [sessionId, setSessionId] = useState(() => localStorage.getItem(SESSION_KEY) || null);
+      const [messages, setMessages] = useState([
+        { role: 'assistant', content: GREETING, id: 'greeting' },
+      ]);
+      const [input, setInput] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState('');
+      const [toast, setToast] = useState('');
+      const scrollRef = useRef(null);
+
+      useEffect(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+      }, [messages, loading]);
+
+      const showToast = (msg) => {
+        setToast(msg);
+        setTimeout(() => setToast(''), 1500);
+      };
+
+      const copyCode = async (text) => {
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast('코드 복사 완료! ✅');
+        } catch {
+          showToast('복사 실패 😢');
+        }
+      };
+
+      const send = async (text) => {
+        const trimmed = (text ?? input).trim();
+        if (!trimmed || loading) return;
+        setInput('');
+        setError('');
+        const userMsg = { role: 'user', content: trimmed, id: `u-${Date.now()}` };
+        setMessages((m) => [...m, userMsg]);
+        setLoading(true);
+        try {
+          const resp = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId, message: trimmed }),
+          });
+          const data = await resp.json();
+          if (!resp.ok) throw new Error(data.error || '응답 실패');
+          if (data.sessionId && data.sessionId !== sessionId) {
+            setSessionId(data.sessionId);
+            localStorage.setItem(SESSION_KEY, data.sessionId);
+          }
+          setMessages((m) => [...m, { role: 'assistant', content: data.answer, id: `a-${Date.now()}` }]);
+        } catch (e) {
+          setError(e.message);
+          setMessages((m) => [...m, {
+            role: 'assistant',
+            content: `아이고... 고서를 펼치던 중 실수가 있었네요. (${e.message})\n\n다시 한 번 물어봐 주시겠어요?`,
+            id: `err-${Date.now()}`,
+          }]);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const restart = async () => {
+        if (!confirm('지금까지의 대화를 정리하고 새로 시작할까요?')) return;
+        if (sessionId) {
+          try {
+            await fetch('/api/reset', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sessionId }),
+            });
+          } catch {}
+        }
+        localStorage.removeItem(SESSION_KEY);
+        setSessionId(null);
+        setMessages([{ role: 'assistant', content: GREETING, id: 'greeting-2' }]);
+        setError('');
+      };
+
+      const onKey = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          send();
+        }
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col">
+          <header className="pt-10 pb-6 px-4 text-center relative">
+            <h1 className="font-brush text-6xl md:text-7xl" style={{ color: '#fef3c7' }}>
+              🌙 달빛 서당
+            </h1>
+            <p className="font-gaegu text-xl mt-2 text-purple-200">
+              스승 · 달빛 선녀
+            </p>
+            <p className="text-sm mt-1 text-purple-300/70">
+              1~3주차 수업 내용을 모두 기억합니다
+            </p>
+          </header>
+
+          <main className="flex-1 max-w-4xl w-full mx-auto px-4 pb-6 flex flex-col">
+
+            {/* 빠른 질문 */}
+            <div className="mb-4 space-y-2">
+              {Object.entries(QUICK_QUESTIONS).map(([week, qs]) => (
+                <div key={week} className="flex items-center gap-2 flex-wrap">
+                  <span className="font-serif-kr text-sm font-bold text-amber-200 w-14 shrink-0">{week}</span>
+                  <div className="flex gap-2 flex-wrap">
+                    {qs.map((q, i) => (
+                      <button
+                        key={i}
+                        className="quick-btn"
+                        onClick={() => send(q)}
+                        disabled={loading}
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* 대화 영역 */}
+            <div
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto space-y-4 pb-4 pr-1"
+              style={{ maxHeight: 'calc(100vh - 380px)', minHeight: '320px' }}
+            >
+              {messages.map((m) => (
+                <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  {m.role === 'user'
+                    ? (
+                      <div className="bubble-user px-5 py-3 max-w-[75%] text-[15px] whitespace-pre-wrap">
+                        {m.content}
+                      </div>
+                    )
+                    : <AssistantBubble text={m.content} onCopyCode={copyCode} />
+                  }
+                </div>
+              ))}
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="bubble-assistant px-5 py-3 flex items-center gap-3">
+                    <span className="font-gaegu text-lg text-purple-800">
+                      달빛 선녀가 고서를 뒤적이고 있어요
+                    </span>
+                    <span className="typing-dots">
+                      <span></span><span></span><span></span>
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {error && !loading && (
+              <div className="mb-2 text-red-300 text-sm px-2">⚠ {error}</div>
+            )}
+
+            {/* 입력 */}
+            <div className="input-area">
+              <div className="flex gap-2 items-end">
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={onKey}
+                  placeholder="수업에 대해 궁금한 것을 물어보세요 (Enter로 전송, Shift+Enter 줄바꿈)"
+                  rows={2}
+                  className="flex-1"
+                  disabled={loading}
+                />
+                <button
+                  className="send-btn px-6 py-3 rounded-xl"
+                  onClick={() => send()}
+                  disabled={loading || !input.trim()}
+                >
+                  보내기
+                </button>
+              </div>
+              <div className="flex justify-between mt-2 text-xs">
+                <span className="text-purple-300/60">
+                  {sessionId ? '세션 이어짐 (브라우저에 저장됨)' : '새 세션'}
+                </span>
+                <button onClick={restart} className="text-purple-300 hover:text-amber-300 underline">
+                  🔄 새로 시작
+                </button>
+              </div>
+            </div>
+          </main>
+
+          <footer className="py-4 text-center text-xs text-purple-400/60">
+            harbor.school week3 quest · 달빛 서당
+          </footer>
+
+          {toast && (
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
+              <div className="toast-anim bg-purple-900 text-amber-100 px-6 py-3 rounded-full shadow-xl font-bold">
+                {toast}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
