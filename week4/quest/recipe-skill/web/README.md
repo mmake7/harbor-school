@@ -2,8 +2,10 @@
 
 > 도시에 혼자 사는 IT/금융 전문직을 위한 냉장고 관리 + AI 레시피 생성 웹앱
 
-[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=flat&logo=vercel)](배포URL여기)
+[![Vercel](https://img.shields.io/badge/Live_Demo-web--mauve--tau--65-000000?style=flat&logo=vercel)](https://web-mauve-tau-65.vercel.app)
 [![Built with Claude](https://img.shields.io/badge/Built_with-Claude-D97706?style=flat)](https://claude.com)
+
+🌐 **Live Demo**: https://web-mauve-tau-65.vercel.app
 
 ## 🎯 프로젝트 소개
 
@@ -157,7 +159,10 @@ npx vercel dev
 
 ## 🌐 배포
 
-**Live Demo**: [여기에 Vercel URL 추가 예정]
+**Live Demo**: https://web-mauve-tau-65.vercel.app
+
+- 프로덕션 고정 별칭: `web-mauve-tau-65.vercel.app`
+- 배포 Inspect: [Vercel 대시보드](https://vercel.com/mmake7-3440s-projects/web)
 
 ### Vercel 배포 방법
 
