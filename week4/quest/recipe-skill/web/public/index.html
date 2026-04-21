@@ -3,483 +3,1276 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>🏠 혼삶 주방</title>
+<meta name="theme-color" content="#FAFAFA" />
+<title>혼삶 · Solo Kitchen</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" />
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
   :root {
-    --bg: #FFF8F0;
+    /* Surfaces */
+    --bg: #FAFAFA;
     --card: #FFFFFF;
-    --primary: #FF8C42;
-    --primary-soft: #FFD6B8;
-    --text: #3D2F24;
-    --muted: #8B7B6E;
-    --border: #F2E4D4;
-    --danger: #E14D4D;
-    --warn-bg: #FFE8E0;
-    --shadow: 0 2px 10px rgba(196, 134, 80, 0.08);
-    --shadow-hover: 0 6px 20px rgba(196, 134, 80, 0.14);
-    --radius: 18px;
-    --radius-sm: 12px;
+    --border: #E8E8E8;
+    --border-strong: #A3A3A3;
+    --hover: #F4F4F4;
+
+    /* Text */
+    --text: #0A0A0A;
+    --text-2: #525252;
+    --text-3: #A3A3A3;
+    --text-disabled: #D4D4D4;
+
+    /* Accents */
+    --accent: #0A0A0A;
+    --blue: #2563EB;
+    --success: #16A34A;
+    --danger: #DC2626;
+
+    /* Status badges (low saturation) */
+    --b-chill:        #E0E7FF;
+    --b-chill-ink:    #3730A3;
+    --b-room:         #FEF3C7;
+    --b-room-ink:     #854D0E;
+    --b-freeze:       #DBEAFE;
+    --b-freeze-ink:   #1E40AF;
+    --b-urgent:       #FEE2E2;
+    --b-urgent-ink:   #991B1B;
+
+    /* Version badges */
+    --v-easy-bg:   #F4F4F4;   --v-easy-ink:   #0A0A0A;
+    --v-hearty-bg: #E0E7FF;   --v-hearty-ink: #3730A3;
+    --v-unique-bg: #F3E8FF;   --v-unique-ink: #6B21A8;
+
+    /* Shadows (very restrained) */
+    --shadow-hover:    0 1px 3px rgba(0,0,0,0.06);
+    --shadow-floating: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-modal:    0 20px 40px rgba(0,0,0,0.12);
+
+    /* Radii (sharp) */
+    --r-card: 4px;
+    --r-btn:  6px;
+    --r-badge: 2px;
+    --r-input: 4px;
   }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; letter-spacing: inherit; }
+  input, select, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+  a { color: inherit; text-decoration: none; }
+  [data-lucide] { width: 16px; height: 16px; stroke-width: 1.75; display: inline-block; vertical-align: middle; }
+
+  /* ============ LAYOUT ============ */
+  .app { min-height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar {
+    height: 64px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+    display: flex; align-items: center;
+    padding: 0 20px;
+    gap: 16px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar__brand {
+    display: flex; align-items: center; gap: 10px;
+    min-width: 220px;
+  }
+  .topbar__logo {
+    width: 28px; height: 28px;
+    background: var(--accent); color: #fff;
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 13px;
+    border-radius: var(--r-badge);
+    letter-spacing: 0;
+  }
+  .topbar__name { font-weight: 600; font-size: 15px; letter-spacing: -0.02em; }
+  .topbar__search {
+    flex: 1; max-width: 420px;
+    display: flex; align-items: center; gap: 8px;
+    height: 36px; padding: 0 12px;
+    background: var(--hover); border: 1px solid transparent;
+    border-radius: var(--r-input);
+    color: var(--text-3);
+    transition: border-color 150ms, background 150ms;
+  }
+  .topbar__search:focus-within { background: var(--card); border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); color: var(--text); }
+  .topbar__search input { flex: 1; background: none; border: 0; outline: 0; font-size: 13px; color: var(--text); }
+  .topbar__search input::placeholder { color: var(--text-3); }
+  .topbar__spacer { flex: 1; }
+  .topbar__profile {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--hover); color: var(--text-2);
+    display: grid; place-items: center;
+    font-size: 12px; font-weight: 600;
+    border: 1px solid var(--border);
+  }
+
+  .body { display: flex; flex: 1; }
+
+  .sidebar {
+    width: 240px; flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    background: var(--card);
+    padding: 20px 12px;
+    display: flex; flex-direction: column; gap: 2px;
+    position: sticky; top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  .side-label {
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-3);
+    padding: 12px 12px 6px;
+  }
+  .side-item {
+    display: flex; align-items: center; gap: 10px;
+    height: 36px; padding: 0 12px;
+    border-radius: var(--r-input);
+    font-size: 13px; font-weight: 500;
+    color: var(--text-2);
+    transition: background 120ms, color 120ms;
+    width: 100%; text-align: left;
+  }
+  .side-item:hover { background: var(--hover); color: var(--text); }
+  .side-item.is-active { background: var(--accent); color: #fff; }
+  .side-item.is-active [data-lucide] { color: #fff; }
+
+  .main { flex: 1; min-width: 0; }
+  .main__inner { max-width: 960px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  /* Mobile tabs (top) */
+  .mtabs { display: none; }
+
+  /* ============ TYPOGRAPHY ============ */
+  .display { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; }
+  .title   { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.3; }
+  .subtitle{ font-size: 16px; font-weight: 600; letter-spacing: -0.015em; }
+  .body-s  { font-size: 13px; color: var(--text-2); }
+  .caption { font-size: 12px; font-weight: 500; color: var(--text-2); }
+  .tiny    { font-size: 11px; font-weight: 500; color: var(--text-3); }
+  .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); }
+  .muted   { color: var(--text-2); }
+  .mono-ink { color: var(--text); }
+
+  /* ============ BUTTONS ============ */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px;
+    height: 36px; padding: 0 14px;
+    border-radius: var(--r-btn);
+    font-size: 13px; font-weight: 500;
+    border: 1px solid transparent;
+    transition: all 150ms ease;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn--primary { background: var(--accent); color: #fff; }
+  .btn--primary:hover { background: #1a1a1a; }
+  .btn--ghost { background: var(--card); color: var(--text); border-color: var(--border); }
+  .btn--ghost:hover { border-color: var(--border-strong); }
+  .btn--danger { background: var(--card); color: var(--danger); border-color: var(--border); }
+  .btn--danger:hover { border-color: var(--danger); }
+  .btn--lg { height: 48px; padding: 0 24px; font-size: 14px; font-weight: 600; min-width: 200px; }
+  .btn--icon { width: 32px; height: 32px; padding: 0; border-radius: var(--r-input); color: var(--text-2); }
+  .btn--icon:hover { background: var(--hover); color: var(--text); transform: none; }
+  .btn[disabled] { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+  /* ============ CHIPS / SEGMENTS ============ */
+  .chips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: 0 0 auto;
+    height: 32px; padding: 0 12px;
+    border-radius: var(--r-badge);
+    border: 1px solid var(--border);
+    background: var(--card); color: var(--text);
+    font-size: 12px; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 120ms;
+  }
+  .chip:hover { border-color: var(--border-strong); }
+  .chip.is-active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .chip__count { color: var(--text-3); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .chip.is-active .chip__count { color: rgba(255,255,255,0.6); }
+
+  .segment {
+    display: inline-flex; padding: 3px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-btn);
+  }
+  .segment button {
+    height: 30px; padding: 0 14px;
+    font-size: 12px; font-weight: 500;
+    color: var(--text-2);
+    border-radius: var(--r-input);
+    transition: all 150ms;
+  }
+  .segment button:hover { color: var(--text); }
+  .segment button.is-active { background: var(--accent); color: #fff; }
+
+  /* ============ BADGES ============ */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    height: 22px; padding: 0 8px;
+    border-radius: var(--r-badge);
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .badge--chill  { background: var(--b-chill);  color: var(--b-chill-ink); }
+  .badge--room   { background: var(--b-room);   color: var(--b-room-ink); }
+  .badge--freeze { background: var(--b-freeze); color: var(--b-freeze-ink); }
+  .badge--urgent { background: var(--b-urgent); color: var(--b-urgent-ink); }
+  .badge--plain  { background: var(--hover);    color: var(--text-2); }
+
+  .vbadge {
+    display: inline-flex; align-items: center;
+    height: 22px; padding: 0 8px;
+    border-radius: var(--r-badge);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .vbadge--easy   { background: var(--v-easy-bg);   color: var(--v-easy-ink); }
+  .vbadge--hearty { background: var(--v-hearty-bg); color: var(--v-hearty-ink); }
+  .vbadge--unique { background: var(--v-unique-bg); color: var(--v-unique-ink); }
+
+  .dday {
+    font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums;
+    color: var(--text-2);
+  }
+  .dday--warn   { color: #B45309; }
+  .dday--danger { color: var(--danger); }
+  .dday--past   { color: var(--text-3); text-decoration: line-through; }
+
+  /* ============ CARD ============ */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    transition: border-color 150ms, box-shadow 150ms;
+  }
+  .card--interactive:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-hover);
+  }
+  .card__pad { padding: 20px; }
+
+  /* ============ FRIDGE ============ */
+  .page-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 16px; margin-bottom: 24px; min-height: 48px;
+  }
+  .page-head__title { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+  .page-head__sub { margin-top: 4px; font-size: 12px; color: var(--text-2); }
+
+  /* Desktop table */
+  .table-wrap { border: 1px solid var(--border); border-radius: var(--r-card); background: var(--card); overflow: hidden; }
+  .table { width: 100%; border-collapse: collapse; }
+  .table thead th {
+    height: 40px; padding: 0 16px;
+    background: #FAFAFA;
+    font-size: 12px; font-weight: 500;
+    color: var(--text-2);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .table tbody td {
+    height: 52px; padding: 0 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    font-size: 13px;
+  }
+  .table tbody tr:last-child td { border-bottom: 0; }
+  .table tbody tr { transition: background 120ms; }
+  .table tbody tr:hover { background: var(--hover); }
+  .table .cell--name { font-weight: 500; color: var(--text); }
+  .table .cell--right { text-align: right; }
+  .table .cell--actions { width: 56px; text-align: right; }
+  .table .cell--muted { color: var(--text-2); font-variant-numeric: tabular-nums; }
+
+  /* Mobile card list */
+  .mlist { display: flex; flex-direction: column; gap: 8px; }
+  .mrow {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 16px;
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 12px;
+    align-items: center;
+    transition: border-color 150ms;
+  }
+  .mrow:hover { border-color: var(--border-strong); }
+  .mrow__name { font-size: 14px; font-weight: 500; }
+  .mrow__meta { font-size: 12px; color: var(--text-2); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .mrow__right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+  /* ============ RECIPE TAB ============ */
+  .hero {
+    text-align: center;
+    padding: 56px 16px 40px;
+  }
+  .hero .eyebrow { margin-bottom: 14px; }
+  .hero h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 12px; }
+  .hero p  { font-size: 14px; color: var(--text-2); margin-bottom: 28px; }
+  .hero__actions { display: inline-flex; gap: 8px; align-items: center; }
+
+  /* Progress bar */
+  .progress {
+    position: relative;
+    height: 4px; width: 100%;
+    background: var(--border);
+    border-radius: 0;
+    overflow: hidden;
+  }
+  .progress__bar {
+    position: absolute; top: 0; left: -30%;
+    width: 30%; height: 100%;
+    background: var(--accent);
+    animation: progressSlide 1.2s ease-in-out infinite;
+  }
+  @keyframes progressSlide {
+    0%   { left: -30%; }
+    100% { left: 100%; }
+  }
+
+  .loading-line {
+    max-width: 320px; margin: 0 auto;
+    text-align: center;
+  }
+  .loading-line p { margin-top: 12px; font-size: 12px; color: var(--text-2); }
+
+  /* Recipe grid */
+  .rgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; }
+  .rcard {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 24px;
+    display: flex; flex-direction: column;
+    transition: border-color 150ms;
+  }
+  .rcard:hover { border-color: var(--border-strong); }
+  .rcard__head { margin-bottom: 16px; }
+  .rcard__title {
+    font-size: 18px; font-weight: 600; letter-spacing: -0.02em;
+    margin: 10px 0 8px;
+  }
+  .rcard__meta {
+    font-size: 12px; color: var(--text-2);
+    display: flex; gap: 8px; align-items: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .rcard__meta-dot { color: var(--text-3); }
+  .rcard__ingredients {
+    margin-top: 14px;
+    font-size: 13px; color: var(--text-2);
     line-height: 1.6;
   }
-  .app { max-width: 680px; margin: 0 auto; padding: 16px 16px 80px; }
-  .header { text-align: center; padding: 24px 0 20px; }
-  .header h1 { margin: 0; font-size: 28px; letter-spacing: -0.5px; }
-  .header p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+  .rcard__divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .rcard__section-label { font-size: 11px; font-weight: 500; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+  .rcard__steps { font-size: 13px; color: var(--text); line-height: 1.7; white-space: pre-wrap; }
+  .rcard__tip {
+    margin-top: 16px; padding: 12px 14px;
+    background: #FAFAFA;
+    border: 1px solid var(--border);
+    border-radius: var(--r-input);
+    font-size: 12px; color: var(--text-2);
+    display: flex; gap: 8px;
+  }
+  .rcard__tip [data-lucide] { flex-shrink: 0; color: var(--text-2); margin-top: 2px; }
+  .rcard__link {
+    margin-top: 18px;
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 500;
+    color: var(--text);
+    transition: color 150ms;
+    padding-top: 4px;
+  }
+  .rcard__link:hover { color: var(--blue); }
 
-  .tabs {
-    display: flex; gap: 8px; background: var(--card);
-    padding: 6px; border-radius: var(--radius); box-shadow: var(--shadow);
-    margin-bottom: 20px; position: sticky; top: 8px; z-index: 10;
+  /* ============ HISTORY ============ */
+  .hist-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
   }
-  .tab {
-    flex: 1; padding: 12px 8px; border: none; background: transparent;
-    border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
-    color: var(--muted); cursor: pointer; transition: all 0.2s;
+  .hist-group { margin-bottom: 32px; }
+  .hist-group__label {
+    font-size: 13px; font-weight: 500; color: var(--text-2);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
   }
-  .tab.active { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(255,140,66,0.3); }
-  .tab:not(.active):hover { background: var(--primary-soft); color: var(--text); }
+  .hitem {
+    min-height: 72px; padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 12px;
+    align-items: center;
+    transition: background 120ms;
+    cursor: pointer;
+  }
+  .hitem:hover { background: var(--hover); }
+  .hitem__top { display: flex; align-items: center; gap: 10px; }
+  .hitem__title { font-size: 14px; font-weight: 500; }
+  .hitem__meta { font-size: 12px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .hitem__time { font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; }
 
-  .card {
-    background: var(--card); border-radius: var(--radius);
-    padding: 18px; box-shadow: var(--shadow); margin-bottom: 12px;
-    transition: transform 0.15s, box-shadow 0.15s;
+  /* ============ EMPTY ============ */
+  .empty {
+    padding: 64px 20px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: var(--r-card);
+    background: var(--card);
   }
-  .card:hover { box-shadow: var(--shadow-hover); }
-  .card-title { margin: 0 0 4px; font-size: 17px; font-weight: 700; }
-  .card-sub { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
-  .card-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .empty [data-lucide] { width: 24px; height: 24px; color: var(--text-3); margin-bottom: 12px; }
+  .empty h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .empty p { font-size: 13px; color: var(--text-2); margin-bottom: 16px; }
 
-  .btn {
-    border: none; border-radius: var(--radius-sm); padding: 10px 18px;
-    font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  /* ============ MODAL ============ */
+  .scrim {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(10,10,10,0.32);
+    display: grid; place-items: center;
+    padding: 20px;
+    animation: fadeIn 150ms ease;
   }
-  .btn-primary { background: var(--primary); color: white; }
-  .btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
-  .btn-primary:disabled { background: var(--primary-soft); color: white; cursor: not-allowed; transform: none; }
-  .btn-ghost { background: var(--primary-soft); color: var(--text); }
-  .btn-ghost:hover { background: #FFC39A; }
-  .btn-danger { background: #fff; color: var(--danger); border: 1px solid var(--border); }
-  .btn-danger:hover { background: var(--warn-bg); }
-  .btn-sm { padding: 6px 12px; font-size: 12px; }
-  .btn-big {
-    width: 100%; padding: 24px; font-size: 18px;
-    background: linear-gradient(135deg, #FF8C42 0%, #FF6B35 100%);
-    color: white; border-radius: var(--radius);
-    box-shadow: 0 8px 24px rgba(255, 140, 66, 0.25);
-  }
-  .btn-big:hover { filter: brightness(1.05); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255, 140, 66, 0.3); }
-  .btn-big:disabled { background: var(--primary-soft); cursor: not-allowed; transform: none; box-shadow: var(--shadow); }
-
-  .badge {
-    display: inline-block; padding: 3px 10px; border-radius: 999px;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
-  }
-  .badge-expiry { background: var(--warn-bg); color: var(--danger); }
-  .badge-category { background: var(--primary-soft); color: var(--text); }
-  .badge-version { background: #FFF0E0; color: var(--primary); border: 1px solid var(--primary-soft); }
-
-  .tag {
-    display: inline-block; padding: 4px 10px; margin: 2px;
-    background: #F7EBDE; color: var(--text); border-radius: 999px;
-    font-size: 12px;
-  }
-
-  .modal-backdrop {
-    position: fixed; inset: 0; background: rgba(60, 40, 20, 0.4);
-    display: flex; align-items: center; justify-content: center;
-    padding: 16px; z-index: 50;
-  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   .modal {
-    background: var(--card); border-radius: var(--radius);
-    padding: 24px; width: 100%; max-width: 420px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    width: 100%; max-width: 420px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow-modal);
+    overflow: hidden;
+    animation: modalIn 180ms ease;
   }
-  .modal h2 { margin: 0 0 16px; font-size: 20px; }
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+  @keyframes modalIn { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal__head { padding: 20px 20px 4px; }
+  .modal__title { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+  .modal__sub { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+  .modal__body { padding: 16px 20px 20px; }
+  .modal__foot {
+    padding: 16px 20px;
+    display: flex; justify-content: flex-end; gap: 8px;
+    border-top: 1px solid var(--border);
+    background: #FAFAFA;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--text-2); }
   .field input, .field select {
-    width: 100%; padding: 11px 14px; border: 1px solid var(--border);
-    border-radius: var(--radius-sm); font-size: 14px; background: #FDFAF6;
-    color: var(--text); outline: none; transition: border 0.15s;
+    height: 36px; padding: 0 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-input);
+    font-size: 13px; color: var(--text);
+    outline: 0;
+    transition: border-color 150ms, box-shadow 150ms;
   }
-  .field input:focus, .field select:focus { border-color: var(--primary); }
-  .field-row { display: flex; gap: 10px; }
-  .field-row .field { flex: 1; }
-
-  .recipe-steps { white-space: pre-wrap; background: #FDF6EF; padding: 12px 14px; border-radius: var(--radius-sm); font-size: 14px; line-height: 1.8; }
-  .recipe-tip { background: #FFF4E6; border-left: 3px solid var(--primary); padding: 10px 14px; border-radius: 8px; font-size: 13px; color: var(--text); margin-top: 10px; }
-
-  .spinner {
-    width: 42px; height: 42px; border: 4px solid var(--primary-soft);
-    border-top-color: var(--primary); border-radius: 50%;
-    animation: spin 1s linear infinite; margin: 0 auto 16px;
+  .field input:focus, .field select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-box { text-align: center; padding: 40px 20px; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); }
-  .loading-text { font-size: 15px; color: var(--muted); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2); }
 
-  .empty { text-align: center; padding: 50px 20px; color: var(--muted); }
-  .empty-emoji { font-size: 48px; display: block; margin-bottom: 10px; }
-
-  .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .filter-chip {
-    padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border);
-    background: var(--card); cursor: pointer; font-size: 13px; color: var(--muted);
-    font-weight: 600;
+  /* ============ TOAST ============ */
+  .toasts {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 200;
+    display: flex; flex-direction: column; gap: 8px;
+    align-items: center;
+    pointer-events: none;
   }
-  .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .toolbar h3 { margin: 0; font-size: 16px; font-weight: 700; }
-
-  .error-box {
-    background: var(--warn-bg); color: var(--danger); padding: 12px 16px;
-    border-radius: var(--radius-sm); margin-bottom: 14px; font-size: 13px;
+  .toast {
+    background: var(--accent); color: #fff;
+    padding: 10px 16px;
+    font-size: 13px; font-weight: 500;
+    border-radius: var(--r-input);
+    box-shadow: var(--shadow-floating);
+    animation: toastUp 220ms ease;
+    max-width: 90vw;
   }
+  .toast--err { background: var(--danger); }
+  @keyframes toastUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-  .history-item { cursor: pointer; }
-  .history-item .details { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); }
+  /* ============ TAB TRANSITION ============ */
+  .tab-enter { animation: tabFade 200ms ease; }
+  @keyframes tabFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-  a.notion-link { display: inline-block; margin-top: 10px; font-size: 13px; color: var(--primary); text-decoration: none; font-weight: 600; }
-  a.notion-link:hover { text-decoration: underline; }
+  /* ============ MENU ============ */
+  .menu-wrap { position: relative; }
+  .menu {
+    position: absolute; right: 0; top: calc(100% + 4px);
+    min-width: 140px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow-modal);
+    z-index: 20;
+    padding: 4px;
+  }
+  .menu button {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; padding: 8px 10px;
+    font-size: 13px; color: var(--text);
+    border-radius: var(--r-input);
+    text-align: left;
+  }
+  .menu button:hover { background: var(--hover); }
+  .menu button.is-danger { color: var(--danger); }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1023px) {
+    .sidebar { display: none; }
+    .topbar__search { display: none; }
+    .topbar__brand { min-width: auto; flex: 1; }
+    .topbar { height: 64px; }
+    .mtabs {
+      display: flex;
+      position: sticky; top: 64px; z-index: 40;
+      height: 48px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px; gap: 4px;
+    }
+    .mtabs button {
+      flex: 1;
+      font-size: 13px; font-weight: 500;
+      color: var(--text-2);
+      border-bottom: 2px solid transparent;
+      transition: all 150ms;
+    }
+    .mtabs button.is-active {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+    }
+    .main__inner { padding: 24px 20px 96px; max-width: 480px; }
+    .page-head { flex-direction: column; align-items: stretch; gap: 12px; }
+    .rgrid { grid-template-columns: 1fr; gap: 8px; margin-top: 24px; }
+    .hero { padding: 40px 8px 32px; }
+    .hero h1 { font-size: 26px; }
+    .display { font-size: 26px; }
+  }
+  @media (max-width: 599px) {
+    .table-wrap { display: none; }
+  }
+  @media (min-width: 600px) {
+    .mlist { display: none; }
+  }
 </style>
 </head>
 <body>
 <div id="root"></div>
 
-<script type="text/babel" data-presets="env,react">
-const { useState, useEffect, useCallback } = React;
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext } = React;
 
-const API = {
+/* ============ API ============ */
+const api = {
   listIngredients: () => fetch('/api/ingredients').then(r => r.json()),
   createIngredient: (data) => fetch('/api/ingredients', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
   }).then(r => r.json()),
-  updateIngredient: (id, data) => fetch(`/api/ingredients?id=${id}`, {
+  updateIngredient: (id, data) => fetch('/api/ingredients?id=' + id, {
     method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
   }).then(r => r.json()),
-  deleteIngredient: (id) => fetch(`/api/ingredients?id=${id}`, { method: 'DELETE' }),
+  deleteIngredient: (id) => fetch('/api/ingredients?id=' + id, { method: 'DELETE' }),
   generateRecipes: () => fetch('/api/recipe', { method: 'POST' }).then(async r => {
-    const data = await r.json();
-    if (!r.ok) throw new Error(data.error || 'Unknown error');
-    return data;
+    if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || 'generate failed'); }
+    return r.json();
   }),
   listRecipes: () => fetch('/api/recipe').then(r => r.json()),
 };
 
-function daysUntil(expiryDate) {
-  if (!expiryDate) return null;
-  const diff = new Date(expiryDate) - new Date();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+/* ============ UTILS ============ */
+function daysUntil(isoDate) {
+  if (!isoDate) return null;
+  const d = new Date(isoDate); const now = new Date();
+  d.setHours(0,0,0,0); now.setHours(0,0,0,0);
+  return Math.round((d - now) / 86400000);
+}
+function ddayClass(n) {
+  if (n == null) return '';
+  if (n < 0) return 'dday--past';
+  if (n <= 2) return 'dday--danger';
+  if (n <= 5) return 'dday--warn';
+  return '';
+}
+function ddayLabel(n) {
+  if (n == null) return '';
+  if (n < 0) return Math.abs(n) + '일 지남';
+  if (n === 0) return 'D-DAY';
+  return 'D-' + n;
+}
+function categoryBadgeClass(cat) {
+  if (cat === '냉장') return 'badge--chill';
+  if (cat === '실온') return 'badge--room';
+  if (cat === '냉동') return 'badge--freeze';
+  return 'badge--plain';
+}
+function versionClass(v) {
+  if (v === '초간단') return 'vbadge--easy';
+  if (v === '든든한') return 'vbadge--hearty';
+  if (v === '색다른') return 'vbadge--unique';
+  return 'vbadge--easy';
+}
+function versionAscii(v) {
+  if (v === '초간단') return 'EASY';
+  if (v === '든든한') return 'HEARTY';
+  if (v === '색다른') return 'UNIQUE';
+  return v;
+}
+function parseIngredients(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return [raw]; } }
+  return [];
+}
+function notionUrl(pageId) {
+  if (!pageId) return null;
+  return 'https://www.notion.so/' + String(pageId).replace(/-/g, '');
+}
+function fmtTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const h = String(d.getHours()).padStart(2,'0'); const m = String(d.getMinutes()).padStart(2,'0');
+  return h + ':' + m;
+}
+function fmtDateHeader(iso) {
+  const d = new Date(iso);
+  const wk = ['일','월','화','수','목','금','토'][d.getDay()];
+  return d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일 ' + wk + '요일';
+}
+function groupByDay(list) {
+  const map = new Map();
+  for (const item of list) {
+    const key = (item.created_at || '').split('T')[0];
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(item);
+  }
+  return Array.from(map.entries()).sort((a, b) => (a[0] < b[0] ? 1 : -1));
 }
 
-function formatDate(ts) {
-  if (!ts) return '';
-  const d = new Date(ts);
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+/* ============ ICON ============ */
+function Icon({ name, size, className, ...rest }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (window.lucide && ref.current) {
+      ref.current.setAttribute('data-lucide', name);
+      ref.current.innerHTML = '';
+      window.lucide.createIcons({ nameAttr: 'data-lucide', icons: window.lucide.icons, attrs: {}, elements: [ref.current] });
+    }
+  }, [name]);
+  const style = size ? { width: size, height: size } : undefined;
+  return <i ref={ref} data-lucide={name} className={className} style={style} {...rest} />;
 }
 
-function App() {
-  const [tab, setTab] = useState('fridge');
+function useLucide(dep) {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [dep]);
+}
+
+/* ============ TOAST ============ */
+const ToastCtx = createContext(null);
+function ToastProvider({ children }) {
+  const [items, setItems] = useState([]);
+  const push = useCallback((msg, kind = 'ok') => {
+    const id = Math.random().toString(36).slice(2);
+    setItems(prev => [...prev, { id, msg, kind }]);
+    setTimeout(() => setItems(prev => prev.filter(t => t.id !== id)), 3000);
+  }, []);
   return (
-    <div className="app">
-      <div className="header">
-        <h1>🏠 혼삶 주방</h1>
-        <p>냉장고 재료로 오늘의 한 끼, AI가 고민 대신 해드려요</p>
+    <ToastCtx.Provider value={push}>
+      {children}
+      <div className="toasts">
+        {items.map(t => (
+          <div key={t.id} className={'toast' + (t.kind === 'err' ? ' toast--err' : '')}>{t.msg}</div>
+        ))}
       </div>
-      <div className="tabs">
-        <button className={`tab ${tab==='fridge'?'active':''}`} onClick={() => setTab('fridge')}>🧊 냉장고</button>
-        <button className={`tab ${tab==='recipe'?'active':''}`} onClick={() => setTab('recipe')}>🍳 레시피 만들기</button>
-        <button className={`tab ${tab==='history'?'active':''}`} onClick={() => setTab('history')}>📚 히스토리</button>
+    </ToastCtx.Provider>
+  );
+}
+const useToast = () => useContext(ToastCtx);
+
+/* ============ LAYOUT ============ */
+function TopBar({ tab }) {
+  return (
+    <header className="topbar">
+      <div className="topbar__brand">
+        <div className="topbar__logo">혼</div>
+        <div className="topbar__name">혼삶</div>
       </div>
-      {tab === 'fridge' && <FridgeTab />}
-      {tab === 'recipe' && <RecipeTab />}
-      {tab === 'history' && <HistoryTab />}
+      <div className="topbar__search">
+        <Icon name="search" size={14} />
+        <input placeholder="재료, 레시피 검색…" />
+      </div>
+      <div className="topbar__spacer" />
+      <div className="topbar__profile">MK</div>
+    </header>
+  );
+}
+
+function Sidebar({ tab, setTab }) {
+  useLucide(tab);
+  const items = [
+    { id: 'fridge',  icon: 'refrigerator', label: '냉장고' },
+    { id: 'recipe',  icon: 'chef-hat',     label: '만들기' },
+    { id: 'history', icon: 'history',      label: '기록' },
+  ];
+  return (
+    <aside className="sidebar">
+      <div className="side-label">Workspace</div>
+      {items.map(it => (
+        <button key={it.id}
+          className={'side-item' + (tab === it.id ? ' is-active' : '')}
+          onClick={() => setTab(it.id)}>
+          <Icon name={it.icon} />
+          <span>{it.label}</span>
+        </button>
+      ))}
+    </aside>
+  );
+}
+
+function MobileTabs({ tab, setTab }) {
+  const items = [
+    { id: 'fridge',  label: '냉장고' },
+    { id: 'recipe',  label: '만들기' },
+    { id: 'history', label: '기록' },
+  ];
+  return (
+    <nav className="mtabs">
+      {items.map(it => (
+        <button key={it.id}
+          className={tab === it.id ? 'is-active' : ''}
+          onClick={() => setTab(it.id)}>{it.label}</button>
+      ))}
+    </nav>
+  );
+}
+
+/* ============ FRIDGE ============ */
+function FridgeTab() {
+  const toast = useToast();
+  const [list, setList] = useState(null);
+  const [filter, setFilter] = useState('all');
+  const [modal, setModal] = useState(null); // {mode:'add'} | {mode:'edit', item}
+  const [confirm, setConfirm] = useState(null);
+  const [menuId, setMenuId] = useState(null);
+
+  const load = useCallback(async () => {
+    try { setList(await api.listIngredients()); }
+    catch (e) { toast('재료를 불러오지 못했어요', 'err'); setList([]); }
+  }, [toast]);
+
+  useEffect(() => { load(); }, [load]);
+  useLucide(list);
+
+  useEffect(() => {
+    const close = () => setMenuId(null);
+    if (menuId) { window.addEventListener('click', close); return () => window.removeEventListener('click', close); }
+  }, [menuId]);
+
+  const counts = useMemo(() => {
+    const src = list || [];
+    const urgent = src.filter(x => { const d = daysUntil(x.expiry); return d != null && d <= 3; }).length;
+    return {
+      all:    src.length,
+      chill:  src.filter(x => x.category === '냉장').length,
+      room:   src.filter(x => x.category === '실온').length,
+      freeze: src.filter(x => x.category === '냉동').length,
+      urgent,
+    };
+  }, [list]);
+
+  const filtered = useMemo(() => {
+    if (!list) return [];
+    if (filter === 'all') return list;
+    if (filter === 'urgent') return list.filter(x => { const d = daysUntil(x.expiry); return d != null && d <= 3; });
+    const map = { chill: '냉장', room: '실온', freeze: '냉동' };
+    return list.filter(x => x.category === map[filter]);
+  }, [list, filter]);
+
+  async function onSave(data) {
+    try {
+      if (modal.mode === 'add') { await api.createIngredient(data); toast('재료를 추가했어요'); }
+      else { await api.updateIngredient(modal.item.id, data); toast('재료를 수정했어요'); }
+      setModal(null); load();
+    } catch (e) { toast('저장에 실패했어요', 'err'); }
+  }
+  async function onDelete() {
+    try { await api.deleteIngredient(confirm.id); toast('삭제했어요'); setConfirm(null); load(); }
+    catch (e) { toast('삭제에 실패했어요', 'err'); }
+  }
+
+  if (list === null) return (
+    <div className="tab-enter">
+      <div className="page-head"><div><div className="page-head__title">냉장고</div><div className="page-head__sub">불러오는 중…</div></div></div>
+      <div className="progress"><div className="progress__bar"/></div>
+    </div>
+  );
+
+  const chips = [
+    { id: 'all',    label: '전체',     count: counts.all },
+    { id: 'chill',  label: '냉장',     count: counts.chill },
+    { id: 'room',   label: '실온',     count: counts.room },
+    { id: 'freeze', label: '냉동',     count: counts.freeze },
+    { id: 'urgent', label: '임박',     count: counts.urgent },
+  ];
+
+  return (
+    <div className="tab-enter">
+      <div className="page-head">
+        <div>
+          <div className="page-head__title">냉장고</div>
+          <div className="page-head__sub">재료 {counts.all}개</div>
+        </div>
+        <button className="btn btn--primary" onClick={() => setModal({ mode: 'add' })}>
+          <Icon name="plus" size={14} /> 재료 추가
+        </button>
+      </div>
+
+      <div className="chips" style={{ marginBottom: 20 }}>
+        {chips.map(c => (
+          <button key={c.id}
+            className={'chip' + (filter === c.id ? ' is-active' : '')}
+            onClick={() => setFilter(c.id)}>
+            {c.label}
+            <span className="chip__count">{c.count}</span>
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <EmptyState icon="refrigerator" title="재료가 없습니다" desc="냉장고에 재료를 추가해 보세요">
+          <button className="btn btn--primary" onClick={() => setModal({ mode: 'add' })}>
+            <Icon name="plus" size={14} /> 재료 추가
+          </button>
+        </EmptyState>
+      ) : (<>
+        {/* Desktop table */}
+        <div className="table-wrap">
+          <table className="table">
+            <thead><tr>
+              <th>재료</th><th>수량</th><th>카테고리</th><th>유통기한</th><th>D-day</th><th></th>
+            </tr></thead>
+            <tbody>
+              {filtered.map(item => {
+                const d = daysUntil(item.expiry);
+                return (
+                  <tr key={item.id}>
+                    <td className="cell--name">{item.name}</td>
+                    <td className="cell--muted">{item.quantity || '-'}</td>
+                    <td><span className={'badge ' + categoryBadgeClass(item.category)}>{item.category || '-'}</span></td>
+                    <td className="cell--muted">{item.expiry || '-'}</td>
+                    <td><span className={'dday ' + ddayClass(d)}>{ddayLabel(d) || '-'}</span></td>
+                    <td className="cell--actions">
+                      <RowMenu
+                        open={menuId === item.id}
+                        onOpen={() => setMenuId(item.id)}
+                        onEdit={() => { setMenuId(null); setModal({ mode: 'edit', item }); }}
+                        onDelete={() => { setMenuId(null); setConfirm(item); }} />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile list */}
+        <div className="mlist">
+          {filtered.map(item => {
+            const d = daysUntil(item.expiry);
+            return (
+              <div className="mrow" key={item.id}>
+                <div>
+                  <div className="mrow__name">{item.name} <span className="muted" style={{ fontWeight: 400 }}>· {item.quantity || '-'}</span></div>
+                  <div className="mrow__meta">
+                    <span className={'badge ' + categoryBadgeClass(item.category)}>{item.category}</span>
+                    <span>{item.expiry || '유통기한 미지정'}</span>
+                  </div>
+                </div>
+                <div className="mrow__right">
+                  <span className={'dday ' + ddayClass(d)}>{ddayLabel(d) || '—'}</span>
+                  <RowMenu
+                    open={menuId === item.id}
+                    onOpen={() => setMenuId(item.id)}
+                    onEdit={() => { setMenuId(null); setModal({ mode: 'edit', item }); }}
+                    onDelete={() => { setMenuId(null); setConfirm(item); }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </>)}
+
+      {modal && <IngredientModal mode={modal.mode} item={modal.item} onClose={() => setModal(null)} onSave={onSave} />}
+      {confirm && <ConfirmModal
+        title="재료 삭제"
+        desc={`‘${confirm.name}’을(를) 삭제할까요? 이 작업은 되돌릴 수 없어요.`}
+        onClose={() => setConfirm(null)} onConfirm={onDelete} />}
     </div>
   );
 }
 
-function FridgeTab() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-
-  const load = useCallback(async () => {
-    setLoading(true); setError(null);
-    try { setItems(await API.listIngredients()); }
-    catch (e) { setError(e.message); }
-    finally { setLoading(false); }
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const onDelete = async (id) => {
-    if (!confirm('삭제할까요?')) return;
-    await API.deleteIngredient(id);
-    load();
-  };
-
+function RowMenu({ open, onOpen, onEdit, onDelete }) {
   return (
-    <div>
-      <div className="toolbar">
-        <h3>냉장고 속 재료 ({items.length})</h3>
-        <button className="btn btn-primary" onClick={() => { setEditing(null); setModalOpen(true); }}>+ 재료 추가</button>
-      </div>
-      {error && <div className="error-box">⚠️ {error}</div>}
-      {loading ? <div className="loading-box"><div className="spinner"/><div className="loading-text">냉장고 여는 중...</div></div> :
-        items.length === 0 ? (
-          <div className="empty"><span className="empty-emoji">🥛</span>냉장고가 텅 비었네요. 재료를 추가해볼까요?</div>
-        ) : items.map(it => {
-          const days = daysUntil(it.expiry);
-          const expiryLabel = days === null ? '' : days < 0 ? `${-days}일 지남` : days === 0 ? '오늘까지' : `${days}일 남음`;
-          const warn = days !== null && days <= 3;
-          return (
-            <div key={it.id} className="card">
-              <div className="card-row">
-                <div style={{flex:1}}>
-                  <div className="card-title">{it.name} <span style={{color:'var(--muted)',fontWeight:500}}>· {it.quantity}</span></div>
-                  <div className="card-sub">
-                    <span className="badge badge-category">{it.category || '냉장'}</span>
-                    {' '}
-                    {expiryLabel && <span className={`badge ${warn ? 'badge-expiry' : ''}`} style={!warn?{background:'#F3ECE3',color:'var(--muted)'}:{}}>
-                      {warn ? '⚠️ ' : '📅 '}{expiryLabel}
-                    </span>}
-                    {it.allergen && <span className="badge badge-expiry" style={{marginLeft:4}}>알레르기</span>}
-                  </div>
-                </div>
-                <div style={{display:'flex',gap:6}}>
-                  <button className="btn btn-ghost btn-sm" onClick={() => { setEditing(it); setModalOpen(true); }}>수정</button>
-                  <button className="btn btn-danger btn-sm" onClick={() => onDelete(it.id)}>삭제</button>
-                </div>
-              </div>
-            </div>
-          );
-        })
-      }
-      {modalOpen && (
-        <IngredientModal
-          initial={editing}
-          onClose={() => setModalOpen(false)}
-          onSaved={() => { setModalOpen(false); load(); }}
-        />
+    <div className="menu-wrap" onClick={(e) => e.stopPropagation()}>
+      <button className="btn btn--icon" onClick={onOpen} aria-label="메뉴">
+        <Icon name="more-horizontal" />
+      </button>
+      {open && (
+        <div className="menu">
+          <button onClick={onEdit}><Icon name="pencil" size={14} />수정</button>
+          <button className="is-danger" onClick={onDelete}><Icon name="trash" size={14} />삭제</button>
+        </div>
       )}
     </div>
   );
 }
 
-function IngredientModal({ initial, onClose, onSaved }) {
-  const [name, setName] = useState(initial?.name || '');
-  const [quantity, setQuantity] = useState(initial?.quantity || '');
-  const [category, setCategory] = useState(initial?.category || '냉장');
-  const [expiry, setExpiry] = useState(initial?.expiry ? formatDate(initial.expiry) : '');
-  const [allergen, setAllergen] = useState(initial?.allergen || false);
-  const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState(null);
+function EmptyState({ icon, title, desc, children }) {
+  useLucide(icon);
+  return (
+    <div className="empty">
+      <Icon name={icon} size={24} />
+      <h3>{title}</h3>
+      <p>{desc}</p>
+      {children}
+    </div>
+  );
+}
 
-  const submit = async (e) => {
+function IngredientModal({ mode, item, onClose, onSave }) {
+  const [form, setForm] = useState(() => ({
+    name: item?.name || '',
+    quantity: item?.quantity || '',
+    category: item?.category || '냉장',
+    expiry: item?.expiry ? item.expiry.split('T')[0] : '',
+    allergen: !!item?.allergen,
+  }));
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e) {
     e.preventDefault();
-    if (!name.trim()) return setErr('재료 이름은 필수예요');
-    setSaving(true); setErr(null);
-    try {
-      const payload = { name, quantity, category, expiry: expiry || null, allergen };
-      if (initial) await API.updateIngredient(initial.id, payload);
-      else await API.createIngredient(payload);
-      onSaved();
-    } catch (e) { setErr(e.message); }
-    finally { setSaving(false); }
-  };
+    if (!form.name.trim()) return;
+    setBusy(true);
+    await onSave({ ...form, expiry: form.expiry || null });
+    setBusy(false);
+  }
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="scrim" onClick={onClose}>
       <form className="modal" onClick={e => e.stopPropagation()} onSubmit={submit}>
-        <h2>{initial ? '재료 수정' : '새 재료 추가'}</h2>
-        {err && <div className="error-box">{err}</div>}
-        <div className="field">
-          <label>이름 *</label>
-          <input value={name} onChange={e => setName(e.target.value)} placeholder="예: 계란, 두부, 신김치" />
+        <div className="modal__head">
+          <div className="modal__title">{mode === 'add' ? '재료 추가' : '재료 수정'}</div>
+          <div className="modal__sub">냉장고에 있는 재료 정보를 입력하세요</div>
         </div>
-        <div className="field-row">
+        <div className="modal__body">
           <div className="field">
-            <label>수량</label>
-            <input value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="6개, 1모, 1/4포기" />
+            <label>이름</label>
+            <input autoFocus value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="예: 계란" required />
           </div>
-          <div className="field">
-            <label>카테고리</label>
-            <select value={category} onChange={e => setCategory(e.target.value)}>
-              <option value="냉장">냉장</option>
-              <option value="냉동">냉동</option>
-              <option value="실온">실온</option>
-            </select>
+          <div className="field-row">
+            <div className="field">
+              <label>수량</label>
+              <input value={form.quantity} onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))} placeholder="6개" />
+            </div>
+            <div className="field">
+              <label>카테고리</label>
+              <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                <option>냉장</option><option>실온</option><option>냉동</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div className="field-row">
           <div className="field">
             <label>유통기한</label>
-            <input type="date" value={expiry} onChange={e => setExpiry(e.target.value)} />
+            <input type="date" value={form.expiry} onChange={e => setForm(f => ({ ...f, expiry: e.target.value }))} />
           </div>
-          <div className="field" style={{display:'flex',alignItems:'end'}}>
-            <label style={{display:'flex',alignItems:'center',gap:6,marginBottom:11}}>
-              <input type="checkbox" checked={allergen} onChange={e => setAllergen(e.target.checked)} />
-              알레르기 유의
-            </label>
-          </div>
+          <label className="field-check">
+            <input type="checkbox" checked={form.allergen} onChange={e => setForm(f => ({ ...f, allergen: e.target.checked }))} />
+            알레르기 주의 재료
+          </label>
         </div>
-        <div style={{display:'flex',gap:8,marginTop:8}}>
-          <button type="button" className="btn btn-ghost" onClick={onClose} style={{flex:1}}>취소</button>
-          <button type="submit" className="btn btn-primary" disabled={saving} style={{flex:2}}>
-            {saving ? '저장 중...' : (initial ? '수정' : '추가')}
-          </button>
+        <div className="modal__foot">
+          <button type="button" className="btn btn--ghost" onClick={onClose}>취소</button>
+          <button type="submit" className="btn btn--primary" disabled={busy}>{busy ? '저장 중…' : '저장'}</button>
         </div>
       </form>
     </div>
   );
 }
 
-function RecipeTab() {
-  const [loading, setLoading] = useState(false);
-  const [recipes, setRecipes] = useState([]);
-  const [error, setError] = useState(null);
+function ConfirmModal({ title, desc, onClose, onConfirm }) {
+  const [busy, setBusy] = useState(false);
+  return (
+    <div className="scrim" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 360 }}>
+        <div className="modal__head">
+          <div className="modal__title">{title}</div>
+          <div className="modal__sub">{desc}</div>
+        </div>
+        <div className="modal__foot">
+          <button className="btn btn--ghost" onClick={onClose}>취소</button>
+          <button className="btn btn--danger" disabled={busy} onClick={async () => { setBusy(true); await onConfirm(); setBusy(false); }}>삭제</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  const generate = async () => {
-    setLoading(true); setError(null); setRecipes([]);
+/* ============ RECIPE TAB ============ */
+function RecipeTab() {
+  const toast = useToast();
+  const [loading, setLoading] = useState(false);
+  const [recipes, setRecipes] = useState(null);
+
+  async function run() {
+    setLoading(true); setRecipes(null);
     try {
-      const data = await API.generateRecipes();
-      setRecipes(data.recipes || []);
-    } catch (e) { setError(e.message); }
-    finally { setLoading(false); }
-  };
+      const res = await api.generateRecipes();
+      setRecipes(res.recipes || []);
+      toast('레시피 ' + (res.recipes?.length || 0) + '개를 만들었어요');
+    } catch (e) {
+      toast(e.message || '레시피 생성 실패', 'err');
+    } finally { setLoading(false); }
+  }
 
   return (
-    <div>
-      <button className="btn btn-big" onClick={generate} disabled={loading}>
-        {loading ? '달빛 선녀가 고민 중이에요...' : '🍳 AI가 레시피 만들어줘!'}
-      </button>
+    <div className="tab-enter">
+      <div className="hero">
+        <div className="eyebrow">AI RECIPE GENERATOR</div>
+        <h1>오늘 뭐 해먹지?</h1>
+        <p>냉장고 재료로 3가지 레시피를 제안합니다</p>
+        <div className="hero__actions">
+          <button className="btn btn--primary btn--lg" onClick={run} disabled={loading}>
+            {loading ? '생성 중…' : '레시피 생성'}
+          </button>
+        </div>
+      </div>
+
       {loading && (
-        <div className="loading-box" style={{marginTop:16}}>
-          <div className="spinner"/>
-          <div className="loading-text">냉장고 털어서 3가지 레시피 짜는 중... (약 15초)</div>
+        <div className="loading-line">
+          <div className="progress"><div className="progress__bar" /></div>
+          <p>Claude가 레시피를 분석 중입니다…</p>
         </div>
       )}
-      {error && <div className="error-box" style={{marginTop:16}}>⚠️ {error}</div>}
-      {recipes.length > 0 && (
-        <div style={{marginTop:20}}>
-          <h3 style={{margin:'0 0 14px'}}>🎉 오늘의 추천 레시피</h3>
-          {recipes.map((r, i) => <RecipeCard key={r.id || i} recipe={r} rank={['🥇','🥈','🥉'][i]} />)}
+
+      {recipes && recipes.length > 0 && (
+        <div className="rgrid">
+          {recipes.map(r => <RecipeResultCard key={r.id} r={r} />)}
         </div>
+      )}
+
+      {recipes && recipes.length === 0 && (
+        <EmptyState icon="chef-hat" title="레시피를 만들지 못했어요" desc="재료를 먼저 추가해 주세요." />
       )}
     </div>
   );
 }
 
-function RecipeCard({ recipe, rank }) {
-  const ingredients = typeof recipe.ingredients === 'string'
-    ? JSON.parse(recipe.ingredients) : (recipe.ingredients || []);
-  const notionUrl = recipe.notion_page_id
-    ? `https://notion.so/${recipe.notion_page_id.replace(/-/g, '')}`
-    : null;
+function RecipeResultCard({ r }) {
+  useLucide(r.id);
+  const ing = parseIngredients(r.ingredients);
+  const link = notionUrl(r.notion_page_id);
   return (
-    <div className="card">
-      <div className="card-title">{rank} {recipe.title} <span className="badge badge-version">{recipe.version}</span></div>
-      <div className="card-sub">
-        🔥 {recipe.calories}kcal · ⏱️ {recipe.cook_time}분 · {recipe.difficulty}
+    <article className="rcard">
+      <div className="rcard__head">
+        <span className={'vbadge ' + versionClass(r.version)}>{r.version} · {versionAscii(r.version)}</span>
+        <div className="rcard__title">{r.title}</div>
+        <div className="rcard__meta">
+          <Icon name="flame" size={12} /><span>{r.calories ?? '-'} kcal</span>
+          <span className="rcard__meta-dot">·</span>
+          <Icon name="clock" size={12} /><span>{r.cook_time ?? '-'}분</span>
+          <span className="rcard__meta-dot">·</span>
+          <span>{r.difficulty || ''}</span>
+        </div>
+        <div className="rcard__ingredients">{ing.map(x => typeof x === 'string' ? x : x.name).join(' · ')}</div>
       </div>
-      <div style={{marginBottom:10}}>
-        {ingredients.map((ing, i) => (
-          <span key={i} className="tag">{typeof ing === 'string' ? ing : ing.name}</span>
-        ))}
-      </div>
-      <div className="recipe-steps">{recipe.steps}</div>
-      {recipe.tip && <div className="recipe-tip">💡 {recipe.tip}</div>}
-      {notionUrl && (
-        <a className="notion-link" href={notionUrl} target="_blank" rel="noreferrer">
-          📝 노션에서 보기 →
+
+      <div className="rcard__divider" />
+
+      <div className="rcard__section-label">조리 순서</div>
+      <div className="rcard__steps">{r.steps || '-'}</div>
+
+      {r.tip && (
+        <div className="rcard__tip">
+          <Icon name="lightbulb" size={14} />
+          <span>{r.tip}</span>
+        </div>
+      )}
+
+      {link && (
+        <a className="rcard__link" href={link} target="_blank" rel="noreferrer">
+          Notion에서 보기 <Icon name="arrow-right" size={12} />
         </a>
       )}
+    </article>
+  );
+}
+
+/* ============ HISTORY ============ */
+function HistoryTab() {
+  const toast = useToast();
+  const [list, setList] = useState(null);
+  const [seg, setSeg] = useState('all');
+  const [detail, setDetail] = useState(null);
+
+  useEffect(() => {
+    api.listRecipes().then(setList).catch(() => { toast('기록을 불러오지 못했어요', 'err'); setList([]); });
+  }, [toast]);
+  useLucide(list);
+
+  const filtered = useMemo(() => {
+    if (!list) return [];
+    if (seg === 'all') return list;
+    return list.filter(x => x.version === seg);
+  }, [list, seg]);
+
+  const grouped = useMemo(() => groupByDay(filtered), [filtered]);
+
+  if (list === null) return (
+    <div className="tab-enter">
+      <div className="page-head"><div><div className="page-head__title">기록</div><div className="page-head__sub">불러오는 중…</div></div></div>
+      <div className="progress"><div className="progress__bar" /></div>
+    </div>
+  );
+
+  const segments = [
+    { id: 'all', label: '전체' },
+    { id: '초간단', label: '초간단' },
+    { id: '든든한', label: '든든한' },
+    { id: '색다른', label: '색다른' },
+  ];
+
+  return (
+    <div className="tab-enter">
+      <div className="hist-head">
+        <div>
+          <div className="page-head__title">기록</div>
+          <div className="page-head__sub">누적 {list.length}개</div>
+        </div>
+        <div className="segment">
+          {segments.map(s => (
+            <button key={s.id}
+              className={seg === s.id ? 'is-active' : ''}
+              onClick={() => setSeg(s.id)}>{s.label}</button>
+          ))}
+        </div>
+      </div>
+
+      {grouped.length === 0 ? (
+        <EmptyState icon="history" title="기록이 없어요" desc="'만들기' 탭에서 레시피를 생성하면 여기에 쌓입니다" />
+      ) : (
+        grouped.map(([day, items]) => (
+          <div key={day} className="hist-group">
+            <div className="hist-group__label">{day ? fmtDateHeader(day) : '—'}</div>
+            {items.map(item => (
+              <div key={item.id} className="hitem" onClick={() => setDetail(item)}>
+                <div>
+                  <div className="hitem__top">
+                    <span className={'vbadge ' + versionClass(item.version)}>{versionAscii(item.version)}</span>
+                    <span className="hitem__title">{item.title}</span>
+                  </div>
+                  <div className="hitem__meta" style={{ marginTop: 4 }}>
+                    {item.calories ?? '-'}kcal · {item.cook_time ?? '-'}분 · {item.difficulty || ''}
+                  </div>
+                </div>
+                <div className="hitem__time">{fmtTime(item.created_at)}</div>
+              </div>
+            ))}
+          </div>
+        ))
+      )}
+
+      {detail && <HistoryDetailModal item={detail} onClose={() => setDetail(null)} />}
     </div>
   );
 }
 
-function HistoryTab() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
-  const [expanded, setExpanded] = useState(null);
-
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try { setItems(await API.listRecipes()); }
-      finally { setLoading(false); }
-    })();
-  }, []);
-
-  const filtered = filter === 'all' ? items : items.filter(r => r.version === filter);
-
+function HistoryDetailModal({ item, onClose }) {
+  useLucide(item.id);
+  const ing = parseIngredients(item.ingredients);
+  const link = notionUrl(item.notion_page_id);
   return (
-    <div>
-      <div className="filter-bar">
-        {['all','초간단','든든한','색다른'].map(f => (
-          <button key={f}
-            className={`filter-chip ${filter===f?'active':''}`}
-            onClick={() => setFilter(f)}>
-            {f === 'all' ? '전체' : f}
-          </button>
-        ))}
-      </div>
-      {loading ? <div className="loading-box"><div className="spinner"/><div className="loading-text">히스토리 불러오는 중...</div></div> :
-        filtered.length === 0 ? (
-          <div className="empty"><span className="empty-emoji">📜</span>저장된 레시피가 없어요. "레시피 만들기" 탭에서 첫 레시피를 생성해보세요!</div>
-        ) : filtered.map(r => {
-          const isOpen = expanded === r.id;
-          const ingredients = typeof r.ingredients === 'string'
-            ? JSON.parse(r.ingredients) : (r.ingredients || []);
-          return (
-            <div key={r.id} className="card history-item" onClick={() => setExpanded(isOpen ? null : r.id)}>
-              <div className="card-row">
-                <div style={{flex:1}}>
-                  <div className="card-title">{r.title} <span className="badge badge-version">{r.version}</span></div>
-                  <div className="card-sub">
-                    📅 {formatDate(r.created_at)} · 🔥 {r.calories}kcal · ⏱️ {r.cook_time}분 · {r.difficulty}
-                  </div>
-                </div>
-                <div style={{color:'var(--muted)',fontSize:18}}>{isOpen ? '▲' : '▼'}</div>
-              </div>
-              {isOpen && (
-                <div className="details">
-                  <div style={{marginBottom:10}}>
-                    {ingredients.map((ing, i) => (
-                      <span key={i} className="tag">{typeof ing === 'string' ? ing : ing.name}</span>
-                    ))}
-                  </div>
-                  <div className="recipe-steps">{r.steps}</div>
-                  {r.tip && <div className="recipe-tip">💡 {r.tip}</div>}
-                  {r.notion_page_id && (
-                    <a className="notion-link"
-                       href={`https://notion.so/${r.notion_page_id.replace(/-/g, '')}`}
-                       target="_blank" rel="noreferrer"
-                       onClick={e => e.stopPropagation()}>
-                      📝 노션에서 보기 →
-                    </a>
-                  )}
-                </div>
-              )}
+    <div className="scrim" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 520 }}>
+        <div className="modal__head">
+          <span className={'vbadge ' + versionClass(item.version)}>{item.version} · {versionAscii(item.version)}</span>
+          <div className="modal__title" style={{ fontSize: 20, marginTop: 10 }}>{item.title}</div>
+          <div className="rcard__meta" style={{ marginTop: 6 }}>
+            <Icon name="flame" size={12} /><span>{item.calories ?? '-'} kcal</span>
+            <span className="rcard__meta-dot">·</span>
+            <Icon name="clock" size={12} /><span>{item.cook_time ?? '-'}분</span>
+            <span className="rcard__meta-dot">·</span>
+            <span>{item.difficulty}</span>
+          </div>
+        </div>
+        <div className="modal__body">
+          <div className="rcard__section-label">재료</div>
+          <div className="rcard__ingredients" style={{ marginTop: 0 }}>{ing.map(x => typeof x === 'string' ? x : x.name).join(' · ')}</div>
+          <div className="rcard__divider" />
+          <div className="rcard__section-label">조리 순서</div>
+          <div className="rcard__steps">{item.steps || '-'}</div>
+          {item.tip && (
+            <div className="rcard__tip" style={{ marginTop: 16 }}>
+              <Icon name="lightbulb" size={14} />
+              <span>{item.tip}</span>
             </div>
-          );
-        })
-      }
+          )}
+        </div>
+        <div className="modal__foot">
+          {link ? (
+            <a className="btn btn--ghost" href={link} target="_blank" rel="noreferrer">
+              <Icon name="external-link" size={14} /> Notion
+            </a>
+          ) : <span />}
+          <button className="btn btn--primary" onClick={onClose}>닫기</button>
+        </div>
+      </div>
     </div>
+  );
+}
+
+/* ============ APP ============ */
+function App() {
+  const [tab, setTab] = useState('fridge');
+  useLucide(tab);
+  return (
+    <ToastProvider>
+      <div className="app">
+        <TopBar tab={tab} />
+        <MobileTabs tab={tab} setTab={setTab} />
+        <div className="body">
+          <Sidebar tab={tab} setTab={setTab} />
+          <main className="main">
+            <div className="main__inner">
+              {tab === 'fridge'  && <FridgeTab key="fridge" />}
+              {tab === 'recipe'  && <RecipeTab key="recipe" />}
+              {tab === 'history' && <HistoryTab key="history" />}
+            </div>
+          </main>
+        </div>
+      </div>
+    </ToastProvider>
   );
 }
 

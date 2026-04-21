@@ -4,7 +4,7 @@
   "type": "module",
   "description": "혼삶 웹 - 1인 가구용 냉장고 관리 + AI 레시피 생성 + Notion 업로드",
   "scripts": {
-    "dev": "vercel dev",
+    "start": "vercel dev",
     "deploy": "vercel --prod"
   },
   "dependencies": {
