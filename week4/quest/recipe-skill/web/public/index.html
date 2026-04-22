@@ -935,6 +935,162 @@
     .opt-box__emoji { font-size: 30px; }
     .bwrite__grid { grid-template-columns: 1fr; }
   }
+
+  /* ============ LIFE (Q6) ============ */
+  .lcard {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 22px;
+  }
+  .lcard + .lcard { margin-top: 16px; }
+  .lcard__title {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .lcard__title .hint { font-size: 12px; font-weight: 400; color: var(--text-3); }
+
+  .life-form__grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  .life-form__label {
+    font-size: 12px; font-weight: 500; color: var(--text-2);
+    margin-bottom: 6px; display: block;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    height: 30px; padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border); background: var(--card);
+    color: var(--text-2); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all .15s ease;
+    display: inline-flex; align-items: center;
+  }
+  .chip:hover { border-color: var(--text-3); color: var(--text); }
+  .chip.is-active {
+    background: var(--text); color: var(--bg);
+    border-color: var(--text);
+  }
+
+  .money-input {
+    height: 40px; padding: 0 14px;
+    border: 1px solid var(--border); border-radius: var(--r-input);
+    background: var(--card); color: var(--text);
+    font-size: 15px; font-weight: 500; outline: 0;
+    font-variant-numeric: tabular-nums;
+    width: 100%;
+  }
+  .money-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+
+  .savings-preview {
+    margin-top: 14px; padding: 16px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .savings-preview__label { font-size: 13px; color: var(--text-2); }
+  .savings-preview__val {
+    font-size: 22px; font-weight: 600; color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .savings-preview__val.is-neg { color: #c0392b; }
+  .savings-preview__val.is-good { color: #27ae60; }
+
+  .lfilters { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 16px; }
+  .lfilters__group { display: flex; flex-direction: column; gap: 6px; }
+  .lfilters__group-label {
+    font-size: 11px; color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500;
+  }
+
+  .lstat-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  }
+  .lstat {
+    padding: 14px;
+    border: 1px solid var(--border); border-radius: var(--r-card);
+    background: var(--card);
+  }
+  .lstat__label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.04em; }
+  .lstat__value {
+    font-size: 22px; font-weight: 600; color: var(--text);
+    font-variant-numeric: tabular-nums; margin-top: 4px;
+  }
+  .lstat__unit { font-size: 12px; font-weight: 400; color: var(--text-3); margin-left: 2px; }
+
+  .hbar-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .hbar-row__label {
+    flex: 0 0 64px; font-size: 13px; color: var(--text-2);
+  }
+  .hbar {
+    flex: 1; height: 10px; border-radius: 999px;
+    background: var(--bg); border: 1px solid var(--border);
+    overflow: hidden; position: relative;
+  }
+  .hbar__fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4f7cff, #6ea0ff);
+    border-radius: 999px;
+    transition: width 800ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  .hbar__fill.is-me {
+    background: linear-gradient(90deg, #ff6b6b, #ff9876);
+  }
+  .hbar__fill.is-muted {
+    background: linear-gradient(90deg, #9aa3b2, #b8bfca);
+  }
+  .hbar-row__value {
+    flex: 0 0 auto; font-size: 12px; color: var(--text-2);
+    font-variant-numeric: tabular-nums; min-width: 54px; text-align: right;
+  }
+
+  .position-card {
+    background: linear-gradient(135deg, #4f7cff 0%, #6b63ff 100%);
+    color: #fff;
+    border-radius: var(--r-card);
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .position-card__tier {
+    font-size: 13px; opacity: 0.85; letter-spacing: 0.05em;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .position-card__pct {
+    font-size: 48px; font-weight: 700; letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .position-card__pct-label { font-size: 14px; opacity: 0.9; margin-left: 4px; }
+  .position-card__desc { font-size: 13px; opacity: 0.9; margin-top: 8px; }
+
+  .warn-banner {
+    margin-top: 14px; padding: 12px 14px;
+    background: #fff5f5; border: 1px solid #ffcaca;
+    border-radius: var(--r-card); color: #c0392b;
+    font-size: 13px; line-height: 1.5;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .warn-banner b { font-weight: 600; }
+
+  .cmp-row {
+    display: grid; grid-template-columns: 80px 1fr 1fr;
+    gap: 10px; align-items: center; padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .cmp-row:last-child { border-bottom: 0; }
+  .cmp-row__label { font-size: 13px; color: var(--text-2); }
+  .cmp-row__me, .cmp-row__avg {
+    font-size: 13px; color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .cmp-row__me b { font-weight: 600; }
+
+  @media (max-width: 640px) {
+    .life-form__grid { grid-template-columns: 1fr; }
+    .lstat-grid { grid-template-columns: 1fr 1fr; }
+    .position-card__pct { font-size: 40px; }
+    .hbar-row__label { flex-basis: 56px; font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -1026,6 +1182,21 @@ const api = {
     if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || 'vote failed'); }
     return r.json();
   }),
+
+  // Life (Q6)
+  meLife: () => apiFetch('/api/life/me').then(r => r.json()),
+  submitLife: (data) => apiFetch('/api/life', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+  }).then(async r => {
+    if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || 'submit failed'); }
+    return r.json();
+  }),
+  statsLife: (job, age) => {
+    const q = new URLSearchParams();
+    if (job && job !== '전체') q.set('job', job);
+    if (age && age !== '전체') q.set('age', age);
+    return apiFetch('/api/life/stats?' + q.toString()).then(r => r.json());
+  },
 };
 
 /* ============ UTILS ============ */
@@ -1170,12 +1341,17 @@ const SIDEBAR_ITEMS = {
     { id: 'rank',  icon: 'trophy',       label: '인기' },
     { id: 'write', icon: 'pencil-line',  label: '질문 만들기' },
   ],
+  life: [
+    { id: 'input',   icon: 'clipboard-pen', label: '내 정보 입력' },
+    { id: 'stats',   icon: 'bar-chart-3',   label: '평균 통계' },
+    { id: 'compare', icon: 'target',        label: '내 위치' },
+  ],
 };
 
 function Sidebar({ mode, tab, setTab }) {
   useLucide(mode + ':' + tab);
   const items = SIDEBAR_ITEMS[mode] || SIDEBAR_ITEMS.food;
-  const label = mode === 'social' ? 'Social' : mode === 'balance' ? 'Balance' : 'Workspace';
+  const label = mode === 'social' ? 'Social' : mode === 'balance' ? 'Balance' : mode === 'life' ? 'Life' : 'Workspace';
   return (
     <aside className="sidebar">
       <div className="side-label">{label}</div>
@@ -1211,6 +1387,7 @@ function ModeBar({ mode, setMode }) {
         <button className={mode === 'food' ? 'is-active' : ''} onClick={() => setMode('food')}>🍳 식생활</button>
         <button className={mode === 'social' ? 'is-active' : ''} onClick={() => setMode('social')}>💬 소셜</button>
         <button className={mode === 'balance' ? 'is-active' : ''} onClick={() => setMode('balance')}>🎮 밸런스</button>
+        <button className={mode === 'life' ? 'is-active' : ''} onClick={() => setMode('life')}>📊 라이프</button>
       </div>
     </div>
   );
@@ -2521,14 +2698,488 @@ function BalanceWriteTab({ goToPlay }) {
   );
 }
 
+/* ============ LIFE (Q6) ============ */
+const LIFE_AGES = ['20대','30대','40대','50대+'];
+const LIFE_JOBS = ['IT','금융','공공','서비스','제조','기타'];
+const LIFE_EXPS = ['1년미만','1-3년','3-5년','5-10년','10년+'];
+const LIFE_REGIONS = ['수도권','광역시','그외'];
+const LIFE_EXPENSES = [
+  { key: 'expense_housing',   label: '주거비' },
+  { key: 'expense_food',      label: '식비' },
+  { key: 'expense_transport', label: '교통비' },
+  { key: 'expense_leisure',   label: '여가비' },
+  { key: 'expense_shopping',  label: '쇼핑' },
+  { key: 'expense_other',     label: '기타' },
+];
+const LIFE_AGE_FILTERS = ['전체', ...LIFE_AGES];
+const LIFE_JOB_FILTERS = ['전체', ...LIFE_JOBS];
+
+function formatMan(n) {
+  if (!Number.isFinite(Number(n))) return '0만';
+  return Number(n).toLocaleString() + '만';
+}
+
+function positionTier(pct) {
+  if (pct >= 80) return { label: '상위권', desc: '또래 그룹에서 상위권에 해당해요' };
+  if (pct >= 60) return { label: '중상위', desc: '평균보다 높은 편이에요' };
+  if (pct >= 40) return { label: '중위권', desc: '평균 근처에 있어요' };
+  if (pct >= 20) return { label: '중하위', desc: '평균보다 낮은 편이에요' };
+  return { label: '하위권', desc: '또래 그룹 평균보다 낮아요' };
+}
+
+function HBar({ value, max, accent = 'default', label, right }) {
+  const pct = max > 0 ? Math.min(100, Math.max(0, Math.round((value / max) * 100))) : 0;
+  const cls = 'hbar__fill' + (accent === 'me' ? ' is-me' : accent === 'muted' ? ' is-muted' : '');
+  return (
+    <div className="hbar-row">
+      {label != null && <div className="hbar-row__label">{label}</div>}
+      <div className="hbar"><div className={cls} style={{ width: pct + '%' }} /></div>
+      {right != null && <div className="hbar-row__value">{right}</div>}
+    </div>
+  );
+}
+
+/* ---- LifeInputTab ---- */
+function LifeInputTab({ goToCompare }) {
+  const toast = useToast();
+  const [loaded, setLoaded] = useState(false);
+  const [age, setAge] = useState(null);
+  const [job, setJob] = useState(null);
+  const [exp, setExp] = useState(null);
+  const [region, setRegion] = useState(null);
+  const [salary, setSalary] = useState('');
+  const [exps, setExps] = useState({
+    expense_housing: '', expense_food: '', expense_transport: '',
+    expense_leisure: '', expense_shopping: '', expense_other: '',
+  });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const me = await api.meLife();
+        if (me) {
+          setAge(me.age_group); setJob(me.job_category);
+          setExp(me.experience_years); setRegion(me.region);
+          setSalary(String(me.monthly_salary || ''));
+          setExps({
+            expense_housing:   String(me.expense_housing   || ''),
+            expense_food:      String(me.expense_food      || ''),
+            expense_transport: String(me.expense_transport || ''),
+            expense_leisure:   String(me.expense_leisure   || ''),
+            expense_shopping:  String(me.expense_shopping  || ''),
+            expense_other:     String(me.expense_other     || ''),
+          });
+        }
+      } catch {}
+      setLoaded(true);
+    })();
+  }, []);
+
+  const salaryNum = parseInt(salary, 10) || 0;
+  const totalExp = LIFE_EXPENSES.reduce((s, e) => s + (parseInt(exps[e.key], 10) || 0), 0);
+  const remain = salaryNum - totalExp;
+  const savingsRate = salaryNum > 0 ? Math.round((remain / salaryNum) * 100) : 0;
+
+  async function handleSubmit() {
+    if (!age || !job || !exp || !region) {
+      toast('나이·직업·경력·지역을 모두 선택해 주세요', 'err');
+      return;
+    }
+    if (!salaryNum || salaryNum <= 0) {
+      toast('월 실수령액을 입력해 주세요', 'err');
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.submitLife({
+        age_group: age, job_category: job, experience_years: exp, region,
+        monthly_salary: salaryNum,
+        ...Object.fromEntries(LIFE_EXPENSES.map(e => [e.key, parseInt(exps[e.key], 10) || 0])),
+      });
+      toast('저장했어요. 내 위치를 확인해 볼까요?');
+      goToCompare?.();
+    } catch (e) {
+      toast(e.message || '저장 실패', 'err');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (!loaded) return <div className="empty">불러오는 중…</div>;
+
+  return (
+    <div>
+      <div className="lcard">
+        <div className="lcard__title">
+          기본 정보 <span className="hint">· 익명으로 통계에 반영돼요</span>
+        </div>
+        <div className="life-form__grid">
+          <div>
+            <div className="life-form__label">나이대</div>
+            <div className="chip-row">
+              {LIFE_AGES.map(a => (
+                <button key={a}
+                  className={'chip' + (age === a ? ' is-active' : '')}
+                  onClick={() => setAge(a)}>{a}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="life-form__label">직업군</div>
+            <div className="chip-row">
+              {LIFE_JOBS.map(j => (
+                <button key={j}
+                  className={'chip' + (job === j ? ' is-active' : '')}
+                  onClick={() => setJob(j)}>{j}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="life-form__label">경력</div>
+            <div className="chip-row">
+              {LIFE_EXPS.map(e => (
+                <button key={e}
+                  className={'chip' + (exp === e ? ' is-active' : '')}
+                  onClick={() => setExp(e)}>{e}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="life-form__label">지역</div>
+            <div className="chip-row">
+              {LIFE_REGIONS.map(r => (
+                <button key={r}
+                  className={'chip' + (region === r ? ' is-active' : '')}
+                  onClick={() => setRegion(r)}>{r}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="lcard">
+        <div className="lcard__title">월 실수령액 <span className="hint">· 만원 단위</span></div>
+        <input type="number" inputMode="numeric" className="money-input"
+          placeholder="예: 350"
+          value={salary}
+          onChange={(e) => setSalary(e.target.value)} />
+      </div>
+
+      <div className="lcard">
+        <div className="lcard__title">월 지출 내역 <span className="hint">· 만원 단위, 비워두면 0</span></div>
+        <div className="life-form__grid">
+          {LIFE_EXPENSES.map(e => (
+            <div key={e.key}>
+              <div className="life-form__label">{e.label}</div>
+              <input type="number" inputMode="numeric" className="money-input"
+                placeholder="0"
+                value={exps[e.key]}
+                onChange={(ev) => setExps(p => ({ ...p, [e.key]: ev.target.value }))} />
+            </div>
+          ))}
+        </div>
+
+        <div className="savings-preview">
+          <div>
+            <div className="savings-preview__label">
+              월 저축 가능액 ({totalExp.toLocaleString()}만 지출)
+            </div>
+          </div>
+          <div className={
+            'savings-preview__val ' +
+            (salaryNum === 0 ? '' : remain < 0 ? 'is-neg' : savingsRate >= 20 ? 'is-good' : '')
+          }>
+            {salaryNum === 0 ? '—' : `${remain.toLocaleString()}만 (${savingsRate}%)`}
+          </div>
+        </div>
+      </div>
+
+      <button className="btn" style={{ marginTop: 18 }}
+        onClick={handleSubmit} disabled={saving}>
+        {saving ? '저장 중…' : '저장하고 내 위치 보기'}
+      </button>
+    </div>
+  );
+}
+
+/* ---- LifeStatsTab ---- */
+function LifeStatsTab() {
+  const toast = useToast();
+  const [jobF, setJobF] = useState('전체');
+  const [ageF, setAgeF] = useState('전체');
+  const [data, setData] = useState(null);
+
+  const load = useCallback(async () => {
+    try { setData(await api.statsLife(jobF, ageF)); }
+    catch { toast('통계를 불러오지 못했어요', 'err'); setData({ total_count: 0 }); }
+  }, [jobF, ageF, toast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  if (data === null) return <div className="empty">불러오는 중…</div>;
+
+  const total = data.total_count || 0;
+  if (total === 0) {
+    return (
+      <div>
+        <div className="lfilters">
+          <div className="lfilters__group">
+            <div className="lfilters__group-label">직업군</div>
+            <div className="chip-row">
+              {LIFE_JOB_FILTERS.map(j => (
+                <button key={j} className={'chip' + (jobF === j ? ' is-active' : '')}
+                  onClick={() => setJobF(j)}>{j}</button>
+              ))}
+            </div>
+          </div>
+          <div className="lfilters__group">
+            <div className="lfilters__group-label">나이대</div>
+            <div className="chip-row">
+              {LIFE_AGE_FILTERS.map(a => (
+                <button key={a} className={'chip' + (ageF === a ? ' is-active' : '')}
+                  onClick={() => setAgeF(a)}>{a}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="empty">해당 조건의 데이터가 아직 없어요</div>
+      </div>
+    );
+  }
+
+  const distMax = Math.max(...data.distribution.map(d => d.count), 1);
+  const expMax = Math.max(...data.expense_breakdown.map(e => e.avg), 1);
+  const jobMax = Math.max(...data.by_job.map(j => j.salary_avg), 1);
+  const ageMax = Math.max(...data.by_age.map(a => a.salary_avg), 1);
+
+  return (
+    <div>
+      <div className="lfilters">
+        <div className="lfilters__group">
+          <div className="lfilters__group-label">직업군</div>
+          <div className="chip-row">
+            {LIFE_JOB_FILTERS.map(j => (
+              <button key={j} className={'chip' + (jobF === j ? ' is-active' : '')}
+                onClick={() => setJobF(j)}>{j}</button>
+            ))}
+          </div>
+        </div>
+        <div className="lfilters__group">
+          <div className="lfilters__group-label">나이대</div>
+          <div className="chip-row">
+            {LIFE_AGE_FILTERS.map(a => (
+              <button key={a} className={'chip' + (ageF === a ? ' is-active' : '')}
+                onClick={() => setAgeF(a)}>{a}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="lcard">
+        <div className="lcard__title">
+          월 실수령액 <span className="hint">· 표본 {total.toLocaleString()}명</span>
+        </div>
+        <div className="lstat-grid">
+          <div className="lstat">
+            <div className="lstat__label">평균</div>
+            <div className="lstat__value">{data.salary.avg.toLocaleString()}<span className="lstat__unit">만</span></div>
+          </div>
+          <div className="lstat">
+            <div className="lstat__label">중앙값</div>
+            <div className="lstat__value">{data.salary.median.toLocaleString()}<span className="lstat__unit">만</span></div>
+          </div>
+          <div className="lstat">
+            <div className="lstat__label">최소</div>
+            <div className="lstat__value">{data.salary.min.toLocaleString()}<span className="lstat__unit">만</span></div>
+          </div>
+          <div className="lstat">
+            <div className="lstat__label">최대</div>
+            <div className="lstat__value">{data.salary.max.toLocaleString()}<span className="lstat__unit">만</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="lcard">
+        <div className="lcard__title">실수령액 분포</div>
+        {data.distribution.map(d => (
+          <HBar key={d.label}
+            value={d.count} max={distMax}
+            label={d.label}
+            right={`${d.count}명`} />
+        ))}
+      </div>
+
+      <div className="lcard">
+        <div className="lcard__title">월 평균 지출</div>
+        {data.expense_breakdown.map(e => (
+          <HBar key={e.key}
+            value={e.avg} max={expMax}
+            label={e.label}
+            right={`${e.avg}만 (${e.percent}%)`} />
+        ))}
+        <div className="savings-preview" style={{ marginTop: 16 }}>
+          <div className="savings-preview__label">평균 저축률</div>
+          <div className="savings-preview__val">
+            {Math.round((data.savings.avg_rate || 0) * 100)}%
+            <span style={{ fontSize: 12, color: 'var(--text-3)', fontWeight: 400, marginLeft: 6 }}>
+              (중앙값 {Math.round((data.savings.median_rate || 0) * 100)}%)
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {data.by_job && data.by_job.length > 0 && (
+        <div className="lcard">
+          <div className="lcard__title">직업군별 평균 실수령액</div>
+          {data.by_job.map(j => (
+            <HBar key={j.job_category}
+              value={j.salary_avg} max={jobMax}
+              label={j.job_category}
+              right={`${j.salary_avg}만 · ${j.count}명`} />
+          ))}
+        </div>
+      )}
+
+      {data.by_age && data.by_age.length > 0 && (
+        <div className="lcard">
+          <div className="lcard__title">나이대별 평균 실수령액</div>
+          {data.by_age.map(a => (
+            <HBar key={a.age_group}
+              value={a.salary_avg} max={ageMax}
+              label={a.age_group}
+              right={`${a.salary_avg}만 · ${a.count}명`} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---- LifeCompareTab ---- */
+function LifeCompareTab({ goToInput }) {
+  const toast = useToast();
+  const [data, setData] = useState(null);
+
+  const load = useCallback(async () => {
+    try { setData(await api.statsLife(null, null)); }
+    catch { toast('비교 정보를 불러오지 못했어요', 'err'); setData({ my_position: null }); }
+  }, [toast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  if (data === null) return <div className="empty">불러오는 중…</div>;
+
+  const me = data.my_position;
+  if (!me) {
+    return (
+      <div className="lcard" style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 14, color: 'var(--text-2)', marginBottom: 14 }}>
+          아직 정보를 입력하지 않았어요. 내 위치를 확인하려면 먼저 정보를 입력해 주세요.
+        </div>
+        <button className="btn" onClick={() => goToInput?.()}>내 정보 입력하러 가기</button>
+      </div>
+    );
+  }
+
+  const tier = positionTier(me.salary_percentile);
+  const savingsPct = Math.round((me.savings_rate || 0) * 100);
+  const avgSavingsPct = Math.round((data.savings.avg_rate || 0) * 100);
+  const housingPct = Math.round((me.housing_ratio || 0) * 100);
+
+  const myExp = {
+    expense_housing:   me.expense_housing   || 0,
+    expense_food:      me.expense_food      || 0,
+    expense_transport: me.expense_transport || 0,
+    expense_leisure:   me.expense_leisure   || 0,
+    expense_shopping:  me.expense_shopping  || 0,
+    expense_other:     me.expense_other     || 0,
+  };
+
+  return (
+    <div>
+      <div className="position-card">
+        <div className="position-card__tier">{me.age_group} · {me.job_category} 그룹 {tier.label}</div>
+        <div>
+          <span className="position-card__pct">상위 {Math.max(1, 100 - me.salary_percentile)}%</span>
+        </div>
+        <div className="position-card__desc">
+          {me.total_in_group.toLocaleString()}명 중 {me.rank_from_top.toLocaleString()}등 · {tier.desc}
+        </div>
+      </div>
+
+      <div className="lcard">
+        <div className="lcard__title">내 실수령액 vs 전체 평균</div>
+        <HBar
+          value={me.monthly_salary}
+          max={Math.max(me.monthly_salary, data.salary.avg, 1)}
+          label="나"
+          accent="me"
+          right={`${me.monthly_salary.toLocaleString()}만`} />
+        <HBar
+          value={data.salary.avg}
+          max={Math.max(me.monthly_salary, data.salary.avg, 1)}
+          label="평균"
+          accent="muted"
+          right={`${data.salary.avg.toLocaleString()}만`} />
+      </div>
+
+      <div className="lcard">
+        <div className="lcard__title">저축률 비교</div>
+        <HBar value={Math.max(savingsPct, 0)} max={100}
+          label="나" accent="me" right={`${savingsPct}%`} />
+        <HBar value={Math.max(avgSavingsPct, 0)} max={100}
+          label="평균" accent="muted" right={`${avgSavingsPct}%`} />
+      </div>
+
+      <div className="lcard">
+        <div className="lcard__title">지출 카테고리별 비교 <span className="hint">· 만원</span></div>
+        {data.expense_breakdown.map(e => {
+          const mine = myExp[e.key === 'housing' ? 'expense_housing' :
+                              e.key === 'food' ? 'expense_food' :
+                              e.key === 'transport' ? 'expense_transport' :
+                              e.key === 'leisure' ? 'expense_leisure' :
+                              e.key === 'shopping' ? 'expense_shopping' : 'expense_other'];
+          const diff = mine - e.avg;
+          const sign = diff > 0 ? '+' : '';
+          return (
+            <div key={e.key} className="cmp-row">
+              <div className="cmp-row__label">{e.label}</div>
+              <div className="cmp-row__me"><b>{mine}만</b> <span style={{ color: diff > 0 ? '#c0392b' : diff < 0 ? '#27ae60' : 'var(--text-3)' }}>({sign}{diff})</span></div>
+              <div className="cmp-row__avg" style={{ color: 'var(--text-3)' }}>평균 {e.avg}만</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {me.housing_warning && (
+        <div className="warn-banner">
+          <span>⚠️</span>
+          <div>
+            <b>주거비 부담 경고</b> · 실수령액의 {housingPct}%를 주거비로 쓰고 있어요.
+            일반적으로 소득의 30% 이하를 권장해요. 관리비 포함 여부와 이사 시점을 재검토해 보세요.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ============ APP ============ */
 function App() {
   const [mode, setMode] = useState('food');
   const [foodTab, setFoodTab] = useState('fridge');
   const [socialTab, setSocialTab] = useState('talk');
   const [balanceTab, setBalanceTab] = useState('play');
-  const tab = mode === 'food' ? foodTab : mode === 'social' ? socialTab : balanceTab;
-  const setTab = mode === 'food' ? setFoodTab : mode === 'social' ? setSocialTab : setBalanceTab;
+  const [lifeTab, setLifeTab] = useState('input');
+  const tab = mode === 'food' ? foodTab
+            : mode === 'social' ? socialTab
+            : mode === 'balance' ? balanceTab
+            : lifeTab;
+  const setTab = mode === 'food' ? setFoodTab
+               : mode === 'social' ? setSocialTab
+               : mode === 'balance' ? setBalanceTab
+               : setLifeTab;
   useLucide(mode + ':' + tab);
   return (
     <ToastProvider>
@@ -2549,6 +3200,9 @@ function App() {
               {mode === 'balance' && tab === 'play'   && <BalancePlayTab key="balance-play" />}
               {mode === 'balance' && tab === 'rank'   && <BalanceRankTab key="balance-rank" />}
               {mode === 'balance' && tab === 'write'  && <BalanceWriteTab key="balance-write" goToPlay={() => setBalanceTab('play')} />}
+              {mode === 'life'   && tab === 'input'   && <LifeInputTab   key="life-input"   goToCompare={() => setLifeTab('compare')} />}
+              {mode === 'life'   && tab === 'stats'   && <LifeStatsTab   key="life-stats" />}
+              {mode === 'life'   && tab === 'compare' && <LifeCompareTab key="life-compare" goToInput={() => setLifeTab('input')} />}
             </div>
           </main>
         </div>
