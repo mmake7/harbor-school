@@ -1,7 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/ingredients", "destination": "/api/ingredients" },
-    { "source": "/api/recipe", "destination": "/api/recipe" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/public/$1" }
   ]
 }
