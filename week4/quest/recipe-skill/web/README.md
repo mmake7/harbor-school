@@ -190,17 +190,44 @@ web/
 
 ## 🎯 퀘스트 요구사항 충족
 
-### Q1: 냉장고 재료 기반 레시피 제작 스킬
-- ✅ 재료를 JSON/DB로 관리
-- ✅ 레시피 자동 생성
-- ✅ 마크다운 파일 저장
-- ✅ 창의성: 칼로리/시간/난이도/대체재료/Notion 업로드 (5개)
+이 프로젝트는 4주차 퀘스트 1번+2번+3번을 통합 구현했습니다.
 
-### Q2: 냉장고 재료 & 레시피 관리앱
-- ✅ Server (Vercel Serverless)
-- ✅ DB (Supabase PostgreSQL)
-- ✅ CRUD (재료 추가/수정/삭제/조회)
-- ✅ 웹 UI로 접근 가능
+### Q1: [Skill] 냉장고 재료 기반 레시피 제작 스킬
+- ✅ 재료 JSON 파일 관리 (`../ingredients/`)
+- ✅ Claude Code Skill (`/recipe` 명령)
+- ✅ 마크다운 파일 저장 (`../recipes/`)
+- ✅ 창의성 5개: 칼로리·시간·난이도·대체재료·Notion 업로드
+
+### Q2: [Server+DB] 냉장고 재료 & 레시피 관리앱
+- ✅ Server: Vercel Serverless Functions
+- ✅ DB: Supabase PostgreSQL (`fridge_ingredients` 테이블)
+- ✅ CRUD: 재료 추가/수정/삭제/조회
+- ✅ 웹 UI: 모바일 반응형 SPA
+
+### Q3: [Server+DB+AI] 냉장고 재료 기반 AI 레시피 제작앱
+- ✅ DB에서 재료 조회 → AI 전달
+- ✅ Claude API로 자동 레시피 생성 (3종)
+- ✅ `fridge_recipes` 테이블에 저장
+- ✅ 히스토리 탭에서 목록 조회
+- ✅ 창의성 5개:
+  - 3가지 버전 선택 (초간단/든든한/색다른)
+  - 조리시간·칼로리·난이도 필터
+  - 버전별 필터링
+  - Notion 자동 업로드
+  - 대체 재료 제안
+
+## 📸 스크린샷
+
+제출용 스크린샷은 `screenshots/` 폴더에 다음 파일명으로 보관합니다.
+
+| 파일 | 설명 |
+|------|------|
+| `q1-skill-execute.png` | Claude Code에서 `/recipe` 실행 화면 |
+| `q2-fridge-list.png` | 냉장고 재료 목록 UI |
+| `q2-fridge-add.png` | 재료 추가 모달 |
+| `q3-recipe-generate.png` | AI 레시피 생성 결과 화면 |
+| `q3-history.png` | 레시피 히스토리 탭 |
+| `agent-conversation.png` | 에이전트 대화 스크린샷 |
 
 ## 🧑‍🍳 만든 사람
 
