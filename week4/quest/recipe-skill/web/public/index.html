@@ -1091,6 +1091,121 @@
     .position-card__pct { font-size: 40px; }
     .hbar-row__label { flex-basis: 56px; font-size: 12px; }
   }
+
+  /* ============ FORTUNE (Q7) ============ */
+  .fortune-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .fortune-head__date { font-size: 14px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .fortune-head__new {
+    font-size: 11px; padding: 3px 8px; border-radius: 999px;
+    background: var(--accent); color: #fff; font-weight: 600;
+  }
+
+  .fortune-hero {
+    background: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 55%, #fdf2f8 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .fortune-hero__cat {
+    font-size: 13px; color: var(--text-2); letter-spacing: 0.04em;
+  }
+  .fortune-hero__stars {
+    font-size: 28px; margin: 10px 0 6px;
+    letter-spacing: 4px; color: #eab308;
+  }
+  .fortune-hero__stars .dim { color: rgba(0,0,0,0.12); }
+  .fortune-hero__msg {
+    font-size: 16px; color: var(--text); line-height: 1.6; font-weight: 500;
+    max-width: 540px; margin: 0 auto;
+  }
+
+  .fortune-themes {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .fortune-theme {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+  }
+  .fortune-theme__head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .fortune-theme__name {
+    font-size: 14px; font-weight: 600; color: var(--text);
+  }
+  .fortune-theme__name .emoji { margin-right: 6px; }
+  .fortune-theme__stars {
+    font-size: 13px; color: #eab308; letter-spacing: 2px;
+  }
+  .fortune-theme__stars .dim { color: rgba(0,0,0,0.12); }
+  .fortune-theme__text {
+    font-size: 13px; color: var(--text-2); line-height: 1.55;
+  }
+
+  .fortune-lucky {
+    display: flex; align-items: center; gap: 12px;
+    background: #fef9c3;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .fortune-lucky__icon { font-size: 22px; line-height: 1; }
+  .fortune-lucky__label { font-size: 12px; color: #854d0e; font-weight: 600; }
+  .fortune-lucky__val { font-size: 15px; color: #422006; font-weight: 600; margin-top: 2px; }
+
+  .fortune-advice {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .fortune-advice__icon { font-size: 20px; line-height: 1.2; }
+  .fortune-advice__label { font-size: 12px; color: #065f46; font-weight: 600; }
+  .fortune-advice__val { font-size: 14px; color: #064e3b; line-height: 1.55; margin-top: 2px; }
+
+  .fortune-err {
+    border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+    text-align: center; color: var(--text-2); background: var(--bg);
+  }
+  .fortune-err button {
+    margin-top: 12px; padding: 8px 16px; border-radius: 8px;
+    background: var(--accent); color: #fff; border: 0; cursor: pointer;
+    font-size: 13px; font-weight: 600;
+  }
+
+  .fortune-hist {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .fortune-hist__item {
+    border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+    background: var(--bg);
+  }
+  .fortune-hist__row1 {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .fortune-hist__date { font-size: 13px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+  .fortune-hist__stars { font-size: 13px; color: #eab308; letter-spacing: 2px; }
+  .fortune-hist__stars .dim { color: rgba(0,0,0,0.12); }
+  .fortune-hist__msg { font-size: 13px; color: var(--text-2); line-height: 1.55; margin-bottom: 6px; }
+  .fortune-hist__foot {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    font-size: 12px; color: var(--text-3);
+  }
+  .fortune-hist__foot b { color: var(--text-2); font-weight: 600; }
+
+  @media (max-width: 640px) {
+    .fortune-themes { grid-template-columns: 1fr; }
+    .fortune-hero__stars { font-size: 24px; }
+  }
 </style>
 </head>
 <body>
@@ -1197,6 +1312,18 @@ const api = {
     if (age && age !== '전체') q.set('age', age);
     return apiFetch('/api/life/stats?' + q.toString()).then(r => r.json());
   },
+
+  // Fortune (Q7)
+  todayFortune: () => apiFetch('/api/fortune').then(async r => {
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || '운세를 불러오지 못했어요');
+    return data;
+  }),
+  historyFortune: () => apiFetch('/api/fortune/history').then(async r => {
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || '운세 기록을 불러오지 못했어요');
+    return data;
+  }),
 };
 
 /* ============ UTILS ============ */
@@ -1346,12 +1473,20 @@ const SIDEBAR_ITEMS = {
     { id: 'stats',   icon: 'bar-chart-3',   label: '평균 통계' },
     { id: 'compare', icon: 'target',        label: '내 위치' },
   ],
+  fortune: [
+    { id: 'today',   icon: 'sparkles',      label: '오늘의 운세' },
+    { id: 'history', icon: 'calendar-days', label: '운세 기록' },
+  ],
 };
 
 function Sidebar({ mode, tab, setTab }) {
   useLucide(mode + ':' + tab);
   const items = SIDEBAR_ITEMS[mode] || SIDEBAR_ITEMS.food;
-  const label = mode === 'social' ? 'Social' : mode === 'balance' ? 'Balance' : mode === 'life' ? 'Life' : 'Workspace';
+  const label = mode === 'social' ? 'Social'
+              : mode === 'balance' ? 'Balance'
+              : mode === 'life' ? 'Life'
+              : mode === 'fortune' ? 'Fortune'
+              : 'Workspace';
   return (
     <aside className="sidebar">
       <div className="side-label">{label}</div>
@@ -1388,6 +1523,7 @@ function ModeBar({ mode, setMode }) {
         <button className={mode === 'social' ? 'is-active' : ''} onClick={() => setMode('social')}>💬 소셜</button>
         <button className={mode === 'balance' ? 'is-active' : ''} onClick={() => setMode('balance')}>🎮 밸런스</button>
         <button className={mode === 'life' ? 'is-active' : ''} onClick={() => setMode('life')}>📊 라이프</button>
+        <button className={mode === 'fortune' ? 'is-active' : ''} onClick={() => setMode('fortune')}>🔮 운세</button>
       </div>
     </div>
   );
@@ -3194,6 +3330,155 @@ function LifeCompareTab({ goToInput }) {
   );
 }
 
+/* ============ FORTUNE (Q7) ============ */
+const FORTUNE_THEMES = [
+  { key: 'honbap', emoji: '🍚', label: '혼밥' },
+  { key: 'jachi',  emoji: '🧺', label: '자취' },
+  { key: 'save',   emoji: '💰', label: '저축/소비' },
+  { key: 'meet',   emoji: '💬', label: '만남/소통' },
+];
+
+function Stars({ score, size }) {
+  const n = Math.max(0, Math.min(5, Number(score) || 0));
+  const filled = '★'.repeat(n);
+  const dim = '★'.repeat(5 - n);
+  return (
+    <span style={size ? { fontSize: size } : null}>
+      <span>{filled}</span>
+      <span className="dim">{dim}</span>
+    </span>
+  );
+}
+
+function FortuneTodayTab() {
+  const [data, setData] = useState(null);
+  const [err, setErr] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true); setErr(null);
+    try {
+      const d = await api.todayFortune();
+      setData(d);
+    } catch (e) {
+      setErr(e.message || '운세를 불러오지 못했어요');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  if (loading && !data) return <div className="empty">타로냥이 오늘의 운세를 읽는 중…</div>;
+
+  if (err && !data) {
+    return (
+      <div className="fortune-err">
+        <div>{err}</div>
+        <button onClick={load}>다시 시도</button>
+      </div>
+    );
+  }
+
+  if (!data) return <div className="empty">불러오는 중…</div>;
+
+  return (
+    <div>
+      <div className="fortune-head">
+        <div className="fortune-head__date">{data.fortune_date} · 혼삶 타로냥</div>
+        {data.is_new && <div className="fortune-head__new">NEW</div>}
+      </div>
+
+      <div className="fortune-hero">
+        <div className="fortune-hero__cat">오늘의 종합운</div>
+        <div className="fortune-hero__stars"><Stars score={data.overall_score} /></div>
+        <div className="fortune-hero__msg">{data.overall_message}</div>
+      </div>
+
+      <div className="fortune-themes">
+        {FORTUNE_THEMES.map(t => {
+          const th = data.themes && data.themes[t.key];
+          if (!th) return null;
+          return (
+            <div key={t.key} className="fortune-theme">
+              <div className="fortune-theme__head">
+                <div className="fortune-theme__name"><span className="emoji">{t.emoji}</span>{t.label}</div>
+                <div className="fortune-theme__stars"><Stars score={th.score} /></div>
+              </div>
+              <div className="fortune-theme__text">{th.text}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="fortune-lucky">
+        <div className="fortune-lucky__icon">🍀</div>
+        <div>
+          <div className="fortune-lucky__label">오늘의 행운 아이템</div>
+          <div className="fortune-lucky__val">{data.lucky_item}</div>
+        </div>
+      </div>
+
+      <div className="fortune-advice">
+        <div className="fortune-advice__icon">✨</div>
+        <div>
+          <div className="fortune-advice__label">오늘의 한마디</div>
+          <div className="fortune-advice__val">{data.daily_advice}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FortuneHistoryTab() {
+  const [items, setItems] = useState(null);
+  const [err, setErr] = useState(null);
+
+  const load = useCallback(async () => {
+    setErr(null);
+    try {
+      const d = await api.historyFortune();
+      setItems(d.items || []);
+    } catch (e) {
+      setErr(e.message || '운세 기록을 불러오지 못했어요');
+      setItems([]);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  if (items === null) return <div className="empty">불러오는 중…</div>;
+  if (err && items.length === 0) {
+    return (
+      <div className="fortune-err">
+        <div>{err}</div>
+        <button onClick={load}>다시 시도</button>
+      </div>
+    );
+  }
+  if (items.length === 0) {
+    return <div className="empty">아직 저장된 운세가 없어요. 먼저 오늘의 운세를 열어 보세요.</div>;
+  }
+
+  return (
+    <div className="fortune-hist">
+      {items.map(it => (
+        <div key={it.fortune_date} className="fortune-hist__item">
+          <div className="fortune-hist__row1">
+            <div className="fortune-hist__date">{it.fortune_date}</div>
+            <div className="fortune-hist__stars"><Stars score={it.overall_score} /></div>
+          </div>
+          <div className="fortune-hist__msg">{it.overall_message}</div>
+          <div className="fortune-hist__foot">
+            <span>🍀 <b>{it.lucky_item}</b></span>
+            <span>✨ {it.daily_advice}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ============ APP ============ */
 function App() {
   const [mode, setMode] = useState('food');
@@ -3201,14 +3486,17 @@ function App() {
   const [socialTab, setSocialTab] = useState('talk');
   const [balanceTab, setBalanceTab] = useState('play');
   const [lifeTab, setLifeTab] = useState('input');
+  const [fortuneTab, setFortuneTab] = useState('today');
   const tab = mode === 'food' ? foodTab
             : mode === 'social' ? socialTab
             : mode === 'balance' ? balanceTab
-            : lifeTab;
+            : mode === 'life' ? lifeTab
+            : fortuneTab;
   const setTab = mode === 'food' ? setFoodTab
                : mode === 'social' ? setSocialTab
                : mode === 'balance' ? setBalanceTab
-               : setLifeTab;
+               : mode === 'life' ? setLifeTab
+               : setFortuneTab;
   useLucide(mode + ':' + tab);
   return (
     <ToastProvider>
@@ -3232,6 +3520,8 @@ function App() {
               {mode === 'life'   && tab === 'input'   && <LifeInputTab   key="life-input"   goToCompare={() => setLifeTab('compare')} />}
               {mode === 'life'   && tab === 'stats'   && <LifeStatsTab   key="life-stats" />}
               {mode === 'life'   && tab === 'compare' && <LifeCompareTab key="life-compare" goToInput={() => setLifeTab('input')} />}
+              {mode === 'fortune' && tab === 'today'   && <FortuneTodayTab   key="fortune-today" />}
+              {mode === 'fortune' && tab === 'history' && <FortuneHistoryTab key="fortune-history" />}
             </div>
           </main>
         </div>
