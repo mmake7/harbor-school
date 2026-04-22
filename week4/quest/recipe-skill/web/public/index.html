@@ -807,6 +807,134 @@
       min-width: 0;
     }
   }
+
+  /* ============ BALANCE: CATEGORY BADGES ============ */
+  .bcat--money   { background: #FEF3C7; color: #B45309; }
+  .bcat--food    { background: #FEE2E2; color: #B91C1C; }
+  .bcat--home    { background: #DBEAFE; color: #1E40AF; }
+  .bcat--work    { background: #E0E7FF; color: #3730A3; }
+  .bcat--leisure { background: #DCFCE7; color: #15803D; }
+
+  /* ============ BALANCE: QUESTION CARD ============ */
+  .blist { display: flex; flex-direction: column; gap: 16px; }
+  .bcard {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 28px;
+    transition: border-color 150ms, box-shadow 150ms;
+  }
+  .bcard:hover { border-color: var(--border-strong); }
+  .bcard__head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .bcard__nick { font-size: 12px; font-weight: 500; color: var(--text-2); }
+  .bcard__time { margin-left: auto; font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .bcard__title {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    line-height: 1.4; letter-spacing: -0.01em;
+    margin-bottom: 20px; word-break: keep-all;
+  }
+  .bcard__vs {
+    display: grid;
+    grid-template-columns: 1fr 36px 1fr;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .bcard__divider {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--text-3);
+    letter-spacing: 0.05em;
+  }
+  .opt-box {
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px;
+    min-height: 140px;
+    padding: 18px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    cursor: pointer;
+    transition: background 150ms, border-color 150ms, color 150ms, transform 120ms;
+    text-align: center;
+  }
+  .opt-box:hover { border-color: var(--border-strong); }
+  .opt-box:active { transform: scale(0.98); }
+  .opt-box__emoji { font-size: 36px; line-height: 1; }
+  .opt-box__text {
+    font-size: 14px; font-weight: 500; color: var(--text);
+    word-break: keep-all; line-height: 1.4;
+    position: relative; z-index: 2;
+  }
+  .opt-box__pct {
+    font-size: 22px; font-weight: 700; color: var(--text);
+    font-variant-numeric: tabular-nums;
+    position: relative; z-index: 2;
+  }
+  .opt-box__bar {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: rgba(0,0,0,0.06);
+    width: 0;
+    transition: width 800ms cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 1;
+  }
+  .opt-box.is-selected {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .opt-box.is-selected .opt-box__text,
+  .opt-box.is-selected .opt-box__pct {
+    color: #fff;
+  }
+  .opt-box.is-selected .opt-box__bar { background: rgba(255,255,255,0.18); }
+  .opt-box.is-other {
+    background: var(--hover);
+  }
+  .opt-box.is-other .opt-box__text,
+  .opt-box.is-other .opt-box__pct {
+    color: var(--text-2);
+  }
+  .bcard__foot {
+    margin-top: 16px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ============ BALANCE: WRITE FORM ============ */
+  .bwrite { display: flex; flex-direction: column; gap: 20px; }
+  .bwrite__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .bwrite__opt {
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 16px;
+    background: var(--card);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .bwrite__opt input[type="text"] {
+    height: 36px; padding: 0 10px;
+    border: 1px solid var(--border); border-radius: var(--r-input);
+    background: var(--card); color: var(--text); font-size: 14px; outline: 0;
+  }
+  .bwrite__opt input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+  .bwrite__emoji-input {
+    width: 72px; text-align: center;
+    font-size: 28px !important;
+    height: 56px !important;
+  }
+  .bwrite__label-mini { font-size: 11px; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  @media (max-width: 640px) {
+    .bcard { padding: 20px; }
+    .bcard__title { font-size: 17px; margin-bottom: 16px; }
+    .bcard__vs { grid-template-columns: 1fr 24px 1fr; gap: 6px; }
+    .opt-box { min-height: 120px; padding: 14px 10px; }
+    .opt-box__emoji { font-size: 30px; }
+    .bwrite__grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -874,6 +1002,28 @@ const api = {
     body: JSON.stringify({ post_id: postId, reaction_type: type })
   }).then(async r => {
     if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || 'reaction failed'); }
+    return r.json();
+  }),
+
+  // Balance (Q5)
+  listBalance: (sort, category) => {
+    const q = new URLSearchParams();
+    if (sort) q.set('sort', sort);
+    if (category && category !== '전체') q.set('category', category);
+    return apiFetch('/api/balance?' + q.toString()).then(r => r.json());
+  },
+  createBalance: (data) => apiFetch('/api/balance', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+  }).then(async r => {
+    if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || 'create failed'); }
+    return r.json();
+  }),
+  rankingBalance: () => apiFetch('/api/balance/ranking').then(r => r.json()),
+  vote: (questionId, choice) => apiFetch('/api/vote', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: questionId, choice })
+  }).then(async r => {
+    if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || 'vote failed'); }
     return r.json();
   }),
 };
@@ -1015,12 +1165,17 @@ const SIDEBAR_ITEMS = {
     { id: 'best',  icon: 'trophy',         label: '베스트' },
     { id: 'write', icon: 'pencil-line',    label: '쓰기' },
   ],
+  balance: [
+    { id: 'play',  icon: 'scale',        label: '투표' },
+    { id: 'rank',  icon: 'trophy',       label: '인기' },
+    { id: 'write', icon: 'pencil-line',  label: '질문 만들기' },
+  ],
 };
 
 function Sidebar({ mode, tab, setTab }) {
   useLucide(mode + ':' + tab);
   const items = SIDEBAR_ITEMS[mode] || SIDEBAR_ITEMS.food;
-  const label = mode === 'social' ? 'Social' : 'Workspace';
+  const label = mode === 'social' ? 'Social' : mode === 'balance' ? 'Balance' : 'Workspace';
   return (
     <aside className="sidebar">
       <div className="side-label">{label}</div>
@@ -1055,6 +1210,7 @@ function ModeBar({ mode, setMode }) {
       <div className="modebar__seg">
         <button className={mode === 'food' ? 'is-active' : ''} onClick={() => setMode('food')}>🍳 식생활</button>
         <button className={mode === 'social' ? 'is-active' : ''} onClick={() => setMode('social')}>💬 소셜</button>
+        <button className={mode === 'balance' ? 'is-active' : ''} onClick={() => setMode('balance')}>🎮 밸런스</button>
       </div>
     </div>
   );
@@ -2027,13 +2183,352 @@ function SocialWriteTab({ goToTalk }) {
   );
 }
 
+/* ============ BALANCE: CONSTANTS ============ */
+const BALANCE_CATEGORIES = ['돈','음식','주거','일','여가'];
+const BALANCE_CATEGORY_FILTERS = ['전체', ...BALANCE_CATEGORIES];
+const BALANCE_CATEGORY_META = {
+  '돈':   { cls: 'bcat--money',   desc: '경제적 선택' },
+  '음식': { cls: 'bcat--food',    desc: '먹는 이야기' },
+  '주거': { cls: 'bcat--home',    desc: '사는 공간' },
+  '일':   { cls: 'bcat--work',    desc: '커리어와 일' },
+  '여가': { cls: 'bcat--leisure', desc: '즐기는 시간' },
+};
+
+/* ============ BALANCE: QUESTION CARD ============ */
+function BalanceQuestionCard({ q, onVote, compact = false }) {
+  const voted = q.user_choice === 'A' || q.user_choice === 'B';
+  const total = Math.max(q.total_votes || 0, 0);
+  const pctA = total > 0 ? Math.round(((q.vote_a_count || 0) / total) * 100) : 0;
+  const pctB = total > 0 ? 100 - pctA : 0;
+  const meta = BALANCE_CATEGORY_META[q.category] || { cls: 'bcat--work' };
+
+  function handleClick(choice) {
+    if (q.user_choice === choice) return;
+    onVote?.(q.id, choice);
+  }
+
+  function renderOpt(side) {
+    const isA = side === 'A';
+    const emoji = isA ? (q.emoji_a || '🅰️') : (q.emoji_b || '🅱️');
+    const text = isA ? q.option_a : q.option_b;
+    const pct = isA ? pctA : pctB;
+    const selected = voted && q.user_choice === side;
+    const other = voted && q.user_choice !== side;
+    const cls = 'opt-box' + (selected ? ' is-selected' : '') + (other ? ' is-other' : '');
+    return (
+      <div className={cls} onClick={() => handleClick(side)} role="button">
+        {voted && <div className="opt-box__bar" style={{ width: pct + '%' }} />}
+        <div className="opt-box__emoji">{emoji}</div>
+        <div className="opt-box__text">{text}</div>
+        {voted && <div className="opt-box__pct">{pct}%</div>}
+      </div>
+    );
+  }
+
+  return (
+    <div className="bcard" style={compact ? { padding: 20 } : undefined}>
+      <div className="bcard__head">
+        <span className={'cbadge ' + meta.cls}>{q.category}</span>
+        <span className="bcard__nick">{q.nickname}</span>
+        <span className="bcard__time">{timeAgo(q.created_at)}</span>
+      </div>
+      <div className="bcard__title" style={compact ? { fontSize: 16, marginBottom: 14 } : undefined}>{q.title}</div>
+      <div className="bcard__vs">
+        {renderOpt('A')}
+        <div className="bcard__divider">VS</div>
+        {renderOpt('B')}
+      </div>
+      <div className="bcard__foot">
+        총 {total.toLocaleString()}명 참여
+        {!voted && total > 0 && <span> · 한쪽을 눌러 결과를 확인해 보세요</span>}
+      </div>
+    </div>
+  );
+}
+
+/* ============ BALANCE: PLAY TAB ============ */
+function BalancePlayTab() {
+  const toast = useToast();
+  const [list, setList] = useState(null);
+  const [category, setCategory] = useState('전체');
+  const [sort, setSort] = useState('latest');
+
+  const load = useCallback(async () => {
+    try { setList(await api.listBalance(sort, category)); }
+    catch { toast('질문을 불러오지 못했어요', 'err'); setList([]); }
+  }, [sort, category, toast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function handleVote(questionId, choice) {
+    const before = list;
+    // Optimistic: toggle/move vote immediately
+    setList(prev => prev ? prev.map(q => {
+      if (q.id !== questionId) return q;
+      let a = q.vote_a_count || 0;
+      let b = q.vote_b_count || 0;
+      const prevChoice = q.user_choice;
+      if (prevChoice === 'A') a = Math.max(a - 1, 0);
+      if (prevChoice === 'B') b = Math.max(b - 1, 0);
+      if (choice === 'A') a += 1; else b += 1;
+      return { ...q, vote_a_count: a, vote_b_count: b, total_votes: a + b, user_choice: choice };
+    }) : prev);
+    try {
+      const res = await api.vote(questionId, choice);
+      setList(prev => prev ? prev.map(q => q.id === questionId ? { ...q, ...res } : q) : prev);
+    } catch (err) {
+      setList(before);
+      toast(err.message || '투표 실패', 'err');
+    }
+  }
+
+  if (list === null) return (
+    <div className="tab-enter">
+      <div className="page-head"><div><div className="page-head__title">밸런스</div><div className="page-head__sub">불러오는 중…</div></div></div>
+      <div className="progress"><div className="progress__bar"/></div>
+    </div>
+  );
+
+  return (
+    <div className="tab-enter">
+      <div className="page-head">
+        <div>
+          <div className="page-head__title">밸런스</div>
+          <div className="page-head__sub">둘 중 하나, 당신의 선택은?</div>
+        </div>
+        <div className="segment">
+          <button className={sort === 'latest' ? 'is-active' : ''} onClick={() => setSort('latest')}>최신순</button>
+          <button className={sort === 'popular' ? 'is-active' : ''} onClick={() => setSort('popular')}>인기순</button>
+        </div>
+      </div>
+
+      <div className="chips" style={{ marginBottom: 20 }}>
+        {BALANCE_CATEGORY_FILTERS.map(c => (
+          <button key={c}
+            className={'chip' + (category === c ? ' is-active' : '')}
+            onClick={() => setCategory(c)}>{c}</button>
+        ))}
+      </div>
+
+      {list.length === 0 ? (
+        <EmptyState icon="scale" title="아직 질문이 없어요" desc="첫 번째 밸런스 질문을 만들어 보세요" />
+      ) : (
+        <div className="blist">
+          {list.map(q => (
+            <BalanceQuestionCard key={q.id} q={q} onVote={handleVote} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============ BALANCE: RANK TAB ============ */
+function BalanceRankTab() {
+  const toast = useToast();
+  const [list, setList] = useState(null);
+
+  const load = useCallback(async () => {
+    try { setList(await api.rankingBalance()); }
+    catch { toast('랭킹을 불러오지 못했어요', 'err'); setList([]); }
+  }, [toast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function handleVote(questionId, choice) {
+    const before = list;
+    setList(prev => prev ? prev.map(q => {
+      if (q.id !== questionId) return q;
+      let a = q.vote_a_count || 0;
+      let b = q.vote_b_count || 0;
+      const prevChoice = q.user_choice;
+      if (prevChoice === 'A') a = Math.max(a - 1, 0);
+      if (prevChoice === 'B') b = Math.max(b - 1, 0);
+      if (choice === 'A') a += 1; else b += 1;
+      return { ...q, vote_a_count: a, vote_b_count: b, total_votes: a + b, user_choice: choice };
+    }) : prev);
+    try {
+      const res = await api.vote(questionId, choice);
+      setList(prev => prev ? prev.map(q => q.id === questionId ? { ...q, ...res } : q) : prev);
+    } catch (err) {
+      setList(before);
+      toast(err.message || '투표 실패', 'err');
+    }
+  }
+
+  if (list === null) return (
+    <div className="tab-enter">
+      <div className="page-head"><div><div className="page-head__title">인기 질문</div><div className="page-head__sub">불러오는 중…</div></div></div>
+      <div className="progress"><div className="progress__bar"/></div>
+    </div>
+  );
+
+  const medals = ['🥇','🥈','🥉','4위','5위'];
+
+  return (
+    <div className="tab-enter">
+      <div className="page-head">
+        <div>
+          <div className="page-head__title">인기 질문</div>
+          <div className="page-head__sub">가장 많은 투표를 받은 TOP 5</div>
+        </div>
+      </div>
+
+      {list.length === 0 ? (
+        <EmptyState icon="trophy" title="아직 집계된 질문이 없어요" desc="투표가 쌓이면 여기에 올라와요" />
+      ) : (
+        <div className="blist">
+          {list.map((q, i) => (
+            <div key={q.id} style={{ position: 'relative' }}>
+              <div style={{
+                position: 'absolute', top: 12, right: 16, zIndex: 3,
+                fontSize: 22, fontWeight: 700, color: 'var(--text-2)', lineHeight: 1,
+              }}>{medals[i] || (i + 1) + '위'}</div>
+              <BalanceQuestionCard q={q} onVote={handleVote} compact />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============ BALANCE: WRITE TAB ============ */
+function BalanceWriteTab({ goToPlay }) {
+  const toast = useToast();
+  const [category, setCategory] = useState('돈');
+  const [title, setTitle] = useState('');
+  const [optA, setOptA] = useState('');
+  const [optB, setOptB] = useState('');
+  const [emojiA, setEmojiA] = useState('');
+  const [emojiB, setEmojiB] = useState('');
+  const [preview] = useState(() => previewNickname());
+  const [busy, setBusy] = useState(false);
+
+  const overTitle = title.length > 50;
+  const overA = optA.length > 30;
+  const overB = optB.length > 30;
+
+  async function submit(e) {
+    e.preventDefault();
+    if (!title.trim()) { toast('질문을 입력해 주세요', 'err'); return; }
+    if (!optA.trim() || !optB.trim()) { toast('두 선택지를 모두 입력해 주세요', 'err'); return; }
+    if (overTitle || overA || overB) { toast('글자 수를 초과했어요', 'err'); return; }
+    setBusy(true);
+    try {
+      await api.createBalance({
+        category,
+        title: title.trim(),
+        option_a: optA.trim(),
+        option_b: optB.trim(),
+        emoji_a: emojiA.trim() || undefined,
+        emoji_b: emojiB.trim() || undefined,
+      });
+      toast('새 질문이 등록되었어요');
+      setTitle(''); setOptA(''); setOptB(''); setEmojiA(''); setEmojiB('');
+      goToPlay?.();
+    } catch (err) {
+      toast(err.message || '등록 실패', 'err');
+    } finally { setBusy(false); }
+  }
+
+  const previewQuestion = {
+    id: 0,
+    category,
+    title: title || '여기에 질문이 표시됩니다',
+    option_a: optA || '선택지 A',
+    option_b: optB || '선택지 B',
+    emoji_a: emojiA || '🅰️',
+    emoji_b: emojiB || '🅱️',
+    nickname: preview,
+    created_at: new Date().toISOString(),
+    vote_a_count: 0, vote_b_count: 0, total_votes: 0, user_choice: null,
+  };
+
+  return (
+    <div className="tab-enter">
+      <div className="page-head">
+        <div>
+          <div className="page-head__title">질문 만들기</div>
+          <div className="page-head__sub">당신의 고민을 모두의 선택으로</div>
+        </div>
+      </div>
+
+      <form className="bwrite" onSubmit={submit}>
+        <div>
+          <label className="write-label">카테고리</label>
+          <div className="radio-row">
+            {BALANCE_CATEGORIES.map(c => (
+              <button type="button" key={c}
+                className={'radio-cell' + (category === c ? ' is-active' : '')}
+                onClick={() => setCategory(c)}>
+                <div className="radio-cell__label">{c}</div>
+                <div className="radio-cell__desc">{BALANCE_CATEGORY_META[c]?.desc}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="write-label">질문</label>
+          <input
+            type="text"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="예: 월세 50만원 vs 전세 2억"
+            maxLength={60}
+            style={{
+              width: '100%', height: 44, padding: '0 12px',
+              border: '1px solid var(--border)', borderRadius: 'var(--r-input)',
+              fontSize: 15, outline: 0, background: 'var(--card)',
+            }}
+          />
+          <div className={'write-counter' + (overTitle ? ' is-over' : '')}>{title.length} / 50</div>
+        </div>
+
+        <div className="bwrite__grid">
+          <div className="bwrite__opt">
+            <div className="bwrite__label-mini">Option A</div>
+            <input type="text" value={emojiA} onChange={e => setEmojiA(e.target.value)} placeholder="🅰️" maxLength={4} className="bwrite__emoji-input" />
+            <input type="text" value={optA} onChange={e => setOptA(e.target.value)} placeholder="선택지 A 텍스트" maxLength={40} />
+            <div className={'write-counter' + (overA ? ' is-over' : '')}>{optA.length} / 30</div>
+          </div>
+          <div className="bwrite__opt">
+            <div className="bwrite__label-mini">Option B</div>
+            <input type="text" value={emojiB} onChange={e => setEmojiB(e.target.value)} placeholder="🅱️" maxLength={4} className="bwrite__emoji-input" />
+            <input type="text" value={optB} onChange={e => setOptB(e.target.value)} placeholder="선택지 B 텍스트" maxLength={40} />
+            <div className={'write-counter' + (overB ? ' is-over' : '')}>{optB.length} / 30</div>
+          </div>
+        </div>
+
+        <div>
+          <label className="write-label">미리보기</label>
+          <BalanceQuestionCard q={previewQuestion} onVote={() => {}} />
+        </div>
+
+        <div className="nickname-preview">
+          당신은 이번에 <strong>{preview}</strong> 로 등록됩니다.<br />
+          실제 닉네임은 등록 순간 서버에서 다시 뽑혀요.
+        </div>
+
+        <button type="submit" className="btn btn--primary btn--lg"
+          style={{ width: '100%', minWidth: 0 }}
+          disabled={busy || overTitle || overA || overB || !title.trim() || !optA.trim() || !optB.trim()}>
+          {busy ? '등록 중…' : '질문 등록하기'}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 /* ============ APP ============ */
 function App() {
   const [mode, setMode] = useState('food');
   const [foodTab, setFoodTab] = useState('fridge');
   const [socialTab, setSocialTab] = useState('talk');
-  const tab = mode === 'food' ? foodTab : socialTab;
-  const setTab = mode === 'food' ? setFoodTab : setSocialTab;
+  const [balanceTab, setBalanceTab] = useState('play');
+  const tab = mode === 'food' ? foodTab : mode === 'social' ? socialTab : balanceTab;
+  const setTab = mode === 'food' ? setFoodTab : mode === 'social' ? setSocialTab : setBalanceTab;
   useLucide(mode + ':' + tab);
   return (
     <ToastProvider>
@@ -2051,6 +2546,9 @@ function App() {
               {mode === 'social' && tab === 'talk'    && <SocialTalkTab key="talk" />}
               {mode === 'social' && tab === 'best'    && <SocialBestTab key="best" />}
               {mode === 'social' && tab === 'write'   && <SocialWriteTab key="write" goToTalk={() => setSocialTab('talk')} />}
+              {mode === 'balance' && tab === 'play'   && <BalancePlayTab key="balance-play" />}
+              {mode === 'balance' && tab === 'rank'   && <BalanceRankTab key="balance-rank" />}
+              {mode === 'balance' && tab === 'write'  && <BalanceWriteTab key="balance-write" goToPlay={() => setBalanceTab('play')} />}
             </div>
           </main>
         </div>
