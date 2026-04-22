@@ -93,8 +93,8 @@ export default async function handler(req, res) {
       const nickname = generateNickname();
       const result = await pool.query(
         `INSERT INTO board_posts (category, content, nickname, tags)
-         VALUES ($1, $2, $3, $4::jsonb) RETURNING *`,
-        [category, content.trim(), nickname, JSON.stringify(cleanTags)]
+         VALUES ($1, $2, $3, $4) RETURNING *`,
+        [category, content.trim(), nickname, cleanTags]
       );
       const row = result.rows[0];
       row.comment_count = 0;

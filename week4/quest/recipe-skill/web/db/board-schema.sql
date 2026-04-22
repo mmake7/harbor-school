@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS board_posts (
   category      TEXT NOT NULL CHECK (category IN ('고민','칭찬','응원','수다')),
   content       TEXT NOT NULL,
   nickname      TEXT NOT NULL,
-  tags          JSONB NOT NULL DEFAULT '[]'::jsonb,
+  tags          TEXT[] NOT NULL DEFAULT '{}',
   like_count    INT  NOT NULL DEFAULT 0,
   cheer_count   INT  NOT NULL DEFAULT 0,
   sparkle_count INT  NOT NULL DEFAULT 0,
@@ -50,11 +50,11 @@ CREATE INDEX IF NOT EXISTS idx_board_reactions_session ON board_reactions (sessi
 -- =============================================================
 
 INSERT INTO board_posts (category, content, nickname, tags) VALUES
-  ('고민', '퇴근하고 혼자 밥 먹는 게 익숙해질 법도 한데 오늘따라 외롭네요. 다들 저녁 뭐 드셨나요?', '지친 고양이 #1024', '["외로움","저녁","혼밥"]'::jsonb),
-  ('칭찬', '오늘 냉장고 털어서 김치볶음밥 완성! 레시피 추천해준 AI 덕분에 버리는 재료 없이 다 썼어요.', '뿌듯한 부엉이 #7812', '["자취요리","김치볶음밥"]'::jsonb),
-  ('응원', '시험 준비하느라 매일 삼각김밥만 먹는 분들 화이팅! 오늘도 잘 버텨봅시다.', '다정한 여우 #4455', '["응원","시험"]'::jsonb),
-  ('수다', '계란을 한 판 샀는데 도저히 못 다 먹을 것 같아요. 계란 소비 꿀팁 있으신 분?', '배고픈 햄스터 #0321', '["계란","꿀팁"]'::jsonb),
-  ('고민', '자취 6개월차인데 아직도 장보기가 너무 어려워요. 1인분 계산이 자꾸 엉켜요.', '조용한 판다 #2201', '["장보기","1인분"]'::jsonb);
+  ('고민', '퇴근하고 혼자 밥 먹는 게 익숙해질 법도 한데 오늘따라 외롭네요. 다들 저녁 뭐 드셨나요?', '지친 고양이 #1024', ARRAY['외로움','저녁','혼밥']),
+  ('칭찬', '오늘 냉장고 털어서 김치볶음밥 완성! 레시피 추천해준 AI 덕분에 버리는 재료 없이 다 썼어요.', '뿌듯한 부엉이 #7812', ARRAY['자취요리','김치볶음밥']),
+  ('응원', '시험 준비하느라 매일 삼각김밥만 먹는 분들 화이팅! 오늘도 잘 버텨봅시다.', '다정한 여우 #4455', ARRAY['응원','시험']),
+  ('수다', '계란을 한 판 샀는데 도저히 못 다 먹을 것 같아요. 계란 소비 꿀팁 있으신 분?', '배고픈 햄스터 #0321', ARRAY['계란','꿀팁']),
+  ('고민', '자취 6개월차인데 아직도 장보기가 너무 어려워요. 1인분 계산이 자꾸 엉켜요.', '조용한 판다 #2201', ARRAY['장보기','1인분']);
 
 INSERT INTO board_comments (post_id, content, nickname) VALUES
   (1, '오늘 저는 라면에 계란 두 개 풀어서 든든하게요. 혼자도 잘 해요!', '씩씩한 토끼 #9912'),
