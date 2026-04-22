@@ -2704,11 +2704,12 @@ const LIFE_JOBS = ['IT','금융','공공','서비스','제조','기타'];
 const LIFE_EXPS = ['1년미만','1-3년','3-5년','5-10년','10년+'];
 const LIFE_REGIONS = ['수도권','광역시','그외'];
 const LIFE_EXPENSES = [
-  { key: 'expense_housing',   label: '주거비' },
-  { key: 'expense_food',      label: '식비' },
-  { key: 'expense_transport', label: '교통비' },
-  { key: 'expense_shopping',  label: '쇼핑' },
-  { key: 'expense_leisure',   label: '🎮 여가' },
+  { key: 'expense_housing',      label: '🏠 주거' },
+  { key: 'expense_food',         label: '🍽️ 식비' },
+  { key: 'expense_transport',    label: '🚗 교통' },
+  { key: 'expense_subscription', label: '📱 구독료' },
+  { key: 'expense_shopping',     label: '👔 쇼핑' },
+  { key: 'expense_leisure',      label: '🎮 여가' },
 ];
 const LIFE_AGE_FILTERS = ['전체', ...LIFE_AGES];
 const LIFE_JOB_FILTERS = ['전체', ...LIFE_JOBS];
@@ -2749,7 +2750,7 @@ function LifeInputTab({ goToCompare }) {
   const [salary, setSalary] = useState('');
   const [exps, setExps] = useState({
     expense_housing: '', expense_food: '', expense_transport: '',
-    expense_leisure: '', expense_shopping: '',
+    expense_subscription: '', expense_shopping: '', expense_leisure: '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -2762,11 +2763,12 @@ function LifeInputTab({ goToCompare }) {
           setExp(me.experience_years); setRegion(me.region);
           setSalary(String(me.monthly_salary || ''));
           setExps({
-            expense_housing:   String(me.expense_housing   || ''),
-            expense_food:      String(me.expense_food      || ''),
-            expense_transport: String(me.expense_transport || ''),
-            expense_leisure:   String(me.expense_leisure   || ''),
-            expense_shopping:  String(me.expense_shopping  || ''),
+            expense_housing:      String(me.expense_housing      || ''),
+            expense_food:         String(me.expense_food         || ''),
+            expense_transport:    String(me.expense_transport    || ''),
+            expense_subscription: String(me.expense_subscription || ''),
+            expense_shopping:     String(me.expense_shopping     || ''),
+            expense_leisure:      String(me.expense_leisure      || ''),
           });
         }
       } catch {}
@@ -3086,11 +3088,12 @@ function LifeCompareTab({ goToInput }) {
   const housingPct = Math.round((me.housing_ratio || 0) * 100);
 
   const myExp = {
-    expense_housing:   me.expense_housing   || 0,
-    expense_food:      me.expense_food      || 0,
-    expense_transport: me.expense_transport || 0,
-    expense_leisure:   me.expense_leisure   || 0,
-    expense_shopping:  me.expense_shopping  || 0,
+    expense_housing:      me.expense_housing      || 0,
+    expense_food:         me.expense_food         || 0,
+    expense_transport:    me.expense_transport    || 0,
+    expense_subscription: me.expense_subscription || 0,
+    expense_shopping:     me.expense_shopping     || 0,
+    expense_leisure:      me.expense_leisure      || 0,
   };
 
   return (
@@ -3135,6 +3138,7 @@ function LifeCompareTab({ goToInput }) {
           const mine = myExp[e.key === 'housing' ? 'expense_housing' :
                               e.key === 'food' ? 'expense_food' :
                               e.key === 'transport' ? 'expense_transport' :
+                              e.key === 'subscription' ? 'expense_subscription' :
                               e.key === 'shopping' ? 'expense_shopping' : 'expense_leisure'];
           const diff = mine - e.avg;
           const sign = diff > 0 ? '+' : '';

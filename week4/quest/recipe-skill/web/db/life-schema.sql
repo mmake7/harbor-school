@@ -13,11 +13,12 @@ CREATE TABLE IF NOT EXISTS life_profiles (
   experience_years  TEXT NOT NULL CHECK (experience_years IN ('1년미만','1-3년','3-5년','5-10년','10년+')),
   region            TEXT NOT NULL CHECK (region IN ('수도권','광역시','그외')),
   monthly_salary    INT  NOT NULL CHECK (monthly_salary > 0),     -- 만원 단위
-  expense_housing   INT  NOT NULL DEFAULT 0 CHECK (expense_housing   >= 0),
-  expense_food      INT  NOT NULL DEFAULT 0 CHECK (expense_food      >= 0),
-  expense_transport INT  NOT NULL DEFAULT 0 CHECK (expense_transport >= 0),
-  expense_leisure   INT  NOT NULL DEFAULT 0 CHECK (expense_leisure   >= 0),
-  expense_shopping  INT  NOT NULL DEFAULT 0 CHECK (expense_shopping  >= 0),
+  expense_housing      INT  NOT NULL DEFAULT 0 CHECK (expense_housing      >= 0),
+  expense_food         INT  NOT NULL DEFAULT 0 CHECK (expense_food         >= 0),
+  expense_transport    INT  NOT NULL DEFAULT 0 CHECK (expense_transport    >= 0),
+  expense_subscription INT  NOT NULL DEFAULT 0 CHECK (expense_subscription >= 0),
+  expense_shopping     INT  NOT NULL DEFAULT 0 CHECK (expense_shopping     >= 0),
+  expense_leisure      INT  NOT NULL DEFAULT 0 CHECK (expense_leisure      >= 0),
   session_id        TEXT NOT NULL,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
