@@ -1647,7 +1647,7 @@ function ReactionBar({ post, onToggle }) {
 }
 
 /* ============ SOCIAL: POST DETAIL MODAL ============ */
-function PostDetailModal({ post, onClose, onToggle }) {
+function PostDetailModal({ post, onClose, onToggle, onCommentAdded }) {
   const toast = useToast();
   const [comments, setComments] = useState(null);
   const [reply, setReply] = useState('');
@@ -1670,6 +1670,7 @@ function PostDetailModal({ post, onClose, onToggle }) {
     try {
       const newComment = await api.createComment(post.id, content);
       setComments(prev => [...(prev || []), newComment]);
+      onCommentAdded?.(post.id);
       setReply('');
       toast('답글을 남겼어요');
       setTimeout(() => listEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
@@ -1772,6 +1773,13 @@ function SocialTalkTab() {
     }
   }
 
+  function handleCommentAdded(postId) {
+    setList(prev => prev ? prev.map(p => p.id === postId
+      ? { ...p, comment_count: (p.comment_count ?? 0) + 1 } : p) : prev);
+    setDetail(d => (d && d.id === postId
+      ? { ...d, comment_count: (d.comment_count ?? 0) + 1 } : d));
+  }
+
   if (list === null) return (
     <div className="tab-enter">
       <div className="page-head"><div><div className="page-head__title">혼삶톡</div><div className="page-head__sub">불러오는 중…</div></div></div>
@@ -1815,6 +1823,7 @@ function SocialTalkTab() {
           post={detail}
           onClose={() => setDetail(null)}
           onToggle={(type) => handleToggle(detail.id, type)}
+          onCommentAdded={handleCommentAdded}
         />
       )}
     </div>
@@ -1845,6 +1854,13 @@ function SocialBestTab() {
       setDetail(beforeDetail);
       toast('반응 처리 실패', 'err');
     }
+  }
+
+  function handleCommentAdded(postId) {
+    setList(prev => prev ? prev.map(p => p.id === postId
+      ? { ...p, comment_count: (p.comment_count ?? 0) + 1 } : p) : prev);
+    setDetail(d => (d && d.id === postId
+      ? { ...d, comment_count: (d.comment_count ?? 0) + 1 } : d));
   }
 
   if (list === null) return (
@@ -1897,6 +1913,7 @@ function SocialBestTab() {
           post={detail}
           onClose={() => setDetail(null)}
           onToggle={(type) => handleToggle(detail.id, type)}
+          onCommentAdded={handleCommentAdded}
         />
       )}
     </div>
