@@ -861,9 +861,10 @@ const api = {
     return r.json();
   }),
   bestPosts: () => apiFetch('/api/posts/best').then(r => r.json()),
-  listComments: (postId) => apiFetch('/api/posts/' + postId + '/comments').then(r => r.json()),
-  createComment: (postId, content) => apiFetch('/api/posts/' + postId + '/comments', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content })
+  listComments: (postId) => apiFetch('/api/comments?post_id=' + postId).then(r => r.json()),
+  createComment: (postId, content) => apiFetch('/api/comments', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ post_id: postId, content })
   }).then(async r => {
     if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || 'comment failed'); }
     return r.json();

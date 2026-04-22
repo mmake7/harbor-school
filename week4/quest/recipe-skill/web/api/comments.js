@@ -24,9 +24,12 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const postId = parseInt(req.query.id, 10);
+  const rawId = req.method === 'GET'
+    ? req.query.post_id
+    : (req.body && req.body.post_id);
+  const postId = parseInt(rawId, 10);
   if (!Number.isFinite(postId) || postId <= 0) {
-    return res.status(400).json({ error: 'invalid post id' });
+    return res.status(400).json({ error: 'invalid post_id' });
   }
 
   try {
