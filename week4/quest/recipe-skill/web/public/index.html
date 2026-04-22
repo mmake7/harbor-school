@@ -1063,6 +1063,47 @@
   .position-card__pct-label { font-size: 14px; opacity: 0.9; margin-left: 4px; }
   .position-card__desc { font-size: 13px; opacity: 0.9; margin-top: 8px; }
 
+  /* ---- Rank tier gradients (Q6 tier badges) ---- */
+  .position-card.tier-diamond { background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%); }
+  .position-card.tier-gold    { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+  .position-card.tier-silver  { background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%); }
+  .position-card.tier-bronze  { background: linear-gradient(135deg, #b45309 0%, #78350f 100%); }
+  .position-card.tier-starter { background: linear-gradient(135deg, #6b7280 0%, #374151 100%); }
+
+  .rank-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 28px; font-weight: 800; letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .rank-badge__emoji { font-size: 32px; line-height: 1; }
+  .rank-top {
+    font-size: 15px; opacity: 0.95; letter-spacing: 0.02em;
+    margin-bottom: 2px;
+  }
+  .rank-row {
+    font-size: 14px; opacity: 0.92; margin-top: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-bar {
+    margin-top: 14px; height: 8px; border-radius: 999px;
+    background: rgba(255,255,255,0.22); overflow: hidden;
+  }
+  .rank-bar__fill {
+    height: 100%; background: #fff; border-radius: 999px;
+    transition: width 320ms ease;
+  }
+
+  .savings-title {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; padding: 4px 10px;
+    border-radius: 999px; margin-left: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .savings-title.st-king  { background: #fef3c7; color: #92400e; }
+  .savings-title.st-good  { background: #dcfce7; color: #166534; }
+  .savings-title.st-avg   { background: #e0e7ff; color: #3730a3; }
+  .savings-title.st-warn  { background: #fee2e2; color: #991b1b; }
+
   .warn-banner {
     margin-top: 14px; padding: 12px 14px;
     background: #fff5f5; border: 1px solid #ffcaca;
@@ -1471,7 +1512,7 @@ const SIDEBAR_ITEMS = {
   life: [
     { id: 'input',   icon: 'clipboard-pen', label: '내 정보 입력' },
     { id: 'stats',   icon: 'bar-chart-3',   label: '평균 통계' },
-    { id: 'compare', icon: 'target',        label: '내 위치' },
+    { id: 'compare', icon: 'trophy',        label: '내 등급' },
   ],
   fortune: [
     { id: 'today',   icon: 'sparkles',      label: '오늘의 운세' },
@@ -2857,12 +2898,19 @@ function formatMan(n) {
   return Number(n).toLocaleString() + '만';
 }
 
-function positionTier(pct) {
-  if (pct >= 80) return { label: '상위권', desc: '또래 그룹에서 상위권에 해당해요' };
-  if (pct >= 60) return { label: '중상위', desc: '평균보다 높은 편이에요' };
-  if (pct >= 40) return { label: '중위권', desc: '평균 근처에 있어요' };
-  if (pct >= 20) return { label: '중하위', desc: '평균보다 낮은 편이에요' };
-  return { label: '하위권', desc: '또래 그룹 평균보다 낮아요' };
+function rankTier(topPct) {
+  if (topPct <= 10) return { key: 'diamond', emoji: '💎', name: 'DIAMOND', cls: 'tier-diamond' };
+  if (topPct <= 30) return { key: 'gold',    emoji: '🥇', name: 'GOLD',    cls: 'tier-gold' };
+  if (topPct <= 50) return { key: 'silver',  emoji: '🥈', name: 'SILVER',  cls: 'tier-silver' };
+  if (topPct <= 70) return { key: 'bronze',  emoji: '🥉', name: 'BRONZE',  cls: 'tier-bronze' };
+  return                   { key: 'starter', emoji: '⭐', name: 'STARTER', cls: 'tier-starter' };
+}
+
+function savingsTitle(ratePct) {
+  if (ratePct >= 50) return { label: '절약왕 👑',          cls: 'st-king' };
+  if (ratePct >= 30) return { label: '알뜰살림 👍',         cls: 'st-good' };
+  if (ratePct >= 10) return { label: '평균 이상 🙂',        cls: 'st-avg' };
+  return                    { label: '지출 관리 필요 ⚠️', cls: 'st-warn' };
 }
 
 function HBar({ value, max, accent = 'default', label, right }) {
@@ -2938,7 +2986,7 @@ function LifeInputTab({ goToCompare }) {
         monthly_salary: salaryNum,
         ...Object.fromEntries(LIFE_EXPENSES.map(e => [e.key, parseInt(exps[e.key], 10) || 0])),
       });
-      toast('저장했어요. 내 위치를 확인해 볼까요?');
+      toast('저장했어요. 내 등급을 확인해 볼까요?');
       goToCompare?.();
     } catch (e) {
       toast(e.message || '저장 실패', 'err');
@@ -3041,7 +3089,7 @@ function LifeInputTab({ goToCompare }) {
 
       <button className="btn" style={{ marginTop: 18 }}
         onClick={handleSubmit} disabled={saving}>
-        {saving ? '저장 중…' : '저장하고 내 위치 보기'}
+        {saving ? '저장 중…' : '저장하고 내 등급 보기'}
       </button>
     </div>
   );
@@ -3236,17 +3284,20 @@ function LifeCompareTab({ goToInput }) {
     return (
       <div className="lcard" style={{ textAlign: 'center' }}>
         <div style={{ fontSize: 14, color: 'var(--text-2)', marginBottom: 14 }}>
-          아직 정보를 입력하지 않았어요. 내 위치를 확인하려면 먼저 정보를 입력해 주세요.
+          아직 정보를 입력하지 않았어요. 내 등급을 확인하려면 먼저 정보를 입력해 주세요.
         </div>
         <button className="btn" onClick={() => goToInput?.()}>내 정보 입력하러 가기</button>
       </div>
     );
   }
 
-  const tier = positionTier(me.salary_percentile);
+  const topPct = Math.max(1, 100 - me.salary_percentile);
+  const tier = rankTier(topPct);
   const savingsPct = Math.round((me.savings_rate || 0) * 100);
   const avgSavingsPct = Math.round((data.savings.avg_rate || 0) * 100);
   const housingPct = Math.round((me.housing_ratio || 0) * 100);
+  const st = savingsTitle(savingsPct);
+  const progressFill = Math.max(2, 100 - topPct);
 
   const myExp = {
     expense_housing:      me.expense_housing      || 0,
@@ -3261,13 +3312,18 @@ function LifeCompareTab({ goToInput }) {
 
   return (
     <div>
-      <div className="position-card">
-        <div className="position-card__tier">{me.age_group} · {me.job_category} 그룹 {tier.label}</div>
-        <div>
-          <span className="position-card__pct">상위 {Math.max(1, 100 - me.salary_percentile)}%</span>
+      <div className={'position-card ' + tier.cls}>
+        <div className="position-card__tier">{me.age_group} · {me.job_category} 그룹 · 내 연봉 등급</div>
+        <div className="rank-badge">
+          <span className="rank-badge__emoji">{tier.emoji}</span>
+          <span>{tier.name}</span>
         </div>
-        <div className="position-card__desc">
-          {me.total_in_group.toLocaleString()}명 중 {me.rank_from_top.toLocaleString()}등 · {tier.desc}
+        <div className="rank-top">상위 {topPct}%</div>
+        <div className="rank-row">
+          🏆 Rank {me.rank_from_top.toLocaleString()} / {me.total_in_group.toLocaleString()}
+        </div>
+        <div className="rank-bar">
+          <div className="rank-bar__fill" style={{ width: progressFill + '%' }} />
         </div>
       </div>
 
@@ -3288,7 +3344,10 @@ function LifeCompareTab({ goToInput }) {
       </div>
 
       <div className="lcard">
-        <div className="lcard__title">저축률 비교</div>
+        <div className="lcard__title">
+          저축률 비교
+          <span className={'savings-title ' + st.cls}>{st.label}</span>
+        </div>
         <HBar value={Math.max(savingsPct, 0)} max={100}
           label="나" accent="me" right={`${savingsPct}%`} />
         <HBar value={Math.max(avgSavingsPct, 0)} max={100}
