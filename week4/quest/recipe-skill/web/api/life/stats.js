@@ -61,18 +61,17 @@ export default async function handler(req, res) {
         COALESCE(AVG(expense_transport), 0)::int AS exp_transport_avg,
         COALESCE(AVG(expense_leisure), 0)::int   AS exp_leisure_avg,
         COALESCE(AVG(expense_shopping), 0)::int  AS exp_shopping_avg,
-        COALESCE(AVG(expense_other), 0)::int     AS exp_other_avg,
         COALESCE(AVG(
           CASE WHEN monthly_salary > 0 THEN
             (monthly_salary - (expense_housing + expense_food + expense_transport
-              + expense_leisure + expense_shopping + expense_other))::numeric
+              + expense_leisure + expense_shopping))::numeric
             / monthly_salary
           END
         ), 0)::float AS savings_rate_avg,
         COALESCE(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY
           CASE WHEN monthly_salary > 0 THEN
             (monthly_salary - (expense_housing + expense_food + expense_transport
-              + expense_leisure + expense_shopping + expense_other))::numeric
+              + expense_leisure + expense_shopping))::numeric
             / monthly_salary
           END
         ), 0)::float AS savings_rate_median
@@ -130,15 +129,14 @@ export default async function handler(req, res) {
 
     const total_exp_avg =
       stats.exp_housing_avg + stats.exp_food_avg + stats.exp_transport_avg +
-      stats.exp_leisure_avg + stats.exp_shopping_avg + stats.exp_other_avg;
+      stats.exp_leisure_avg + stats.exp_shopping_avg;
 
     const expense_breakdown = [
-      { key: 'housing',   label: '주거',   avg: stats.exp_housing_avg },
-      { key: 'food',      label: '식비',   avg: stats.exp_food_avg },
-      { key: 'transport', label: '교통',   avg: stats.exp_transport_avg },
-      { key: 'leisure',   label: '여가',   avg: stats.exp_leisure_avg },
-      { key: 'shopping',  label: '쇼핑',   avg: stats.exp_shopping_avg },
-      { key: 'other',     label: '기타',   avg: stats.exp_other_avg },
+      { key: 'housing',   label: '주거',     avg: stats.exp_housing_avg },
+      { key: 'food',      label: '식비',     avg: stats.exp_food_avg },
+      { key: 'transport', label: '교통',     avg: stats.exp_transport_avg },
+      { key: 'shopping',  label: '쇼핑',     avg: stats.exp_shopping_avg },
+      { key: 'leisure',   label: '🎮 여가',  avg: stats.exp_leisure_avg },
     ].map(x => ({
       ...x,
       percent: total_exp_avg > 0 ? Math.round((x.avg / total_exp_avg) * 100) : 0,
@@ -149,7 +147,7 @@ export default async function handler(req, res) {
     if (me) {
       const mySalary = num(me.monthly_salary);
       const myExp = num(me.expense_housing) + num(me.expense_food) + num(me.expense_transport)
-                  + num(me.expense_leisure) + num(me.expense_shopping) + num(me.expense_other);
+                  + num(me.expense_leisure) + num(me.expense_shopping);
       const mySavingsRate = mySalary > 0 ? (mySalary - myExp) / mySalary : 0;
       const myHousingRatio = mySalary > 0 ? num(me.expense_housing) / mySalary : 0;
 

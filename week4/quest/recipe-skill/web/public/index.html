@@ -2707,9 +2707,8 @@ const LIFE_EXPENSES = [
   { key: 'expense_housing',   label: '주거비' },
   { key: 'expense_food',      label: '식비' },
   { key: 'expense_transport', label: '교통비' },
-  { key: 'expense_leisure',   label: '여가비' },
   { key: 'expense_shopping',  label: '쇼핑' },
-  { key: 'expense_other',     label: '기타' },
+  { key: 'expense_leisure',   label: '🎮 여가' },
 ];
 const LIFE_AGE_FILTERS = ['전체', ...LIFE_AGES];
 const LIFE_JOB_FILTERS = ['전체', ...LIFE_JOBS];
@@ -2750,7 +2749,7 @@ function LifeInputTab({ goToCompare }) {
   const [salary, setSalary] = useState('');
   const [exps, setExps] = useState({
     expense_housing: '', expense_food: '', expense_transport: '',
-    expense_leisure: '', expense_shopping: '', expense_other: '',
+    expense_leisure: '', expense_shopping: '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -2768,7 +2767,6 @@ function LifeInputTab({ goToCompare }) {
             expense_transport: String(me.expense_transport || ''),
             expense_leisure:   String(me.expense_leisure   || ''),
             expense_shopping:  String(me.expense_shopping  || ''),
-            expense_other:     String(me.expense_other     || ''),
           });
         }
       } catch {}
@@ -3093,7 +3091,6 @@ function LifeCompareTab({ goToInput }) {
     expense_transport: me.expense_transport || 0,
     expense_leisure:   me.expense_leisure   || 0,
     expense_shopping:  me.expense_shopping  || 0,
-    expense_other:     me.expense_other     || 0,
   };
 
   return (
@@ -3138,8 +3135,7 @@ function LifeCompareTab({ goToInput }) {
           const mine = myExp[e.key === 'housing' ? 'expense_housing' :
                               e.key === 'food' ? 'expense_food' :
                               e.key === 'transport' ? 'expense_transport' :
-                              e.key === 'leisure' ? 'expense_leisure' :
-                              e.key === 'shopping' ? 'expense_shopping' : 'expense_other'];
+                              e.key === 'shopping' ? 'expense_shopping' : 'expense_leisure'];
           const diff = mine - e.avg;
           const sign = diff > 0 ? '+' : '';
           return (
