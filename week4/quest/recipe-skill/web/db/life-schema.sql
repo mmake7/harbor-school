@@ -16,8 +16,10 @@ CREATE TABLE IF NOT EXISTS life_profiles (
   expense_housing      INT  NOT NULL DEFAULT 0 CHECK (expense_housing      >= 0),
   expense_food         INT  NOT NULL DEFAULT 0 CHECK (expense_food         >= 0),
   expense_transport    INT  NOT NULL DEFAULT 0 CHECK (expense_transport    >= 0),
+  expense_telecom      INT  NOT NULL DEFAULT 0 CHECK (expense_telecom      >= 0),
   expense_subscription INT  NOT NULL DEFAULT 0 CHECK (expense_subscription >= 0),
   expense_shopping     INT  NOT NULL DEFAULT 0 CHECK (expense_shopping     >= 0),
+  expense_pet          INT  NOT NULL DEFAULT 0 CHECK (expense_pet          >= 0),
   expense_leisure      INT  NOT NULL DEFAULT 0 CHECK (expense_leisure      >= 0),
   session_id        TEXT NOT NULL,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now()

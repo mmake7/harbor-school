@@ -2704,12 +2704,14 @@ const LIFE_JOBS = ['IT','금융','공공','서비스','제조','기타'];
 const LIFE_EXPS = ['1년미만','1-3년','3-5년','5-10년','10년+'];
 const LIFE_REGIONS = ['수도권','광역시','그외'];
 const LIFE_EXPENSES = [
-  { key: 'expense_housing',      label: '🏠 주거' },
-  { key: 'expense_food',         label: '🍽️ 식비' },
-  { key: 'expense_transport',    label: '🚗 교통' },
-  { key: 'expense_subscription', label: '📱 구독료' },
-  { key: 'expense_shopping',     label: '👔 쇼핑' },
-  { key: 'expense_leisure',      label: '🎮 여가' },
+  { key: 'expense_housing',      icon: '🏠',  label: '주거' },
+  { key: 'expense_food',         icon: '🍽️',  label: '식비' },
+  { key: 'expense_transport',    icon: '🚗',  label: '교통' },
+  { key: 'expense_telecom',      icon: '📱',  label: '통신비' },
+  { key: 'expense_subscription', icon: '📺',  label: '구독료' },
+  { key: 'expense_shopping',     icon: '👔',  label: '쇼핑' },
+  { key: 'expense_pet',          icon: '🐾',  label: '반려동물', hint: '반려동물 없으면 0' },
+  { key: 'expense_leisure',      icon: '🎮',  label: '여가' },
 ];
 const LIFE_AGE_FILTERS = ['전체', ...LIFE_AGES];
 const LIFE_JOB_FILTERS = ['전체', ...LIFE_JOBS];
@@ -2750,7 +2752,8 @@ function LifeInputTab({ goToCompare }) {
   const [salary, setSalary] = useState('');
   const [exps, setExps] = useState({
     expense_housing: '', expense_food: '', expense_transport: '',
-    expense_subscription: '', expense_shopping: '', expense_leisure: '',
+    expense_telecom: '', expense_subscription: '',
+    expense_shopping: '', expense_pet: '', expense_leisure: '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -2766,8 +2769,10 @@ function LifeInputTab({ goToCompare }) {
             expense_housing:      String(me.expense_housing      || ''),
             expense_food:         String(me.expense_food         || ''),
             expense_transport:    String(me.expense_transport    || ''),
+            expense_telecom:      String(me.expense_telecom      || ''),
             expense_subscription: String(me.expense_subscription || ''),
             expense_shopping:     String(me.expense_shopping     || ''),
+            expense_pet:          String(me.expense_pet          || ''),
             expense_leisure:      String(me.expense_leisure      || ''),
           });
         }
@@ -2871,7 +2876,10 @@ function LifeInputTab({ goToCompare }) {
         <div className="life-form__grid">
           {LIFE_EXPENSES.map(e => (
             <div key={e.key}>
-              <div className="life-form__label">{e.label}</div>
+              <div className="life-form__label">
+                {e.icon} {e.label}
+                {e.hint && <span style={{ textTransform: 'none', letterSpacing: 0, color: 'var(--text-3)', fontWeight: 400, marginLeft: 6 }}>· {e.hint}</span>}
+              </div>
               <input type="number" inputMode="numeric" className="money-input"
                 placeholder="0"
                 value={exps[e.key]}
@@ -3015,7 +3023,7 @@ function LifeStatsTab() {
         {data.expense_breakdown.map(e => (
           <HBar key={e.key}
             value={e.avg} max={expMax}
-            label={e.label}
+            label={`${e.icon} ${e.label}`}
             right={`${e.avg}만 (${e.percent}%)`} />
         ))}
         <div className="savings-preview" style={{ marginTop: 16 }}>
@@ -3028,6 +3036,23 @@ function LifeStatsTab() {
           </div>
         </div>
       </div>
+
+      {data.pet_stats && data.pet_stats.pet_owners_count > 0 && (
+        <div className="lcard">
+          <div className="lcard__title">🐾 반려동물 키우는 사람 평균</div>
+          <div className="savings-preview" style={{ marginTop: 0 }}>
+            <div className="savings-preview__label">
+              반려동물 키우는 {data.pet_stats.pet_owners_count}명 평균
+            </div>
+            <div className="savings-preview__val">
+              {data.pet_stats.avg_owners.toLocaleString()}만
+              <span style={{ fontSize: 12, color: 'var(--text-3)', fontWeight: 400, marginLeft: 6 }}>
+                (전체 평균 {data.pet_stats.avg_all}만)
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {data.by_job && data.by_job.length > 0 && (
         <div className="lcard">
@@ -3091,8 +3116,10 @@ function LifeCompareTab({ goToInput }) {
     expense_housing:      me.expense_housing      || 0,
     expense_food:         me.expense_food         || 0,
     expense_transport:    me.expense_transport    || 0,
+    expense_telecom:      me.expense_telecom      || 0,
     expense_subscription: me.expense_subscription || 0,
     expense_shopping:     me.expense_shopping     || 0,
+    expense_pet:          me.expense_pet          || 0,
     expense_leisure:      me.expense_leisure      || 0,
   };
 
@@ -3135,17 +3162,19 @@ function LifeCompareTab({ goToInput }) {
       <div className="lcard">
         <div className="lcard__title">지출 카테고리별 비교 <span className="hint">· 만원</span></div>
         {data.expense_breakdown.map(e => {
-          const mine = myExp[e.key === 'housing' ? 'expense_housing' :
-                              e.key === 'food' ? 'expense_food' :
-                              e.key === 'transport' ? 'expense_transport' :
-                              e.key === 'subscription' ? 'expense_subscription' :
-                              e.key === 'shopping' ? 'expense_shopping' : 'expense_leisure'];
+          const colKey = 'expense_' + e.key;
+          const mine = myExp[colKey] || 0;
           const diff = mine - e.avg;
           const sign = diff > 0 ? '+' : '';
+          const isPet = e.key === 'pet';
           return (
             <div key={e.key} className="cmp-row">
-              <div className="cmp-row__label">{e.label}</div>
-              <div className="cmp-row__me"><b>{mine}만</b> <span style={{ color: diff > 0 ? '#c0392b' : diff < 0 ? '#27ae60' : 'var(--text-3)' }}>({sign}{diff})</span></div>
+              <div className="cmp-row__label">{e.icon} {e.label}</div>
+              {isPet && mine === 0 ? (
+                <div className="cmp-row__me" style={{ color: 'var(--text-3)' }}>해당 없음</div>
+              ) : (
+                <div className="cmp-row__me"><b>{mine}만</b> <span style={{ color: diff > 0 ? '#c0392b' : diff < 0 ? '#27ae60' : 'var(--text-3)' }}>({sign}{diff})</span></div>
+              )}
               <div className="cmp-row__avg" style={{ color: 'var(--text-3)' }}>평균 {e.avg}만</div>
             </div>
           );

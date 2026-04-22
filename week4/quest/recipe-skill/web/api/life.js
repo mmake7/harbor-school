@@ -44,8 +44,10 @@ export default async function handler(req, res) {
   const ex_housing = toInt(b.expense_housing) ?? 0;
   const ex_food = toInt(b.expense_food) ?? 0;
   const ex_transport = toInt(b.expense_transport) ?? 0;
+  const ex_telecom = toInt(b.expense_telecom) ?? 0;
   const ex_subscription = toInt(b.expense_subscription) ?? 0;
   const ex_shopping = toInt(b.expense_shopping) ?? 0;
+  const ex_pet = toInt(b.expense_pet) ?? 0;
   const ex_leisure = toInt(b.expense_leisure) ?? 0;
 
   if (!VALID_AGE.includes(age_group)) return res.status(400).json({ error: 'invalid age_group' });
@@ -53,7 +55,7 @@ export default async function handler(req, res) {
   if (!VALID_EXP.includes(experience_years)) return res.status(400).json({ error: 'invalid experience_years' });
   if (!VALID_REGION.includes(region)) return res.status(400).json({ error: 'invalid region' });
   if (!salary || salary <= 0) return res.status(400).json({ error: 'invalid monthly_salary' });
-  for (const v of [ex_housing, ex_food, ex_transport, ex_subscription, ex_shopping, ex_leisure]) {
+  for (const v of [ex_housing, ex_food, ex_transport, ex_telecom, ex_subscription, ex_shopping, ex_pet, ex_leisure]) {
     if (v < 0) return res.status(400).json({ error: 'expense must be >= 0' });
   }
 
@@ -70,11 +72,13 @@ export default async function handler(req, res) {
            age_group = $1, job_category = $2, experience_years = $3, region = $4,
            monthly_salary = $5,
            expense_housing = $6, expense_food = $7, expense_transport = $8,
-           expense_subscription = $9, expense_shopping = $10, expense_leisure = $11
-         WHERE session_id = $12
+           expense_telecom = $9, expense_subscription = $10,
+           expense_shopping = $11, expense_pet = $12, expense_leisure = $13
+         WHERE session_id = $14
          RETURNING *`,
         [age_group, job_category, experience_years, region, salary,
-         ex_housing, ex_food, ex_transport, ex_subscription, ex_shopping, ex_leisure,
+         ex_housing, ex_food, ex_transport, ex_telecom, ex_subscription,
+         ex_shopping, ex_pet, ex_leisure,
          sessionId]
       );
       row = result.rows[0];
@@ -83,11 +87,13 @@ export default async function handler(req, res) {
         `INSERT INTO life_profiles
            (age_group, job_category, experience_years, region, monthly_salary,
             expense_housing, expense_food, expense_transport,
-            expense_subscription, expense_shopping, expense_leisure, session_id)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+            expense_telecom, expense_subscription,
+            expense_shopping, expense_pet, expense_leisure, session_id)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
          RETURNING *`,
         [age_group, job_category, experience_years, region, salary,
-         ex_housing, ex_food, ex_transport, ex_subscription, ex_shopping, ex_leisure,
+         ex_housing, ex_food, ex_transport, ex_telecom, ex_subscription,
+         ex_shopping, ex_pet, ex_leisure,
          sessionId]
       );
       row = result.rows[0];
