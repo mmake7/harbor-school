@@ -2,6 +2,22 @@
 
 1인 가구를 위한 Claude Code Skill — 냉장고 재료로 레시피 자동 생성 + Notion 업로드
 
+## 🌐 통합 프로젝트 안내
+
+이 프로젝트는 4주차 Q1+Q2+Q3를 통합한 "혼삶" 플랫폼의 일부입니다.
+
+- **Q1 (이 폴더)**: Claude Code Skill — `/recipe` 명령어로 레시피 생성
+- **Q2+Q3 (web/ 폴더)**: 웹 버전 — 냉장고 관리 + AI 레시피 + DB 저장
+
+### 🔗 바로가기
+- **Live Demo (웹 버전)**: https://web-mauve-tau-65.vercel.app
+- **웹 버전 소스**: [web/](./web/)
+- **스킬 실행 가이드**: 아래 내용 참고
+
+[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=flat&logo=vercel)](https://web-mauve-tau-65.vercel.app)
+
+---
+
 ## 컨셉
 "혼삶 with AI" 플랫폼 시리즈의 첫 번째 퀘스트.
 냉장고에 있는 재료를 JSON으로 관리하고, 스킬이 그 정보를 읽어 1인 가구용 레시피를 생성합니다.
