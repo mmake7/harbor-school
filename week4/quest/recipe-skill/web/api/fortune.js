@@ -116,6 +116,38 @@ function validateParsed(p) {
   return null;
 }
 
+async function handleHistory(req, res, sessionId) {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM fortune_daily
+       WHERE session_id = $1
+       ORDER BY fortune_date DESC
+       LIMIT 7`,
+      [sessionId]
+    );
+    return res.json({
+      items: result.rows.map(row => ({
+        fortune_date: formatDate(row.fortune_date),
+        overall_score: row.overall_score,
+        overall_message: row.overall_message,
+        themes: {
+          honbap: { score: row.honbap_score, text: row.honbap_text },
+          jachi:  { score: row.jachi_score,  text: row.jachi_text },
+          save:   { score: row.save_score,   text: row.save_text },
+          meet:   { score: row.meet_score,   text: row.meet_text },
+        },
+        lucky_item: row.lucky_item,
+        daily_advice: row.daily_advice,
+      })),
+    });
+  } catch (error) {
+    console.error('[fortune/history]', error);
+    return res.status(500).json({
+      error: '운세 기록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',
+    });
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -126,6 +158,10 @@ export default async function handler(req, res) {
 
   const sessionId = getSessionId(req);
   if (!sessionId) return res.status(400).json({ error: 'session id required' });
+
+  if (req.query && req.query.view === 'history') {
+    return handleHistory(req, res, sessionId);
+  }
 
   const today = todayKST();
 

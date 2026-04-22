@@ -1259,7 +1259,7 @@ const api = {
     if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error || 'create failed'); }
     return r.json();
   }),
-  bestPosts: () => apiFetch('/api/posts/best').then(r => r.json()),
+  bestPosts: () => apiFetch('/api/posts?view=best').then(r => r.json()),
   listComments: (postId) => apiFetch('/api/comments?post_id=' + postId).then(r => r.json()),
   createComment: (postId, content) => apiFetch('/api/comments', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1319,7 +1319,7 @@ const api = {
     if (!r.ok) throw new Error(data.error || '운세를 불러오지 못했어요');
     return data;
   }),
-  historyFortune: () => apiFetch('/api/fortune/history').then(async r => {
+  historyFortune: () => apiFetch('/api/fortune?view=history').then(async r => {
     const data = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(data.error || '운세 기록을 불러오지 못했어요');
     return data;

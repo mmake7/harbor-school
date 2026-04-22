@@ -35,6 +35,20 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
+      if (req.query.view === 'best') {
+        const bestResult = await pool.query(`
+          SELECT
+            p.id, p.category, p.content, p.nickname, p.tags,
+            p.like_count, p.cheer_count, p.sparkle_count, p.created_at,
+            (p.like_count + p.cheer_count + p.sparkle_count) AS total_reactions,
+            (SELECT COUNT(*)::int FROM board_comments c WHERE c.post_id = p.id) AS comment_count
+          FROM board_posts p
+          ORDER BY total_reactions DESC, p.created_at DESC
+          LIMIT 5
+        `);
+        return res.json(bestResult.rows);
+      }
+
       const sort = (req.query.sort === 'popular') ? 'popular' : 'latest';
       const category = req.query.category;
       const sessionId = getSessionId(req);
