@@ -4,6 +4,7 @@
 > **harbor.school 4주차 퀘스트 7개 통합 프로젝트**
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-web--mauve--tau--65.vercel.app-000000?style=for-the-badge)](https://web-mauve-tau-65.vercel.app)
+[![Recipes on Notion](https://img.shields.io/badge/📒_Recipes_on_Notion-000000?style=for-the-badge&logo=notion)](https://www.notion.so/3492e7af795d80018c7ee5dc3076bac6?v=3492e7af795d800d9944000c1c04e2be)
 [![Built with Claude](https://img.shields.io/badge/Built_with-Claude_Code-D97706?style=for-the-badge)](https://claude.com/code)
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=for-the-badge&logo=vercel)](https://vercel.com)
 
@@ -32,6 +33,7 @@ harbor.school AI 수업 4주차 퀘스트 6개를 따로따로 만들 수도 있
 - **🧊 냉장고**: 재료 CRUD, 유통기한 D-day 표시
 - **🍳 만들기**: Claude API로 3가지 레시피 생성 (초간단/든든한/색다른)
 - **📚 기록**: 생성된 레시피 영구 저장, 히스토리 조회
+- **📒 Notion 연동**: 생성된 레시피는 Notion DB에도 자동 업로드됩니다 — [**DB 바로 보기 →**](https://www.notion.so/3492e7af795d80018c7ee5dc3076bac6?v=3492e7af795d800d9944000c1c04e2be)
 
 ### 💬 소셜 (Q4)
 익명 고민/칭찬 게시판 "혼삶톡"
@@ -300,7 +302,7 @@ npx vercel dev
 
 ## 🧑‍🍳 만든 사람
 
-**박유송** — 공공부문 IT 기획자
+**박인수** — 공공부문 IT 기획자
 harbor.school AI 2기 주말반
 
 ## 🤖 Built with Claude Code
