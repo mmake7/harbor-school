@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
 <meta name="theme-color" content="#FAFAFA" />
 <title>혼삶 · Solo Kitchen</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
@@ -1247,6 +1247,63 @@
     .fortune-themes { grid-template-columns: 1fr; }
     .fortune-hero__stars { font-size: 24px; }
   }
+
+  /* ============ MOBILE OVERRIDES (≤768px) ============ */
+  @media (max-width: 768px) {
+    /* ModeBar: 아이콘 위 + 라벨 아래 세로 스택 */
+    .modebar { padding: 0 8px; height: auto; }
+    .modebar__seg {
+      display: flex;
+      width: 100%;
+      padding: 4px;
+    }
+    .modebar__seg button {
+      flex: 1;
+      min-width: 0;
+      flex-direction: column;
+      gap: 4px;
+      height: auto;
+      padding: 8px 4px;
+    }
+    .modebar__seg button .ico { font-size: 20px; line-height: 1; }
+    .modebar__seg button .lbl {
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    /* 서브탭: 컴팩트 + 가로 스크롤 안전장치 */
+    /* modebar 가 세로스택으로 ~59px 로 커지므로 sticky top 보정 (topbar 64 + modebar 59 = 123) */
+    .mtabs {
+      top: 123px;
+      padding: 0 12px;
+      gap: 2px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .mtabs::-webkit-scrollbar { display: none; }
+    .mtabs button {
+      font-size: 12px;
+      flex: 1 0 auto;
+      min-height: 44px;
+      padding: 0 10px;
+    }
+
+    /* 게시글 카드: 패딩 축소 + 본문 미리보기 2줄 */
+    .pcard { padding: 14px 16px; }
+    .pcard__body { -webkit-line-clamp: 2; }
+    .pcard__foot { gap: 8px; }
+    /* 반응 버튼: 터치 타겟 44px */
+    .react-btn { height: 44px; padding: 0 12px; }
+
+    /* 운세 별점: 모바일에서도 잘 보이게 */
+    .fortune-hero { padding: 24px 18px; }
+  }
+
+  /* iOS Safari safe area */
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 </style>
 </head>
 <body>
@@ -1560,11 +1617,11 @@ function ModeBar({ mode, setMode }) {
   return (
     <div className="modebar">
       <div className="modebar__seg">
-        <button className={mode === 'food' ? 'is-active' : ''} onClick={() => setMode('food')}>🍳 식생활</button>
-        <button className={mode === 'social' ? 'is-active' : ''} onClick={() => setMode('social')}>💬 소셜</button>
-        <button className={mode === 'balance' ? 'is-active' : ''} onClick={() => setMode('balance')}>🎮 밸런스</button>
-        <button className={mode === 'life' ? 'is-active' : ''} onClick={() => setMode('life')}>📊 라이프</button>
-        <button className={mode === 'fortune' ? 'is-active' : ''} onClick={() => setMode('fortune')}>🔮 운세</button>
+        <button className={mode === 'food' ? 'is-active' : ''} onClick={() => setMode('food')}><span className="ico">🍳</span><span className="lbl">식생활</span></button>
+        <button className={mode === 'social' ? 'is-active' : ''} onClick={() => setMode('social')}><span className="ico">💬</span><span className="lbl">소셜</span></button>
+        <button className={mode === 'balance' ? 'is-active' : ''} onClick={() => setMode('balance')}><span className="ico">🎮</span><span className="lbl">밸런스</span></button>
+        <button className={mode === 'life' ? 'is-active' : ''} onClick={() => setMode('life')}><span className="ico">📊</span><span className="lbl">라이프</span></button>
+        <button className={mode === 'fortune' ? 'is-active' : ''} onClick={() => setMode('fortune')}><span className="ico">🔮</span><span className="lbl">운세</span></button>
       </div>
     </div>
   );
