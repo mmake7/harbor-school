@@ -1269,6 +1269,105 @@
     .fortune-hero__stars { font-size: 24px; }
   }
 
+  /* ============ HOME (랜딩) ============ */
+  .home { display: flex; flex-direction: column; gap: 32px; }
+
+  .home-hero {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 80px 40px;
+    text-align: center;
+  }
+  .home-hero__head {
+    font-size: 44px; font-weight: 700; line-height: 1.2;
+    letter-spacing: -0.03em; color: var(--text);
+    margin: 0 0 16px;
+  }
+  .home-hero__sub {
+    font-size: 16px; color: var(--text-2); line-height: 1.6;
+    margin: 0 0 32px; max-width: 560px;
+    margin-left: auto; margin-right: auto;
+  }
+  .home-hero__cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 48px; padding: 0 24px;
+    background: var(--accent); color: #fff;
+    border: 0; border-radius: 4px;
+    font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+    cursor: pointer; transition: background-color 150ms;
+  }
+  .home-hero__cta:hover { background: #1f1f1f; }
+  .home-hero__cta span { font-size: 16px; }
+
+  /* skeleton (로딩) */
+  .home-hero__skel {
+    margin: 0 auto 16px;
+    background: linear-gradient(90deg, #F0F0F0 0%, #F8F8F8 50%, #F0F0F0 100%);
+    background-size: 200% 100%;
+    border-radius: 4px;
+    animation: home-skel 1.4s linear infinite;
+  }
+  .home-hero__skel--head { width: 60%; height: 44px; max-width: 360px; }
+  .home-hero__skel--sub  { width: 50%; height: 16px; max-width: 280px; margin-bottom: 32px; }
+  .home-hero__skel--btn  { width: 180px; height: 48px; }
+  @keyframes home-skel {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .home-section__label {
+    font-size: 11px; color: var(--text-3); font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .home-features {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .home-feature {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 4px; padding: 20px 22px;
+    text-align: left; cursor: pointer;
+    transition: border-color 150ms;
+    width: 100%;
+  }
+  .home-feature:hover { border-color: var(--accent); }
+  .home-feature__icon { font-size: 26px; line-height: 1; flex: 0 0 auto; }
+  .home-feature__body { flex: 1; min-width: 0; }
+  .home-feature__title {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    margin-bottom: 4px; letter-spacing: -0.01em;
+  }
+  .home-feature__desc {
+    font-size: 13px; color: var(--text-2); line-height: 1.5;
+  }
+  .home-feature__arrow {
+    color: var(--text-3); font-size: 16px;
+    transition: color 150ms, transform 150ms;
+  }
+  .home-feature:hover .home-feature__arrow {
+    color: var(--text); transform: translateX(2px);
+  }
+
+  .home-about {
+    background: var(--bg);
+    border-radius: 4px;
+    padding: 24px 28px;
+    color: var(--text-2);
+    font-size: 13px; line-height: 1.7;
+  }
+  .home-about p { margin: 0; }
+  .home-about__title {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    margin-bottom: 8px; letter-spacing: -0.01em;
+  }
+  .home-about__sig {
+    margin-top: 12px !important;
+    font-size: 11px; color: var(--text-3);
+    letter-spacing: 0.04em;
+  }
+
   /* ============ MOBILE OVERRIDES (≤768px) ============ */
   @media (max-width: 768px) {
     /* Topbar 브랜드: 좁은 화면에서 살짝 축소 */
@@ -1290,11 +1389,11 @@
       height: auto;
       padding: 8px 4px;
     }
-    .modebar__seg button .ico { font-size: 20px; line-height: 1; }
+    .modebar__seg button .ico { font-size: 18px; line-height: 1; }
     .modebar__seg button .lbl {
-      font-size: 11px;
+      font-size: 10px;
       line-height: 1;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
     }
 
     /* 서브탭: 컴팩트 + 가로 스크롤 안전장치 */
@@ -1325,6 +1424,16 @@
     .fortune-hero { padding: 28px 20px; }
     .fortune-hero__msg { font-size: 16px; }
     .fortune-lucky, .fortune-advice { padding: 16px 18px; }
+
+    /* 홈(랜딩) */
+    .home { gap: 24px; }
+    .home-hero { padding: 48px 24px; }
+    .home-hero__head { font-size: 30px; }
+    .home-hero__sub { font-size: 15px; margin-bottom: 24px; }
+    .home-hero__skel--head { height: 32px; }
+    .home-features { grid-template-columns: 1fr; gap: 10px; }
+    .home-feature { padding: 16px 18px; gap: 12px; }
+    .home-feature__icon { font-size: 22px; }
   }
 
   /* iOS Safari safe area */
@@ -1447,6 +1556,13 @@ const api = {
   historyFortune: () => apiFetch('/api/fortune?view=history').then(async r => {
     const data = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(data.error || '운세 기록을 불러오지 못했어요');
+    return data;
+  }),
+
+  // Home landing copy (session 무관)
+  getLanding: () => fetch('/api/fortune?view=landing').then(async r => {
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || '랜딩 카피를 불러오지 못했어요');
     return data;
   }),
 };
@@ -1577,6 +1693,7 @@ function TopBar({ tab }) {
 }
 
 const SIDEBAR_ITEMS = {
+  home: [],
   food: [
     { id: 'fridge',  icon: 'refrigerator',   label: '냉장고' },
     { id: 'recipe',  icon: 'chef-hat',       label: '만들기' },
@@ -1606,6 +1723,7 @@ const SIDEBAR_ITEMS = {
 function Sidebar({ mode, tab, setTab }) {
   useLucide(mode + ':' + tab);
   const items = SIDEBAR_ITEMS[mode] || SIDEBAR_ITEMS.food;
+  if (items.length === 0) return null;
   const label = mode === 'social' ? 'Social'
               : mode === 'balance' ? 'Balance'
               : mode === 'life' ? 'Life'
@@ -1628,6 +1746,7 @@ function Sidebar({ mode, tab, setTab }) {
 
 function MobileTabs({ mode, tab, setTab }) {
   const items = (SIDEBAR_ITEMS[mode] || SIDEBAR_ITEMS.food).map(it => ({ id: it.id, label: it.label }));
+  if (items.length === 0) return null;
   return (
     <nav className="mtabs">
       {items.map(it => (
@@ -1643,6 +1762,7 @@ function ModeBar({ mode, setMode }) {
   return (
     <div className="modebar">
       <div className="modebar__seg">
+        <button className={mode === 'home' ? 'is-active' : ''} onClick={() => setMode('home')}><span className="ico">🏠</span><span className="lbl">홈</span></button>
         <button className={mode === 'food' ? 'is-active' : ''} onClick={() => setMode('food')}><span className="ico">🍳</span><span className="lbl">식생활</span></button>
         <button className={mode === 'social' ? 'is-active' : ''} onClick={() => setMode('social')}><span className="ico">💬</span><span className="lbl">소셜</span></button>
         <button className={mode === 'balance' ? 'is-active' : ''} onClick={() => setMode('balance')}><span className="ico">🎮</span><span className="lbl">밸런스</span></button>
@@ -3623,9 +3743,106 @@ function FortuneHistoryTab() {
   );
 }
 
+/* ============ HOME ============ */
+const HOME_TARGET_TO_MODE = {
+  '식생활': 'food',
+  '소셜':   'social',
+  '밸런스': 'balance',
+  '라이프': 'life',
+  '운세':   'fortune',
+};
+const HOME_FEATURES = [
+  { mode: 'food',    icon: '🍳', title: '식생활', desc: '냉장고 재료로 AI가 만드는 오늘의 레시피' },
+  { mode: 'social',  icon: '💬', title: '소셜',   desc: '익명으로 털어놓는 고민·칭찬·응원' },
+  { mode: 'balance', icon: '🎮', title: '밸런스', desc: '혼삶의 사소한 딜레마 투표' },
+  { mode: 'life',    icon: '📊', title: '라이프', desc: '연봉·지출 익명 벤치마크' },
+  { mode: 'fortune', icon: '🔮', title: '운세',   desc: 'AI가 읽어주는 오늘의 운세' },
+];
+const HOME_FALLBACK = {
+  headline: '오늘도 수고했어요',
+  subline: '혼자사는 삶이 당신의 일상을 함께해요.',
+  cta_label: '시작하기',
+  cta_target: '식생활',
+};
+
+function HomeTab({ goToMode }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    api.getLanding()
+      .then(d => { if (mounted) setData(d); })
+      .catch(() => { if (mounted) setData(HOME_FALLBACK); })
+      .finally(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
+  }, []);
+
+  const copy = data || HOME_FALLBACK;
+  const ctaMode = HOME_TARGET_TO_MODE[copy.cta_target] || 'food';
+
+  return (
+    <div className="home">
+      <section className={'home-hero' + (loading ? ' is-loading' : '')}>
+        {loading ? (
+          <>
+            <div className="home-hero__skel home-hero__skel--head" />
+            <div className="home-hero__skel home-hero__skel--sub" />
+            <div className="home-hero__skel home-hero__skel--btn" />
+          </>
+        ) : (
+          <>
+            <h1 className="home-hero__head">{copy.headline}</h1>
+            <p className="home-hero__sub">{copy.subline}</p>
+            <button className="home-hero__cta" onClick={() => goToMode(ctaMode)}>
+              {copy.cta_label} <span aria-hidden="true">→</span>
+            </button>
+          </>
+        )}
+      </section>
+
+      <section className="home-section">
+        <div className="home-section__label">우리가 도와드리는 것들</div>
+        <div className="home-features">
+          {HOME_FEATURES.map(f => (
+            <button key={f.mode} className="home-feature" onClick={() => goToMode(f.mode)}>
+              <div className="home-feature__icon">{f.icon}</div>
+              <div className="home-feature__body">
+                <div className="home-feature__title">{f.title}</div>
+                <div className="home-feature__desc">{f.desc}</div>
+              </div>
+              <div className="home-feature__arrow" aria-hidden="true">→</div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="home-about">
+        <div className="home-about__title">혼자사는 삶은?</div>
+        <p>로그인 없는 익명 AI 플랫폼</p>
+        <p>1인 가구의 일상을 AI가 함께해요</p>
+        <p className="home-about__sig">harbor.school × Claude Code</p>
+      </section>
+    </div>
+  );
+}
+
 /* ============ APP ============ */
+const MODE_KEY = 'honsam_mode';
+const VALID_MODES = ['home','food','social','balance','life','fortune'];
 function App() {
-  const [mode, setMode] = useState('food');
+  const [mode, setModeState] = useState(() => {
+    try {
+      const v = localStorage.getItem(MODE_KEY);
+      if (v && VALID_MODES.includes(v)) return v;
+    } catch (e) {}
+    return 'home';
+  });
+  const setMode = useCallback((m) => {
+    setModeState(m);
+    try { localStorage.setItem(MODE_KEY, m); } catch (e) {}
+  }, []);
   const [foodTab, setFoodTab] = useState('fridge');
   const [socialTab, setSocialTab] = useState('talk');
   const [balanceTab, setBalanceTab] = useState('play');
@@ -3635,12 +3852,14 @@ function App() {
             : mode === 'social' ? socialTab
             : mode === 'balance' ? balanceTab
             : mode === 'life' ? lifeTab
-            : fortuneTab;
+            : mode === 'fortune' ? fortuneTab
+            : null;
   const setTab = mode === 'food' ? setFoodTab
                : mode === 'social' ? setSocialTab
                : mode === 'balance' ? setBalanceTab
                : mode === 'life' ? setLifeTab
-               : setFortuneTab;
+               : mode === 'fortune' ? setFortuneTab
+               : (() => {});
   useLucide(mode + ':' + tab);
   return (
     <ToastProvider>
@@ -3652,6 +3871,7 @@ function App() {
           <Sidebar mode={mode} tab={tab} setTab={setTab} />
           <main className="main">
             <div className="main__inner">
+              {mode === 'home' && <HomeTab key="home" goToMode={setMode} />}
               {mode === 'food'   && tab === 'fridge'  && <FridgeTab key="fridge" />}
               {mode === 'food'   && tab === 'recipe'  && <RecipeTab key="recipe" />}
               {mode === 'food'   && tab === 'history' && <HistoryTab key="history" />}

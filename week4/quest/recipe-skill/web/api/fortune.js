@@ -25,6 +25,161 @@ function todayKST() {
   return new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
 }
 
+function currentTimeSlotKST() {
+  const hourStr = new Date().toLocaleString('en-GB', {
+    timeZone: 'Asia/Seoul',
+    hour: '2-digit',
+    hour12: false,
+  });
+  const h = parseInt(hourStr, 10);
+  if (h >= 5 && h <= 11) return '아침';
+  if (h >= 12 && h <= 17) return '오후';
+  if (h >= 18 && h <= 22) return '저녁';
+  return '새벽';
+}
+
+function dayOfWeekKST(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00+09:00');
+  const days = ['일','월','화','수','목','금','토'];
+  return days[d.getDay()] + '요일';
+}
+
+const LANDING_TARGETS = ['식생활','소셜','밸런스','라이프','운세'];
+
+const LANDING_SYSTEM_PROMPT = `당신은 도시 거주 30대 IT/금융 전문직 1인 가구를 위한 웹앱 "혼자사는 삶"의 카피라이터입니다.
+
+톤:
+- 감성적이면서 절제된 (Linear/Notion 스타일)
+- 공감 기반이지만 과하게 감정적이지 않게
+- 세련된 서울 30대 타겟
+
+시간대별 무드:
+- 아침: 활기차고 차분한 시작
+- 오후: 차분한 일상 속 짧은 휴식
+- 저녁: 퇴근 후 따뜻한 위로
+- 새벽: 고요한 성찰
+
+CTA 선택 (현재 시간대에 가장 적합한 기능):
+- 식생활: 식사 관련 (레시피, 냉장고)
+- 소셜: 외로움, 대화 (익명 게시판)
+- 밸런스: 고민, 선택 (투표 게임)
+- 라이프: 돈, 벤치마크 (연봉/지출)
+- 운세: 하루 시작, 방향 (AI 운세)
+
+규칙:
+1) 응답은 반드시 순수 JSON 한 덩어리. 앞뒤 설명·코드 펜스·주석 금지.
+2) 한국어, 다정한 존댓말.
+3) headline 10~16자, 강렬하게.
+4) subline 20~35자, 헤드라인을 보완.
+5) cta_target은 반드시 "식생활"/"소셜"/"밸런스"/"라이프"/"운세" 중 하나.
+6) cta_label 8~16자, 행동을 유도.
+
+출력 스키마:
+{ "headline": "문자열", "subline": "문자열", "cta_label": "문자열", "cta_target": "..." }`;
+
+function landingUserPrompt(date, timeSlot, dayName) {
+  return `오늘은 ${date} (${dayName})입니다. 현재 시간대는 "${timeSlot}"입니다.
+
+이 시간대 1인 가구의 기분에 맞는 랜딩 카피를 JSON으로만 출력하세요.`;
+}
+
+function validateLandingParsed(p) {
+  if (!p || typeof p !== 'object') return '카피 형식이 잘못되었어요';
+  for (const k of ['headline','subline','cta_label','cta_target']) {
+    if (typeof p[k] !== 'string' || !p[k].trim()) return `${k} 필드가 없어요`;
+  }
+  if (!LANDING_TARGETS.includes(p.cta_target)) return `cta_target이 잘못되었어요: ${p.cta_target}`;
+  return null;
+}
+
+function landingRowToResponse(row) {
+  return {
+    date: formatDate(row.copy_date),
+    time_slot: row.time_slot,
+    headline: row.headline,
+    subline: row.subline,
+    cta_label: row.cta_label,
+    cta_target: row.cta_target,
+  };
+}
+
+async function handleLanding(req, res) {
+  try {
+    const today = todayKST();
+    const timeSlot = currentTimeSlotKST();
+
+    const existing = await pool.query(
+      'SELECT * FROM landing_copies WHERE copy_date = $1 AND time_slot = $2 LIMIT 1',
+      [today, timeSlot]
+    );
+    if (existing.rows.length > 0) {
+      return res.json(landingRowToResponse(existing.rows[0]));
+    }
+
+    let message;
+    try {
+      message = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 512,
+        system: LANDING_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: landingUserPrompt(today, timeSlot, dayOfWeekKST(today)) }],
+      });
+    } catch (e) {
+      console.error('[landing] claude call failed', e);
+      return res.status(502).json({ error: '랜딩 카피를 불러오지 못했어요.' });
+    }
+
+    const rawText = (message.content?.[0]?.text) || '';
+    const jsonStr = extractJson(rawText);
+
+    let parsed;
+    try { parsed = JSON.parse(jsonStr); }
+    catch (e) {
+      console.error('[landing] json parse failed', rawText);
+      return res.status(502).json({ error: '랜딩 카피 해석에 실패했어요.' });
+    }
+
+    const err = validateLandingParsed(parsed);
+    if (err) {
+      console.error('[landing] validation failed:', err, parsed);
+      return res.status(502).json({ error: '랜딩 카피 항목이 일부 누락됐어요.' });
+    }
+
+    const values = [
+      today, timeSlot,
+      truncStr(parsed.headline, 80),
+      truncStr(parsed.subline, 200),
+      truncStr(parsed.cta_label, 60),
+      parsed.cta_target,
+    ];
+
+    const insert = await pool.query(
+      `INSERT INTO landing_copies (copy_date, time_slot, headline, subline, cta_label, cta_target)
+       VALUES ($1,$2,$3,$4,$5,$6)
+       ON CONFLICT (copy_date, time_slot) DO NOTHING
+       RETURNING *`,
+      values
+    );
+
+    if (insert.rows.length > 0) {
+      return res.json(landingRowToResponse(insert.rows[0]));
+    }
+
+    const reSelect = await pool.query(
+      'SELECT * FROM landing_copies WHERE copy_date = $1 AND time_slot = $2 LIMIT 1',
+      [today, timeSlot]
+    );
+    if (reSelect.rows.length === 0) {
+      console.error('[landing] race-safe re-select returned nothing');
+      return res.status(500).json({ error: '랜딩 카피 저장에 실패했어요.' });
+    }
+    return res.json(landingRowToResponse(reSelect.rows[0]));
+  } catch (error) {
+    console.error('[landing]', error);
+    return res.status(500).json({ error: '랜딩 서비스에 일시적 문제가 생겼어요.' });
+  }
+}
+
 function formatDate(d) {
   if (typeof d === 'string') return d.slice(0, 10);
   if (d instanceof Date) return d.toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
@@ -155,6 +310,11 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+
+  // landing 카피는 session 무관 (전체 공용)
+  if (req.query && req.query.view === 'landing') {
+    return handleLanding(req, res);
+  }
 
   const sessionId = getSessionId(req);
   if (!sessionId) return res.status(400).json({ error: 'session id required' });
