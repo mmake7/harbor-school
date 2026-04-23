@@ -4,7 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
 <meta name="theme-color" content="#FAFAFA" />
-<title>혼삶 · Solo Kitchen</title>
+<title>혼자사는 삶 (Honsam)</title>
+<meta name="description" content="도시 1인 가구를 위한 AI 올인원 플랫폼 — 냉장고, 레시피, 익명 소통, 밸런스 게임, 연봉/지출, 운세." />
+<meta property="og:title" content="혼자사는 삶" />
+<meta property="og:description" content="도시 1인 가구를 위한 AI 올인원 플랫폼" />
+<meta property="og:type" content="website" />
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" />
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -100,7 +104,20 @@
     border-radius: var(--r-badge);
     letter-spacing: 0;
   }
-  .topbar__name { font-weight: 600; font-size: 15px; letter-spacing: -0.02em; }
+  .topbar__name {
+    font-weight: 600; font-size: 15px; letter-spacing: -0.02em;
+    display: inline-flex; align-items: center; gap: 4px;
+    white-space: nowrap;
+  }
+  .topbar__name__accent {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
   .topbar__search {
     flex: 1; max-width: 420px;
     display: flex; align-items: center; gap: 8px;
@@ -1250,6 +1267,10 @@
 
   /* ============ MOBILE OVERRIDES (≤768px) ============ */
   @media (max-width: 768px) {
+    /* Topbar 브랜드: 좁은 화면에서 살짝 축소 */
+    .topbar__name { font-size: 14px; }
+    .topbar__name__accent { padding: 1px 5px; }
+
     /* ModeBar: 아이콘 위 + 라벨 아래 세로 스택 */
     .modebar { padding: 0 8px; height: auto; }
     .modebar__seg {
@@ -1538,7 +1559,7 @@ function TopBar({ tab }) {
     <header className="topbar">
       <div className="topbar__brand">
         <div className="topbar__logo">혼</div>
-        <div className="topbar__name">혼삶</div>
+        <div className="topbar__name">혼자사는 <span className="topbar__name__accent">삶</span></div>
       </div>
       <div className="topbar__search">
         <Icon name="search" size={14} />
