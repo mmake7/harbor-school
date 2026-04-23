@@ -105,17 +105,20 @@
     letter-spacing: 0;
   }
   .topbar__name {
-    font-weight: 600; font-size: 15px; letter-spacing: -0.02em;
+    font-weight: 300; font-size: 18px; letter-spacing: -0.02em;
     display: inline-flex; align-items: center; gap: 4px;
     white-space: nowrap;
+    color: var(--text);
   }
   .topbar__name__accent {
     display: inline-block;
-    background: var(--accent);
+    background: #A41E22; /* 진한 인주색 */
     color: #fff;
-    padding: 2px 6px;
+    padding: 2px 8px;
     border-radius: 2px;
-    font-weight: 700;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0;
     line-height: 1.1;
   }
   .topbar__search {
@@ -131,13 +134,6 @@
   .topbar__search input { flex: 1; background: none; border: 0; outline: 0; font-size: 13px; color: var(--text); }
   .topbar__search input::placeholder { color: var(--text-3); }
   .topbar__spacer { flex: 1; }
-  .topbar__profile {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: var(--hover); color: var(--text-2);
-    display: grid; place-items: center;
-    font-size: 12px; font-weight: 600;
-    border: 1px solid var(--border);
-  }
 
   .body { display: flex; flex: 1; }
 
@@ -1268,8 +1264,8 @@
   /* ============ MOBILE OVERRIDES (≤768px) ============ */
   @media (max-width: 768px) {
     /* Topbar 브랜드: 좁은 화면에서 살짝 축소 */
-    .topbar__name { font-size: 14px; }
-    .topbar__name__accent { padding: 1px 5px; }
+    .topbar__name { font-size: 16px; }
+    .topbar__name__accent { font-size: 14px; padding: 1px 6px; }
 
     /* ModeBar: 아이콘 위 + 라벨 아래 세로 스택 */
     .modebar { padding: 0 8px; height: auto; }
@@ -1566,7 +1562,6 @@ function TopBar({ tab }) {
         <input placeholder="재료, 레시피 검색…" />
       </div>
       <div className="topbar__spacer" />
-      <div className="topbar__profile">MK</div>
     </header>
   );
 }
