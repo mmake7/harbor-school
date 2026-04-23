@@ -92,7 +92,34 @@ function validateLandingParsed(p) {
   return null;
 }
 
-function landingRowToResponse(row) {
+const LANDING_FALLBACKS = {
+  '아침': {
+    headline: '오늘도 혼자 시작하는 하루',
+    subline: '혼자사는 삶이 곁에서 챙길게요.',
+    cta_label: '오늘의 운세 보기',
+    cta_target: '운세',
+  },
+  '오후': {
+    headline: '점심 먹었어요?',
+    subline: '오후를 정리해봐요.',
+    cta_label: '시작하기',
+    cta_target: '식생활',
+  },
+  '저녁': {
+    headline: '오늘 하루도 수고했어요',
+    subline: '혼자사는 삶이 함께할게요.',
+    cta_label: '저녁 레시피 보기',
+    cta_target: '식생활',
+  },
+  '새벽': {
+    headline: '아직 잠들지 못한 밤',
+    subline: '마음을 털어놓아도 괜찮아요.',
+    cta_label: '혼삶톡 보기',
+    cta_target: '소셜',
+  },
+};
+
+function landingRowToResponse(row, isCached) {
   return {
     date: formatDate(row.copy_date),
     time_slot: row.time_slot,
@@ -100,20 +127,33 @@ function landingRowToResponse(row) {
     subline: row.subline,
     cta_label: row.cta_label,
     cta_target: row.cta_target,
+    is_cached: !!isCached,
+  };
+}
+
+function landingFallbackResponse(date, timeSlot) {
+  const f = LANDING_FALLBACKS[timeSlot] || LANDING_FALLBACKS['오후'];
+  return {
+    date,
+    time_slot: timeSlot,
+    headline: f.headline,
+    subline: f.subline,
+    cta_label: f.cta_label,
+    cta_target: f.cta_target,
+    is_cached: false,
   };
 }
 
 async function handleLanding(req, res) {
+  const today = todayKST();
+  const timeSlot = currentTimeSlotKST();
   try {
-    const today = todayKST();
-    const timeSlot = currentTimeSlotKST();
-
     const existing = await pool.query(
       'SELECT * FROM landing_copies WHERE copy_date = $1 AND time_slot = $2 LIMIT 1',
       [today, timeSlot]
     );
     if (existing.rows.length > 0) {
-      return res.json(landingRowToResponse(existing.rows[0]));
+      return res.json(landingRowToResponse(existing.rows[0], true));
     }
 
     let message;
@@ -126,7 +166,7 @@ async function handleLanding(req, res) {
       });
     } catch (e) {
       console.error('[landing] claude call failed', e);
-      return res.status(502).json({ error: '랜딩 카피를 불러오지 못했어요.' });
+      return res.json(landingFallbackResponse(today, timeSlot));
     }
 
     const rawText = (message.content?.[0]?.text) || '';
@@ -136,13 +176,13 @@ async function handleLanding(req, res) {
     try { parsed = JSON.parse(jsonStr); }
     catch (e) {
       console.error('[landing] json parse failed', rawText);
-      return res.status(502).json({ error: '랜딩 카피 해석에 실패했어요.' });
+      return res.json(landingFallbackResponse(today, timeSlot));
     }
 
     const err = validateLandingParsed(parsed);
     if (err) {
       console.error('[landing] validation failed:', err, parsed);
-      return res.status(502).json({ error: '랜딩 카피 항목이 일부 누락됐어요.' });
+      return res.json(landingFallbackResponse(today, timeSlot));
     }
 
     const values = [
@@ -162,7 +202,7 @@ async function handleLanding(req, res) {
     );
 
     if (insert.rows.length > 0) {
-      return res.json(landingRowToResponse(insert.rows[0]));
+      return res.json(landingRowToResponse(insert.rows[0], false));
     }
 
     const reSelect = await pool.query(
@@ -171,12 +211,12 @@ async function handleLanding(req, res) {
     );
     if (reSelect.rows.length === 0) {
       console.error('[landing] race-safe re-select returned nothing');
-      return res.status(500).json({ error: '랜딩 카피 저장에 실패했어요.' });
+      return res.json(landingFallbackResponse(today, timeSlot));
     }
-    return res.json(landingRowToResponse(reSelect.rows[0]));
+    return res.json(landingRowToResponse(reSelect.rows[0], true));
   } catch (error) {
     console.error('[landing]', error);
-    return res.status(500).json({ error: '랜딩 서비스에 일시적 문제가 생겼어요.' });
+    return res.json(landingFallbackResponse(today, timeSlot));
   }
 }
 
