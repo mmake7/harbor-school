@@ -1146,35 +1146,43 @@
     .hbar-row__label { flex-basis: 56px; font-size: 12px; }
   }
 
-  /* ============ FORTUNE (Q7) ============ */
+  /* ============ FORTUNE (Q7) — 모노톤 + 인주 포인트 ============ */
   .fortune-head {
     display: flex; align-items: baseline; justify-content: space-between;
     margin-bottom: 16px;
   }
-  .fortune-head__date { font-size: 14px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .fortune-head__date {
+    font-size: 13px; color: var(--text-2); font-weight: 500;
+    letter-spacing: -0.01em;
+  }
   .fortune-head__new {
-    font-size: 11px; padding: 3px 8px; border-radius: 999px;
+    font-size: 11px; padding: 3px 8px; border-radius: 2px;
     background: var(--accent); color: #fff; font-weight: 600;
+    letter-spacing: 0.04em;
   }
 
   .fortune-hero {
-    background: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 55%, #fdf2f8 100%);
+    background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
+    border-radius: 4px;
+    padding: 40px 32px;
     margin-bottom: 16px;
     text-align: center;
   }
   .fortune-hero__cat {
-    font-size: 13px; color: var(--text-2); letter-spacing: 0.04em;
+    font-size: 11px; color: var(--text-3);
+    letter-spacing: 0.08em; font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 16px;
   }
   .fortune-hero__stars {
-    font-size: 28px; margin: 10px 0 6px;
-    letter-spacing: 4px; color: #eab308;
+    font-size: 28px; margin: 16px 0;
+    letter-spacing: 4px; color: var(--text);
   }
-  .fortune-hero__stars .dim { color: rgba(0,0,0,0.12); }
+  .fortune-hero__stars .dim { color: #D4D4D4; }
   .fortune-hero__msg {
-    font-size: 16px; color: var(--text); line-height: 1.6; font-weight: 500;
+    font-size: 18px; color: var(--text); line-height: 1.6; font-weight: 500;
+    letter-spacing: -0.02em;
     max-width: 540px; margin: 0 auto;
   }
 
@@ -1183,54 +1191,54 @@
     margin-bottom: 16px;
   }
   .fortune-theme {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 12px; padding: 14px 16px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 4px; padding: 20px;
+    transition: border-color 150ms;
   }
+  .fortune-theme:hover { border-color: var(--accent); }
   .fortune-theme__head {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
   }
   .fortune-theme__name {
     font-size: 14px; font-weight: 600; color: var(--text);
   }
   .fortune-theme__name .emoji { margin-right: 6px; }
   .fortune-theme__stars {
-    font-size: 13px; color: #eab308; letter-spacing: 2px;
+    font-size: 14px; color: var(--text); letter-spacing: 2px;
   }
-  .fortune-theme__stars .dim { color: rgba(0,0,0,0.12); }
+  .fortune-theme__stars .dim { color: #D4D4D4; }
   .fortune-theme__text {
-    font-size: 13px; color: var(--text-2); line-height: 1.55;
+    font-size: 13px; color: var(--text-2); line-height: 1.6;
   }
 
-  .fortune-lucky {
-    display: flex; align-items: center; gap: 12px;
-    background: #fef9c3;
-    border: 1px solid #fde68a;
-    border-radius: 12px;
-    padding: 14px 16px;
+  .fortune-lucky,
+  .fortune-advice {
+    background: var(--bg);
+    padding: 20px 24px;
+    border-radius: 0 4px 4px 0;
     margin-bottom: 12px;
   }
-  .fortune-lucky__icon { font-size: 22px; line-height: 1; }
-  .fortune-lucky__label { font-size: 12px; color: #854d0e; font-weight: 600; }
-  .fortune-lucky__val { font-size: 15px; color: #422006; font-weight: 600; margin-top: 2px; }
-
-  .fortune-advice {
-    display: flex; align-items: flex-start; gap: 12px;
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    border-radius: 12px;
-    padding: 14px 16px;
+  .fortune-lucky { border-left: 4px solid #A41E22; }
+  .fortune-advice { border-left: 4px solid var(--accent); }
+  .fortune-lucky__label,
+  .fortune-advice__label {
+    font-size: 11px; color: var(--text-3); font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 6px;
   }
-  .fortune-advice__icon { font-size: 20px; line-height: 1.2; }
-  .fortune-advice__label { font-size: 12px; color: #065f46; font-weight: 600; }
-  .fortune-advice__val { font-size: 14px; color: #064e3b; line-height: 1.55; margin-top: 2px; }
+  .fortune-lucky__val,
+  .fortune-advice__val {
+    font-size: 15px; color: var(--text); font-weight: 500;
+    line-height: 1.5;
+  }
 
   .fortune-err {
-    border: 1px solid var(--border); border-radius: 12px; padding: 20px;
-    text-align: center; color: var(--text-2); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 4px; padding: 20px;
+    text-align: center; color: var(--text-2); background: var(--card);
   }
   .fortune-err button {
-    margin-top: 12px; padding: 8px 16px; border-radius: 8px;
+    margin-top: 12px; padding: 8px 16px; border-radius: 4px;
     background: var(--accent); color: #fff; border: 0; cursor: pointer;
     font-size: 13px; font-weight: 600;
   }
@@ -1239,16 +1247,16 @@
     display: flex; flex-direction: column; gap: 10px;
   }
   .fortune-hist__item {
-    border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
-    background: var(--bg);
+    border: 1px solid var(--border); border-radius: 4px; padding: 16px 20px;
+    background: var(--card);
   }
   .fortune-hist__row1 {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 6px;
   }
   .fortune-hist__date { font-size: 13px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
-  .fortune-hist__stars { font-size: 13px; color: #eab308; letter-spacing: 2px; }
-  .fortune-hist__stars .dim { color: rgba(0,0,0,0.12); }
+  .fortune-hist__stars { font-size: 13px; color: var(--text); letter-spacing: 2px; }
+  .fortune-hist__stars .dim { color: #D4D4D4; }
   .fortune-hist__msg { font-size: 13px; color: var(--text-2); line-height: 1.55; margin-bottom: 6px; }
   .fortune-hist__foot {
     display: flex; gap: 10px; flex-wrap: wrap;
@@ -1313,8 +1321,10 @@
     /* 반응 버튼: 터치 타겟 44px */
     .react-btn { height: 44px; padding: 0 12px; }
 
-    /* 운세 별점: 모바일에서도 잘 보이게 */
-    .fortune-hero { padding: 24px 18px; }
+    /* 운세: 모바일 패딩/폰트 축소 */
+    .fortune-hero { padding: 28px 20px; }
+    .fortune-hero__msg { font-size: 16px; }
+    .fortune-lucky, .fortune-advice { padding: 16px 18px; }
   }
 
   /* iOS Safari safe area */
@@ -3482,6 +3492,14 @@ function Stars({ score, size }) {
   );
 }
 
+function formatFortuneDate(s) {
+  if (!s) return '';
+  const d = new Date(s + 'T00:00:00');
+  if (Number.isNaN(d.getTime())) return s;
+  const days = ['일','월','화','수','목','금','토'];
+  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 ${days[d.getDay()]}요일`;
+}
+
 function FortuneTodayTab() {
   const [data, setData] = useState(null);
   const [err, setErr] = useState(null);
@@ -3501,7 +3519,7 @@ function FortuneTodayTab() {
 
   useEffect(() => { load(); }, [load]);
 
-  if (loading && !data) return <div className="empty">타로냥이 오늘의 운세를 읽는 중…</div>;
+  if (loading && !data) return <div className="empty">오늘의 운세를 불러오는 중…</div>;
 
   if (err && !data) {
     return (
@@ -3517,7 +3535,7 @@ function FortuneTodayTab() {
   return (
     <div>
       <div className="fortune-head">
-        <div className="fortune-head__date">{data.fortune_date} · 혼삶 타로냥</div>
+        <div className="fortune-head__date">{formatFortuneDate(data.fortune_date)}</div>
         {data.is_new && <div className="fortune-head__new">NEW</div>}
       </div>
 
@@ -3544,19 +3562,13 @@ function FortuneTodayTab() {
       </div>
 
       <div className="fortune-lucky">
-        <div className="fortune-lucky__icon">🍀</div>
-        <div>
-          <div className="fortune-lucky__label">오늘의 행운 아이템</div>
-          <div className="fortune-lucky__val">{data.lucky_item}</div>
-        </div>
+        <div className="fortune-lucky__label">오늘의 행운 아이템</div>
+        <div className="fortune-lucky__val">{data.lucky_item}</div>
       </div>
 
       <div className="fortune-advice">
-        <div className="fortune-advice__icon">✨</div>
-        <div>
-          <div className="fortune-advice__label">오늘의 한마디</div>
-          <div className="fortune-advice__val">{data.daily_advice}</div>
-        </div>
+        <div className="fortune-advice__label">오늘의 한마디</div>
+        <div className="fortune-advice__val">{data.daily_advice}</div>
       </div>
     </div>
   );
