@@ -422,6 +422,8 @@ npx vercel dev
 ---
 
 ## 📁 프로젝트 구조
+
+```
 week4/quest/recipe-skill/
 ├── ingredients/              # Q1: 재료 JSON 파일 10개
 ├── .claude/skills/recipe/    # Q1: Claude Code Skill
@@ -430,40 +432,43 @@ week4/quest/recipe-skill/
 ├── recipes/                  # Q1: 생성된 레시피 마크다운
 │
 └── web/                      # Q2~Q7 + 홈 통합 웹앱
-├── api/
-│   ├── ingredients.js
-│   ├── recipe.js
-│   ├── posts.js                    # (+ ?view=best)
-│   ├── posts/[id]/comments.js
-│   ├── reactions.js
-│   ├── balance.js
-│   ├── balance/ranking.js
-│   ├── vote.js
-│   ├── life.js
-│   ├── life/me.js
-│   ├── life/stats.js
-│   └── fortune.js                  # (+ ?view=history|landing)
-├── db/
-│   ├── board-schema.sql
-│   ├── balance-schema.sql
-│   ├── life-schema.sql
-│   ├── fortune-schema.sql
-│   └── landing-schema.sql
-├── public/
-│   └── index.html        # SPA (React CDN)
-├── package.json
-├── vercel.json
-└── README.md             # 이 파일
+    ├── api/
+    │   ├── ingredients.js
+    │   ├── recipe.js
+    │   ├── posts.js                   # (+ ?view=best)
+    │   ├── posts/[id]/comments.js
+    │   ├── reactions.js
+    │   ├── balance.js
+    │   ├── balance/ranking.js
+    │   ├── vote.js
+    │   ├── life.js
+    │   ├── life/me.js
+    │   ├── life/stats.js
+    │   └── fortune.js                 # (+ ?view=history|landing)
+    ├── db/
+    │   ├── board-schema.sql
+    │   ├── balance-schema.sql
+    │   ├── life-schema.sql
+    │   ├── fortune-schema.sql
+    │   └── landing-schema.sql
+    ├── public/
+    │   └── index.html        # SPA (React CDN)
+    ├── package.json
+    ├── vercel.json
+    └── README.md             # 이 파일
+```
 
 ---
 
 ## 🧑‍🍳 만든 사람
 
-### 박유송
-공공부문 IT 기획자 · [harbor.school](https://harbor.school) 2기 주말반
+### 박인수
+직장인 · [harbor.school](https://harbor.school) 2기 주말반
 
-**개발자 출신 아님.** 공공 SI 제안서 쓰던 기획자가
-Claude Code로 AI 앱을 만들어가는 과정을 기록한 프로젝트입니다.
+**개발자 출신 아님.** 평범한 회사원이 Claude Code로 AI 앱을 만들어가는 과정을 기록한 프로젝트입니다.
+
+**기획부터 설계, 구현, 디버깅, 배포, 개선까지**
+전 과정을 AI 에이전트와 대화하며 완성했습니다.
 
 ---
 
