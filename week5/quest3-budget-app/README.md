@@ -112,14 +112,18 @@ node dev-server.js      # http://localhost:3000
 
 ---
 
-## 폴더 구조 (`test-screenshots/` 단일)
-
-Q1·Q2의 `screenshots/`(제출용 캡처)와 달리 Q3는 *자동화된 E2E 결과 증거* 성격이라 **`test-screenshots/`** 한 폴더로 통일.
+## 폴더 구조 (Q3 자동화 증거 + Q4 제출용)
 
 ```
 test-screenshots/
-├── e2e-01~05-*.png          ← 로컬 (localhost:3000) Playwright 자동 캡처
-└── deployed-01~05-*.png     ← 배포본 (Vercel) Playwright 자동 캡처
+├── e2e-01~05-*.png          ← Q3 로컬 (localhost:3000) Playwright 자동 캡처
+└── deployed-01~05-*.png     ← Q3 배포본 (Vercel) Playwright 자동 캡처
+
+screenshots/q4/
+├── 01-overview.png          ← Q4 메인 화면 (가계부 + 분석 섹션 통합)
+├── 02-monthly-report.png    ← Q4 월간 리포트 카드 (등급 + 4축)
+├── 03-advice.png            ← Q4 다음 달 시도 (advice 섹션)
+└── 04-chat.png              ← Q4 대화형 답변 (Q + A + 후속 질문)
 ```
 
 ---
@@ -159,3 +163,17 @@ test-screenshots/
 
 #### 5. 새로고침 후 (Production)
 ![배포 새로고침 후](./test-screenshots/deployed-05-after-reload.png)
+
+### Q4 — AI 분석 (제출용)
+
+#### 1. 메인 화면 — 가계부 + AI 분석 섹션 통합
+![Q4 메인](./screenshots/q4/01-overview.png)
+
+#### 2. 월간 리포트 카드 (등급 + 4축 분석)
+![Q4 월간 리포트](./screenshots/q4/02-monthly-report.png)
+
+#### 3. 다음 달 시도 (advice)
+![Q4 advice](./screenshots/q4/03-advice.png)
+
+#### 4. 대화형 비서 (질문 + 답변 + 후속 질문)
+![Q4 chat](./screenshots/q4/04-chat.png)
