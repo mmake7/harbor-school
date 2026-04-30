@@ -1,0 +1,6 @@
+scripts/
+sql/
+test-screenshots/
+*.log
+.env*
+dev-server.js
