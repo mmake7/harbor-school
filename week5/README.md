@@ -53,7 +53,8 @@ week5/
 | Q3 — DB 스키마 v2 + apply.js 검증 | ✅ 완료 |
 | Q3 — Vercel 함수 + KST 헬퍼 + curl 4종 검증 | ✅ 완료 |
 | Q3 — 흑백 미니멀 SPA + Playwright E2E 5/5 PASS | ✅ 완료 |
-| Q3 — Vercel 배포 (GitHub 연동) | ⏳ 진행 중 |
+| Q3 — Vercel 배포 (GitHub 연동) | ✅ 완료 — https://harbor-school-mmake7-3440s-projects.vercel.app/ |
+| Q3 — 배포본 Playwright E2E 5/5 PASS | ✅ 완료 |
 | Q4~ | ⏳ 예정 |
 
 자세한 내용은 각 quest README 참조:
