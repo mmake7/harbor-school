@@ -55,7 +55,12 @@ week5/
 | Q3 — 흑백 미니멀 SPA + Playwright E2E 5/5 PASS | ✅ 완료 |
 | Q3 — Vercel 배포 (GitHub 연동) | ✅ 완료 — https://harbor-school-mmake7-3440s-projects.vercel.app/ |
 | Q3 — 배포본 Playwright E2E 5/5 PASS | ✅ 완료 |
-| Q4~ | ⏳ 예정 |
+| Q4 — DB 분석 테이블 + 78건 시드 (Step A) | ✅ 완료 |
+| Q4 — `/api/analyze?view=monthly` Claude 통합 + DB 캐시 (Step B) | ✅ 완료 |
+| Q4 — `/api/analyze?view=chat` 대화형 (Step C) | ✅ 완료 |
+| Q4 — Q3 화면에 분석 UI 통합 (Step D, 로컬 검증) | ✅ 완료 |
+| Q4 — Vercel 환경변수 ANTHROPIC_API_KEY 추가 + Redeploy | ⏳ 진행 중 |
+| Q5~ | ⏳ 예정 |
 
 자세한 내용은 각 quest README 참조:
 - [`quest1-notion-assistant/README.md`](./quest1-notion-assistant/README.md)

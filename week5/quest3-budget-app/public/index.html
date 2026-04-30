@@ -166,6 +166,106 @@
 
     /* Loading state */
     .skeleton { color: var(--secondary); font-size: 13px; padding: 12px 0; }
+
+    /* ── Analysis (Q4) ── */
+    .analyze-block { margin-top: 12px; }
+    .btn-analyze {
+      height: 40px; padding: 0 20px;
+      background: #ffffff; color: var(--text);
+      border: 1px solid var(--text); border-radius: 6px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .btn-analyze:hover { background: var(--text); color: #ffffff; }
+    .btn-analyze:disabled { opacity: 0.5; cursor: wait; }
+
+    .monthly-card {
+      background: var(--card); border-radius: 8px;
+      padding: 24px; margin-top: 16px;
+    }
+    .grade-row {
+      display: flex; align-items: center; gap: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--divider);
+      margin-bottom: 18px;
+    }
+    .grade {
+      width: 72px; height: 72px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--text); color: #ffffff;
+      border-radius: 8px;
+      font-size: 36px; font-weight: 700;
+      letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
+    }
+    .headline-block { flex: 1; }
+    .headline { font-size: 16px; font-weight: 600; line-height: 1.4; margin-bottom: 4px; }
+    .meta { font-size: 11px; color: var(--secondary); font-variant-numeric: tabular-nums; }
+
+    .block { margin-bottom: 18px; }
+    .block:last-child { margin-bottom: 0; }
+    .block-title {
+      font-size: 11px; color: var(--secondary);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .block-row {
+      font-size: 14px; font-variant-numeric: tabular-nums;
+      margin-bottom: 4px;
+    }
+    .block-comment {
+      font-size: 13px; color: var(--secondary); line-height: 1.55;
+      margin-top: 4px;
+    }
+    .advice-list { list-style: none; margin-top: 6px; }
+    .advice-list li {
+      font-size: 13px; line-height: 1.6; color: var(--text);
+      padding: 6px 0 6px 14px; position: relative;
+    }
+    .advice-list li::before {
+      content: '·'; position: absolute; left: 0;
+      color: var(--secondary); font-weight: 700;
+    }
+
+    /* Chat */
+    .chat-block { margin-top: 28px; }
+    .chat-form {
+      display: flex; gap: 8px; margin-bottom: 14px;
+    }
+    .chat-input {
+      flex: 1; height: 40px; padding: 0 14px;
+      background: #ffffff; border: 1px solid var(--divider); border-radius: 6px;
+      font-family: inherit; font-size: 14px; color: var(--text);
+    }
+    .chat-input:focus { outline: none; border-color: var(--text); }
+    .chat-card {
+      background: var(--card); border-radius: 8px;
+      padding: 18px 22px; margin-bottom: 10px;
+    }
+    .chat-q {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      margin-bottom: 10px; line-height: 1.5;
+    }
+    .chat-a {
+      font-size: 14px; color: var(--text); line-height: 1.65;
+    }
+    .follow-up {
+      margin-top: 14px; padding-top: 14px;
+      border-top: 1px solid var(--divider);
+    }
+    .follow-label {
+      font-size: 11px; color: var(--secondary);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .follow-btn {
+      display: inline-block;
+      margin: 4px 6px 4px 0; padding: 6px 12px;
+      background: #ffffff;
+      border: 1px solid var(--divider); border-radius: 16px;
+      font-family: inherit; font-size: 12px; color: var(--text); cursor: pointer;
+    }
+    .follow-btn:hover { background: var(--text); color: #ffffff; border-color: var(--text); }
+    .err-msg { color: var(--danger); font-size: 13px; }
   </style>
 </head>
 <body>
@@ -243,6 +343,24 @@
       <div class="section-title">카테고리별 지출 (이번 달)</div>
       <div class="bars" id="bars">
         <div class="skeleton">불러오는 중…</div>
+      </div>
+    </section>
+
+    <!-- ────────── AI 분석 (Q4) ────────── -->
+    <section>
+      <div class="section-title">🤖 AI 분석</div>
+      <div class="analyze-block">
+        <button id="btn-monthly" type="button" class="btn-analyze">이번 달 분석 보기</button>
+        <div id="monthly-result" hidden></div>
+      </div>
+
+      <div class="chat-block">
+        <div class="section-title">💬 비서에게 질문</div>
+        <form class="chat-form" id="chat-form" autocomplete="off">
+          <input type="text" id="chat-input" class="chat-input" placeholder="자유롭게 질문해보세요... (예: 이번 달 카페 얼마 썼어?)" maxlength="200" />
+          <button type="submit" class="btn-primary" id="chat-submit">보내기</button>
+        </form>
+        <div id="chat-result"></div>
       </div>
     </section>
   </main>
@@ -450,6 +568,131 @@
         showError('네트워크 오류: ' + err.message);
       }
     }
+
+    // ──────── AI 분석 (Q4) ────────
+    const ANALYZE_API = '/api/analyze';
+
+    async function loadMonthly() {
+      const btn = $('btn-monthly');
+      const card = $('monthly-result');
+      btn.disabled = true;
+      card.hidden = false;
+      card.className = 'monthly-card';
+      card.innerHTML = '<div class="skeleton">분석 중... (첫 호출은 약 10~15초, 이후 캐시 1초)</div>';
+      try {
+        const r = await fetch(ANALYZE_API + '?view=monthly');
+        const j = await r.json();
+        if (!r.ok) {
+          card.innerHTML = `<div class="err-msg">${escapeHtml(j.error || '분석 실패')}</div>`;
+          return;
+        }
+        renderMonthly(card, j);
+      } catch (e) {
+        card.innerHTML = `<div class="err-msg">네트워크 오류: ${escapeHtml(e.message)}</div>`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function renderMonthly(card, data) {
+      const a = data.analysis || {};
+      const cf = a.cashflow || {};
+      const cat = a.category || {};
+      const tp = a.time_pattern || {};
+      const fv = cat.fixed_vs_variable || {};
+      const top5 = (cat.top5 || []).map(c => `${escapeHtml(c.name)} ${c.ratio}%`).join(' · ');
+      const adv = (a.advice || []).map(x => `<li>${escapeHtml(x)}</li>`).join('');
+      const cacheLabel = data.cached ? '캐시 hit' : '신규 분석';
+      const tokens = data.meta?.tokens_used ? ` · ${data.meta.tokens_used} tokens` : '';
+      const elapsed = data.meta?.elapsed_ms ? ` · ${data.meta.elapsed_ms}ms` : '';
+
+      card.innerHTML = `
+        <div class="grade-row">
+          <div class="grade">${escapeHtml(a.grade || '?')}</div>
+          <div class="headline-block">
+            <div class="headline">${escapeHtml(a.headline || '')}</div>
+            <div class="meta">${data.month} · ${cacheLabel}${tokens}${elapsed}</div>
+          </div>
+        </div>
+        <div class="block">
+          <div class="block-title">💰 현금 흐름</div>
+          <div class="block-row">수입 ${fmt(cf.income||0)} · 지출 ${fmt(cf.expense||0)} · 잔액 ${fmt(cf.balance||0)} · 저축률 ${cf.savings_rate||0}%</div>
+          <div class="block-comment">${escapeHtml(cf.comment || '')}</div>
+        </div>
+        <div class="block">
+          <div class="block-title">📊 카테고리 (Top 5 · 고정비 ${fv.fixed_ratio||0}%)</div>
+          <div class="block-row">${top5}</div>
+          <div class="block-comment">${escapeHtml(cat.comment || '')}</div>
+        </div>
+        <div class="block">
+          <div class="block-title">⏰ 시간 패턴</div>
+          <div class="block-row">평일 평균 ${fmt(tp.weekday_avg||0)}/일 · 주말 평균 ${fmt(tp.weekend_avg||0)}/일</div>
+          <div class="block-comment">${escapeHtml(tp.comment || '')}</div>
+        </div>
+        <div class="block">
+          <div class="block-title">💡 다음 달 시도</div>
+          <ul class="advice-list">${adv}</ul>
+        </div>
+      `;
+    }
+
+    async function handleChat(question) {
+      const result = $('chat-result');
+      const block = document.createElement('div');
+      block.className = 'chat-card';
+      block.innerHTML = `
+        <div class="chat-q">Q. ${escapeHtml(question)}</div>
+        <div class="chat-a"><span class="skeleton">생각 중... (~6초)</span></div>
+      `;
+      result.prepend(block);
+      try {
+        const r = await fetch(ANALYZE_API + '?view=chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question }),
+        });
+        const j = await r.json();
+        if (!r.ok) {
+          block.querySelector('.chat-a').innerHTML = `<span class="err-msg">${escapeHtml(j.error || '실패')}</span>`;
+          return;
+        }
+        const followups = (j.follow_up_questions || []).map(q =>
+          `<button class="follow-btn" type="button">${escapeHtml(q)}</button>`
+        ).join('');
+        block.querySelector('.chat-a').innerHTML = `
+          A. ${escapeHtml(j.answer || '')}
+          ${followups ? `
+            <div class="follow-up">
+              <div class="follow-label">💡 이어서 물어볼까</div>
+              ${followups}
+            </div>
+          ` : ''}
+        `;
+        block.querySelectorAll('.follow-btn').forEach(b => {
+          b.addEventListener('click', () => {
+            $('chat-input').value = b.textContent;
+            $('chat-input').focus();
+          });
+        });
+      } catch (err) {
+        block.querySelector('.chat-a').innerHTML = `<span class="err-msg">네트워크 오류: ${escapeHtml(err.message)}</span>`;
+      }
+    }
+
+    $('btn-monthly').addEventListener('click', loadMonthly);
+
+    $('chat-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const input = $('chat-input');
+      const q = input.value.trim();
+      if (!q) return;
+      if (q.length > 200) return;
+      input.value = '';
+      const btn = $('chat-submit');
+      btn.disabled = true;
+      try { await handleChat(q); }
+      finally { btn.disabled = false; }
+    });
 
     // Init
     document.addEventListener('DOMContentLoaded', () => {

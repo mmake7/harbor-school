@@ -1,11 +1,14 @@
-# Quest 3 — PRIME / Spend (가계부 앱)
+# Quest 3 — PRIME / Spend (가계부 앱) + Q4 통합
 
 > 🔗 **Production**: https://harbor-school-mmake7-3440s-projects.vercel.app/
 > 📁 **레포**: `week5/quest3-budget-app/`
+> 🤖 **Q4 통합**: monthly 리포트 + chat 대화형 (Step D)
 
 ## 컨셉
 
-수입·지출을 한 줄 입력 → 카테고리별 자동 추적 + 월별 통계, KST 시간대 일관. 4주차 `life_*` 8개 지출 카테고리를 재활용해 5주차 ↔ 4주차 데이터 호환성 확보.
+수입·지출을 한 줄 입력 → 카테고리별 자동 추적 + 월별 통계, KST 시간대 일관.
+4주차 `life_*` 8개 지출 카테고리를 재활용해 5주차 ↔ 4주차 데이터 호환성 확보.
+**Q4 (PRIME / Insight)**: 같은 화면에서 Claude 분석 — 등급·4축 리포트·자유 질문.
 
 ## 진행한 것
 
@@ -46,20 +49,32 @@ node dev-server.js      # http://localhost:3000
 
 - **URL**: https://harbor-school-mmake7-3440s-projects.vercel.app/
 - **방식**: GitHub `mmake7/harbor-school` repo 연동 → Root Directory `week5/quest3-budget-app` → 자동 배포 (push to main)
-- **환경변수**: `DATABASE_URL` 1개 (Vercel 프로젝트 Settings → Environment Variables)
-- **함수 정의**: `vercel.json`의 `functions: { "api/budget.js": { "maxDuration": 10 } }`
+- **환경변수 2개** (Vercel 프로젝트 Settings → Environment Variables):
+  - `DATABASE_URL` — Supabase pooler 연결 (4주차에서 그대로)
+  - `ANTHROPIC_API_KEY` — Claude API (Q4 분석)
+- **함수 정의**: `vercel.json`의 `functions: { "api/budget.js" / "api/analyze.js": { "maxDuration": 10 } }`
 
 ## API 엔드포인트
 
+### Q3 — 가계부 (`/api/budget`)
+
 | Method | Path | 설명 |
 |---|---|---|
-| GET | `/api/budget?view=categories` | 카테고리 마스터 (지출 12 + 수입 4) |
-| GET | `/api/budget?view=entries[&month=YYYY-MM]` | 월별 입력 조회 (기본: 이번 달 KST) |
-| POST | `/api/budget?view=entries` | 입력 추가 `{entry_date, type, category_id, amount, memo}` |
-| PATCH | `/api/budget?view=entries&id=...` | 입력 수정 |
-| DELETE | `/api/budget?view=entries&id=...` | 입력 삭제 |
-| GET | `/api/budget?view=stats` | 이번 달 합계 / 카테고리별 / top 3 |
-| GET | `/api/budget?view=budget-vs-actual` | 카테고리 평균(직전 3개월) vs 이번 달 실적 |
+| GET | `?view=categories` | 카테고리 마스터 (지출 12 + 수입 4) |
+| GET | `?view=entries[&month=YYYY-MM]` | 월별 입력 조회 (기본: 이번 달 KST) |
+| POST | `?view=entries` | 입력 추가 `{entry_date, type, category_id, amount, memo}` |
+| PATCH | `?view=entries&id=...` | 입력 수정 |
+| DELETE | `?view=entries&id=...` | 입력 삭제 |
+| GET | `?view=stats` | 이번 달 합계 / 카테고리별 / top 3 |
+| GET | `?view=budget-vs-actual` | 카테고리 평균(직전 3개월) vs 이번 달 실적 |
+
+### Q4 — AI 분석 (`/api/analyze`)
+
+| Method | Path | 설명 |
+|---|---|---|
+| GET | `?view=monthly[&month=YYYY-MM]` | 월간 리포트 (등급 + 4축 분석, DB 캐시 + Claude) |
+| POST | `?view=cache-clear[&month=...]` | 월간 리포트 캐시 삭제 (개발용) |
+| POST | `?view=chat` body `{question, month?}` | 자유 질문 → 데이터 기반 답변 + 후속 질문 |
 
 ## 자동 검증 결과
 
