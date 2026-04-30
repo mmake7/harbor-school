@@ -12,20 +12,39 @@ Q4 분석 비서는 Q3 가계부 앱과 같은 사이트로 통합 운영됩니�
 
 ## 🎯 미션 충족 증거
 
-### 필수 제출물 — 조회·분석·조언 SS 각 1
-| 미션 항목 | SS 위치 |
-|---|---|
-| 조회 SS | [`../quest3-budget-app/screenshots/q4/01-overview.png`](../quest3-budget-app/screenshots/q4/01-overview.png) |
-| 분석 SS | [`../quest3-budget-app/screenshots/q4/02-monthly-report.png`](../quest3-budget-app/screenshots/q4/02-monthly-report.png) |
-| 조언 SS | [`../quest3-budget-app/screenshots/q4/03-advice.png`](../quest3-budget-app/screenshots/q4/03-advice.png) |
-| 대화 SS (보너스) | [`../quest3-budget-app/screenshots/q4/04-chat.png`](../quest3-budget-app/screenshots/q4/04-chat.png) |
+### 1. 조회 SS — 가계부 메인 화면
 
-### 보너스 — 월간 리포트 / 등급
-- ✅ 월간 리포트: 4축 분석 (현금흐름·카테고리·시간패턴·등급+조언)
-- ✅ 등급: A+ ~ F (저축률·패턴 안정성 기반)
-- 분석 결과: A 등급 받음 (저축률 61.7%, 고정비 관리 탁월)
+![조회](../quest3-budget-app/screenshots/q4/01-overview.png)
 
-### 차별화
+수입·지출·잔액 헤더 + 입력 폼 + 최근 입력 목록 + 카테고리별 막대.
+
+---
+
+### 2. 분석 SS — 월간 리포트 + 등급
+
+![분석](../quest3-budget-app/screenshots/q4/02-monthly-report.png)
+
+A 등급 + 4축 분석 (현금흐름·카테고리·시간패턴·저축률).
+"저축률 61.7% 우수, 고정비 관리 탁월한 달"
+
+---
+
+### 3. 조언 SS — 다음 달 시도 액션
+
+![조언](../quest3-budget-app/screenshots/q4/03-advice.png)
+
+데이터 기반 정량 조언 (예: "평일 78,618원 → 65,000원 목표, 월 300만원 저축 가능").
+
+---
+
+### 4. 대화 SS — 자유 질문 답변 (보너스)
+
+![대화](../quest3-budget-app/screenshots/q4/04-chat.png)
+
+할루시 방지 검증 — 데이터에 없는 정보는 솔직히 "없다" 답변 + 미래 개선 제안.
+
+## ⭐ 차별화
+
 1. **할루시 방지 검증 통과**: "데이터에 없는 정보는 솔직히 모른다고 답변"
    (예: "이번 달 카페 얼마?" → "그 정보는 데이터에 없어" + 미래 개선 제안)
 2. **대화형 후속 질문**: AI가 다음 질문 2개 자동 추천
