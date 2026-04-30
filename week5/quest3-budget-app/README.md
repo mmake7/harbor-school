@@ -1,4 +1,4 @@
-# Quest 3 — PRIME / Spend (가계부 앱) + Q4 통합
+# Quest 3 — PRIME / Spend + Insight (가계부 + AI 분석 통합)
 
 > 🔗 **Production**: https://harbor-school-mmake7-3440s-projects.vercel.app/
 > 📁 **레포**: `week5/quest3-budget-app/`
