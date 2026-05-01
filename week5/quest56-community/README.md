@@ -152,3 +152,16 @@ node dev-server.js      # http://localhost:3002
 
 ## 배포 (Vercel)
 GitHub main 브랜치 push 시 자동 배포. 환경변수는 Vercel 대시보드에서 등록.
+
+## 에이전트 대화 (필수 제출)
+
+Claude / Claude Code와의 작업 대화. Q5+Q6 구현 과정.
+
+| # | 내용 |
+|---|---|
+| 1 | Q5 게시판 — 글 CRUD / 댓글 / 반응 설계 + DB 스키마 |
+| 2 | Q6 쇼핑 — 상품/카트/주문 + 가격 스냅샷 + 트랜잭션 락 |
+
+![Q5 게시판 진행](screenshots/agent/Quest05%20%EC%A7%84%ED%96%89.png)
+
+![Q6 쇼핑 진행](screenshots/agent/Quest06%20%EC%A7%84%ED%96%89.png)

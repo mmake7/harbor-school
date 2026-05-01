@@ -1,68 +1,68 @@
-# Week 5 — PRIME
+# 5주차 PRIME — 미션 제출
 
-harbor.school 5주차 작업 공간.
+5주차 PRIME 부트캠프 8개 퀘스트(Q1~Q8) 통합 제출.
+
+## 라이브
+- 🌐 https://harbor-community.vercel.app/ (Q5~Q8 통합 사이트)
+- 🌙 https://harbor-community.vercel.app/#/me (Q7+Q8 문카페)
 
 ## 컨셉
 
 **PRIME** — 흩어진 정보를 모아 패턴으로 응축하는 개인 운영 시스템.
-- **Notes** (회고·학습 기록) — 매일·매주·주제별 단방향 누적
-- **Radar** (Deep Dive 리서치) — 1차 출처 직접 방문 + 4축 구조 정리
-- **Spend** (가계부) — 수입·지출 입력 / 카테고리별 통계 / KST 일관 처리
+- Notes (회고·학습 기록) — 매일·매주·주제별 단방향 누적
+- Radar (Deep Dive 리서치) — 1차 출처 직접 방문 + 4축 구조 정리
+- Spend (가계부) — 수입·지출 입력 / 카테고리별 통계 / KST 일관 처리
+- Insight (가계부 분석 비서) — Q3 위에 monthly + 대화형 분석 통합
+- Community (게시판 + 쇼핑) — Auth 인프라 + 통합 사이트
+- Moon Cafe (대시보드 + 듀오 AI) — Context Before/After 시연
 
-흑백 미니멀 컨셉 일관성 유지.
+## 퀘스트 구성
 
-## 폴더 구조
+| 미션 | 폴더 | 라이브 위치 | 핵심 |
+|---|---|---|---|
+| Q1 (Notion Assistant) | quest1-notion-assistant/ | (별도) | 첫 에이전트 |
+| Q2 (Research / Radar) | quest2-research-agent/ · q2-radar/ | (별도) | Deep Dive 분석 |
+| Q3 (Budget App) | quest3-budget-app/ | (별도 vercel) | 가계부 SPA |
+| Q4 (Budget Analyzer) | quest4-budget-analyzer/ | (별도) | Q3 위에 분석 비서 |
+| Q5+Q6 (게시판 + 쇼핑) | quest56-community/ | `/board` · `/shop` | Auth + 통합 사이트 |
+| Q7+Q8 (Context + 대시보드) | quest78-prime/ | `/me` 문카페 | 듀오 AI + Before/After |
 
-```
-week5/
-├── plan/                                기획안
-│   └── PRIME_Week5_Plan.pptx            (16장, 흑백 미니멀)
-├── quest1-notion-assistant/             Q1 — PRIME / Notes (회고 비서)
-│   ├── README.md
-│   ├── notes/                           (확장 예약)
-│   └── screenshots/                     (5장)
-├── quest2-research-agent/               Q2 — PRIME / Radar (Deep Dive 리서치)
-│   ├── README.md
-│   ├── research/                        리서치 .md (2건)
-│   ├── insights/                        1페이지 전략 인사이트 (1건)
-│   └── screenshots/                     (5장)
-└── quest3-budget-app/                   Q3 — PRIME / Spend (가계부 앱)
-    ├── README.md
-    ├── api/budget.js                    Vercel 함수 1개, ?view= 분기
-    ├── lib/datetime.js                  KST 헬퍼
-    ├── public/index.html                흑백 미니멀 SPA
-    ├── sql/{schema,seed}.sql            12 expense + 4 income 카테고리
-    ├── scripts/{apply,test-conn}.js     로컬 DB 적용·검증
-    ├── dev-server.js                    로컬 Express wrapper
-    ├── vercel.json                      배포 설정
-    └── test-screenshots/                Playwright E2E SS (5장)
-```
+각 폴더의 README에서 상세 내용 확인.
 
-## 진행 현황 (2026-04-30 기준)
+## 에이전트 대화 (필수 제출)
 
-| 항목 | 상태 |
+5주차 작업 전체에 걸친 Claude / Claude Code 대화 기록.
+
+### 5주차 기획·메타
+| 파일 | 내용 |
 |---|---|
-| 기획안 PPT 16장 (흑백 미니멀) | ✅ 완료 |
-| Q1 — Notion MCP OAuth 셋업 | ✅ 완료 |
-| Q1 — 회고 시스템 뼈대 (4폴더 + 5항목) | ✅ 완료 |
-| Q1 — 자기 진화 1회 (4 → 5항목) | ✅ 완료 |
-| Q2 — Playwright MCP 셋업 | ✅ 완료 |
-| Q2 — 폐쇄망 LLM Deep Dive | ✅ 완료 |
-| Q2 — 엣지 sLLM × 농축산 Deep Dive | ✅ 완료 |
-| Q2 — 1페이지 전략 인사이트 추출 | ✅ 완료 |
-| Q3 — DB 스키마 v2 + apply.js 검증 | ✅ 완료 |
-| Q3 — Vercel 함수 + KST 헬퍼 + curl 4종 검증 | ✅ 완료 |
-| Q3 — 흑백 미니멀 SPA + Playwright E2E 5/5 PASS | ✅ 완료 |
-| Q3 — Vercel 배포 (GitHub 연동) | ✅ 완료 — https://harbor-school-mmake7-3440s-projects.vercel.app/ |
-| Q3 — 배포본 Playwright E2E 5/5 PASS | ✅ 완료 |
-| Q4 — DB 분석 테이블 + 78건 시드 (Step A) | ✅ 완료 |
-| Q4 — `/api/analyze?view=monthly` Claude 통합 + DB 캐시 (Step B) | ✅ 완료 |
-| Q4 — `/api/analyze?view=chat` 대화형 (Step C) | ✅ 완료 |
-| Q4 — Q3 화면에 분석 UI 통합 (Step D, 로컬 검증) | ✅ 완료 |
-| Q4 — Vercel 환경변수 ANTHROPIC_API_KEY 추가 + Redeploy | ⏳ 진행 중 |
-| Q5~ | ⏳ 예정 |
+| ![](screenshots/agent/%ED%80%98%EC%8A%A4%ED%8A%B8%20%EA%B8%B0%ED%9A%8D%EC%95%88%EC%9E%91%EC%84%B1.png) | 5주차 기획안 작성 — 8개 퀘스트 의존성 다이어그램 |
+| ![](screenshots/agent/%ED%80%98%EC%8A%A4%ED%8A%B8%20%EC%A3%BC%EC%9E%AC%20%EB%B6%84%EB%A5%98.png) | 퀘스트 주제 분류 — 어떤 사이트로 통합할지 |
+| ![](screenshots/agent/%ED%80%98%EC%8A%A4%ED%8A%B8%20%EC%BB%A8%EC%85%89%EC%A0%95%EC%9D%98.png) | 퀘스트 컨셉 정의 — 가상 사용자 / 톤 결정 |
 
-자세한 내용은 각 quest README 참조:
-- [`quest1-notion-assistant/README.md`](./quest1-notion-assistant/README.md)
-- [`quest2-research-agent/README.md`](./quest2-research-agent/README.md)
-- [`quest3-budget-app/README.md`](./quest3-budget-app/README.md)
+### Q1~Q4 진행 대화
+| 파일 | 내용 |
+|---|---|
+| ![](screenshots/agent/Quest01%20%EC%A7%84%ED%96%89.png) | Q1 Notion Assistant 작업 |
+| ![](screenshots/agent/Quest02%20%EC%A7%84%ED%96%891.png) | Q2 Research Agent 작업 (1) |
+| ![](screenshots/agent/Quest02%20%EC%A7%84%ED%96%892.png) | Q2 Research Agent 작업 (2) |
+| ![](screenshots/agent/Quest03%20%EC%A7%84%ED%96%89.png) | Q3 Budget App 작업 |
+| ![](screenshots/agent/Quest04%20%EC%A7%84%ED%96%89.png) | Q4 Budget Analyzer 작업 |
+
+### Q5~Q8 진행 대화
+- Q5+Q6: [`quest56-community/screenshots/agent/`](quest56-community/screenshots/agent/)
+- Q7+Q8: [`quest78-prime/screenshots/agent/`](quest78-prime/screenshots/agent/)
+
+## 작업 공간 구조
+
+이 프로젝트는 두 GitHub 저장소에 동일 내용으로 존재:
+
+| 저장소 | 용도 |
+|---|---|
+| `mmake7/harbor-school/week5/` (이 저장소) | 수업 검수용 |
+| `mmake7/harbor-community/` | 라이브 배포용 (Vercel) |
+
+## 5주차 회고
+- ✅ Q5+Q6+Q7+Q8 한 사이트로 통합 (Vercel 12 함수 한도 중 4개 사용)
+- ✅ 듀오 AI 캐릭터 (카페지기 + 달지기) Before/After 임팩트
+- ✅ 라이브 배포 + 시크릿 모드 검증 완료

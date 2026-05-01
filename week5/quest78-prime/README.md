@@ -126,3 +126,16 @@
 - ANTHROPIC_API_KEY: Vercel 환경변수에만 저장 (코드/git 노출 X)
 - AI 브리핑 응답 캐싱 X (실시간 데이터 반영)
 - 외부 API (날씨/뉴스): 인증 불필요, fail-soft (외부 실패해도 화면 동작)
+
+## 에이전트 대화 (필수 제출)
+
+Claude / Claude Code와의 작업 대화. Q7+Q8 구현 과정.
+
+| # | 내용 |
+|---|---|
+| 1 | Q7 — 가상 사용자(올빼미 아저씨) Context 설계 + DB 결합 에이전트 |
+| 2 | Q8 — 카페지기/달지기 듀오 페르소나 + 대시보드 위젯 + Before/After 시연 |
+
+![Q7 Context 진행](screenshots/agent/Quest07%20%EC%A7%84%ED%96%89.png)
+
+![Q8 보스 퀘스트 진행](screenshots/agent/Quest08%20%EC%A7%84%ED%96%89.png)
