@@ -9,10 +9,10 @@
 // 응답 메타: timezone: "Asia/Seoul"
 // 에러 응답: { error, detail? }
 // ===========================================================
-const crypto = require('crypto');
 const { Pool } = require('pg');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { readBearer, hashToken } = require('../lib/auth-helper');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -61,22 +61,12 @@ function isDisplayName(s) {
   return t.length >= 2 && t.length <= 20;
 }
 
-function hashToken(token) {
-  return crypto.createHash('sha256').update(token).digest('hex');
-}
-
 function signToken(user) {
   return jwt.sign(
     { uid: Number(user.id), email: user.email },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN }
   );
-}
-
-function readBearer(req) {
-  const h = (req.headers && (req.headers.authorization || req.headers.Authorization)) || '';
-  if (!h.startsWith('Bearer ')) return null;
-  return h.slice(7).trim() || null;
 }
 
 // JWT 7일 후 만료시각 (ms)

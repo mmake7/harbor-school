@@ -7,6 +7,33 @@
 - 🗂 GitHub: https://github.com/mmake7/harbor-community
 - 📅 라이브 검증: 2026-05-01 — 회원가입·게시판(글/댓글/반응)·쇼핑(카트/주문) 모두 정상
 
+## 작업 공간 구조
+
+이 프로젝트는 두 곳의 GitHub 저장소에 동일한 내용으로 존재합니다.
+
+| 저장소 | 용도 |
+|---|---|
+| `mmake7/harbor-school/week5/quest56-community/` (이 저장소) | 수업 검수용 — 5주차 PRIME Q5+Q6 과제 제출 위치 |
+| `mmake7/harbor-community/` | 라이브 배포용 — Vercel 자동 배포 연결 |
+
+### 왜 분리했나?
+- Vercel은 "1 저장소 = 1 프로젝트"가 기본. 수업 monorepo에서 특정 폴더만 배포하려면 셋업이 복잡
+- 별도 repo로 분리해 라이브 URL 깔끔하게 (harbor-community.vercel.app) 확보
+- 평가/검수는 이 저장소 기준, 라이브 사이트는 harbor-community 쪽이 source of truth
+- 두 저장소는 코드 변경 시 수동 동기화 push
+
+## 통합 아키텍처 설계 (Q5·Q6)
+
+5주차 기획안(PRIME)의 두 가지 원칙에 따라 Q5(게시판)와 Q6(쇼핑)을 단일 사이트로 통합 운영:
+
+### 원칙 1 — Q8(보스 퀘스트)이 Q5·Q7 등을 흡수
+기획안 의존성 다이어그램(슬라이드 6)에 따르면 Q8은 Q1·Q3·Q5·Q7 모두를 데이터 소스로 끌어온다. Auth+DB를 한 사이트에 통합해두면 Q8 단계에서 추가 셋업 없이 데이터 활용 가능.
+
+### 원칙 2 — "새 함수 추가 금지, ?view= 분기로 흡수" (슬라이드 11 Golden Rule)
+Vercel Hobby 플랜은 12 serverless function 한도. 미션마다 함수를 새로 추가하면 한도 초과. 한 파일에 여러 동작을 `?view=` 쿼리 파라미터로 묶어 함수 카운트 절약:
+- Q5(게시판) + Q6(쇼핑) = 함수 3개 (auth/posts/shop) / 21 endpoint
+- 한도 12개 중 9개 여유 확보 → Q7·Q8 추가 시에도 여유 유지
+
 ## 미션 충족 매핑
 
 증빙 스크린샷은 [↓ 스크린샷 섹션](#스크린샷) 참조.
@@ -76,7 +103,7 @@ Vercel Hobby 12 함수 한도 대응. 한 파일에 ?view=로 여러 동작 묶�
 
 ## 디렉토리
 ```
-week5/quest5-community/
+week5/quest56-community/
 ├── api/
 │   ├── auth.js
 │   ├── posts.js

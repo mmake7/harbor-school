@@ -1,0 +1,13 @@
+# quest5-community 로컬 전용 (루트 .gitignore 보완)
+# 루트가 이미 커버: .env.local, node_modules/, .vercel/, *.log
+
+# dev-server 산출물
+dev.err
+dev.out
+
+# Vercel CLI 로컬 캐시
+.vercel/
+
+# 임시 파일
+*.tmp
+*.bak
