@@ -13,6 +13,7 @@
 | **리서치 도메인** | 학술·기술 리서치 (vLLM 폐쇄망, 엣지 sLLM × 농축산) | **동네골목 경쟁 서비스 리서치** |
 | **출처 성격** | 논문·기술 블로그·기업 자료 (1차 텍스트) | 실제 운영 중인 서비스 화면·UX·기능 (1차 인터랙션) |
 | **목적** | 시장 공백 탐지 (양봉 AI 슬롯) | **동네골목 차별화 슬롯 정의** |
+| **노션 업로드** | ✅ 완료 (Notes/Learnings 3페이지 + Daily 트리거) | ⏸ 보류 (노션 무료 한도 소진) |
 
 ## 리서치 대상 (3개)
 
@@ -29,23 +30,36 @@
 3. **시장 공백 (Gap)** — 동네골목이 비집고 들어갈 슬롯
 4. **솔직한 한계 (Limit)** — 이 리서치가 답하지 못하는 것 / 추가 검증 필요한 가설
 
-## 산출물 (예정)
+## 산출물
 
-- `research/2026-05-XX-danggeun-deep-dive.md` — 당근마켓 4축 분석
-- `research/2026-05-XX-naver-place-deep-dive.md` — 네이버 지도/플레이스 4축 분석
-- `research/2026-05-XX-instagram-local-deep-dive.md` — 인스타 동네 해시태그 4축 분석
-- `insights/2026-05-XX-dongne-golmok-differentiation.md` — 1페이지 차별화 인사이트 (동네골목이 들어갈 슬롯)
-- `screenshots/` — Chrome DevTools MCP로 캡처한 실제 화면 N장
+- `research/2026-05-07-daangn-market.md` — 당근마켓 deep dive (5개 페이지 직접 방문, 4,300만 가입자·단골 메커니즘·광고 모델 분석)
+- `research/2026-05-07-naver-place.md` — 네이버 지도/플레이스 quick dive (검색 결과 카드 구조·광고 라벨·TV 인용 패턴)
+- `research/2026-05-07-instagram-local-tags.md` — 인스타 #신당동맛집 quick dive (69만 릴스, 인플루언서 큐레이션 + TV→인스타 사슬)
+- `insights/2026-05-07-dongne-golmok-differentiation.md` — 1p 전략 인사이트 (4가지 발견 양식 + 5가지 액션 제안)
+- `screenshots/06~14.png` — Chrome DevTools MCP 캡처 9장
 
 ## 진행 상태
 
-- [x] 폴더·README 셋업 (5주차 Radar 방법론 계승)
-- [ ] Chrome DevTools MCP 동작 확인 (`mcp__chrome-devtools__*` 툴)
-- [ ] 당근마켓 deep dive
-- [ ] 네이버 지도/플레이스 deep dive
-- [ ] 인스타 동네 해시태그 deep dive
-- [ ] 1페이지 차별화 인사이트 추출
-- [ ] 노션 업로드 + Daily 트리거 메모
+- [x] 폴더·README 셋업
+- [x] Chrome DevTools MCP 동작 확인
+- [x] 당근마켓 deep dive (`research/2026-05-07-daangn-market.md`)
+- [x] 네이버 지도 quick dive (`research/2026-05-07-naver-place.md`)
+- [x] 인스타그램 동네 해시태그 quick dive (`research/2026-05-07-instagram-local-tags.md`)
+- [x] 1p 차별화 인사이트 (`insights/2026-05-07-dongne-golmok-differentiation.md`)
+- [ ] 노션 업로드 — 보류 (노션 무료 한도 소진)
+- [ ] Daily 트리거 메모 — 보류 (노션 의존)
+
+## 핵심 인사이트
+
+> **동네 가게 발견은 *재미·검색·가까움·맥락* 4가지 양식이 있고, 앞 3개는 인스타·네이버·당근이 선점했다. *맥락 발견*은 셋 다 못 만드는 정확히 빈 슬롯 — 동네골목은 그 자리에 들어간다.**
+
+빠른 비교:
+
+- **vs 당근** — *주체·거래 모양 다름*. 당근은 4,300만 × 행정동 × 광고 매출, 동네골목은 골목 × 큐레이터 50개 × 광고 없는 AI 비서.
+- **vs 네이버 지도** — *대상 다름*. 네이버는 *검색어를 만들 수 있는 사용자*용 카탈로그, 동네골목은 *검색어가 안 떠오르는 사용자*용 맥락 비서.
+- **vs 인스타 동네 해시태그** — *사용자 다름*. 인스타는 콘텐츠 보러 와서 *우연히 발견*, 동네골목은 맥락 던지러 와서 *대화로 발견*.
+
+→ **AI 컨시어지가 결정적 차별점**. 세 거인은 못 만드는 게 아니라 *각자 사업 모델 때문에 안 만드는 게 합리적*이라서 못 만든다. 자세한 분석·근거·5가지 실행 액션은 [`insights/2026-05-07-dongne-golmok-differentiation.md`](./insights/2026-05-07-dongne-golmok-differentiation.md) 참조.
 
 ---
 
