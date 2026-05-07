@@ -24,19 +24,30 @@ quest #1과 동일 SPA 안에 *유료잠금 라우트(예: `/locked`)*를 추가
 
 ## 충족 증적 (작업 진행하며 채움)
 
-- [x] **이미지 업로드 동작** — quest #1과 공유, 커밋 `2d97ecc` (harbor-community) / 파일:
-  - `api/upload.js` (Vercel Blob)
-  - `public/index.html` `ShopNewProduct` 컴포넌트
-  - 상세 검증 스크린샷은 [`../quest1-shopping-completion/`](../quest1-shopping-completion/) 참조
+- [x] 이미지 업로드 동작 (코드) — quest #1과 공유, 커밋 `mmake7/harbor-community@2d97ecc`
+  - 검증 스크린샷은 [`../quest1-shopping-completion/`](../quest1-shopping-completion/) 참조
+  - 실제 업로드 검증은 `BLOB_READ_WRITE_TOKEN` 발급 후 (다음 세션 진입 시 첫 작업)
 - [ ] TossPayments 결제 동작 — 커밋 해시: TBD / 파일: TBD
 - [ ] 유료잠금 페이지 동작 — 커밋 해시: TBD / 파일: TBD
 
 ## 진행 상태
 
-- [x] 통합 구조 셋업 (이 README)
-- [x] 이미지 업로드 — Vercel Blob (quest #1과 공유 완료)
-- [ ] TossPayments 통합 — quest #1과 공유 (다음 세션)
-- [ ] 유료잠금 페이지 — 결제 완료 사용자만 콘텐츠 노출
+- [x] 통합 구조 셋업
+- [x] 이미지 업로드 (코드 완료, Blob 토큰 발급 후 실제 업로드 검증 필요)
+- [ ] TossPayments 통합 — 다음 세션
+- [ ] 유료잠금 페이지 — 다음 세션
+
+## 다음 세션 진입 안내
+
+### 다음 세션 시작 시 첫 작업 (5분)
+1. Vercel 대시보드 → Storage → Blob 스토어 생성
+2. `BLOB_READ_WRITE_TOKEN` 발급
+3. `.env.local` + `vercel env add BLOB_READ_WRITE_TOKEN production`
+4. `/shop/new`에서 실제 업로드 동작 1회 확인
+
+### 다음 세션 본 작업
+- TossPayments 결제 통합 (quest #1 + quest #4 공유 모듈)
+- quest #4 유료잠금 페이지
 
 ## 컨셉
 

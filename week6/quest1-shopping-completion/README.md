@@ -24,11 +24,9 @@
 
 ## 충족 증적 (작업 진행하며 채움)
 
-- [x] **이미지 업로드 동작** — 커밋 `2d97ecc` (harbor-community) / 파일:
-  - `api/upload.js` — POST 인증 + base64 JSON + Vercel Blob `put()`
-  - `api/shop.js` `?view=product_create` — 상품 등록 엔드포인트
-  - `public/index.html` `ShopNewProduct` — 파일 선택 → base64 → 업로드 → 상품 등록 폼
-  - `sql/005_seed_product_images.sql` — 시드 2건 placeholder URL
+- [x] 이미지 업로드 동작 (코드) — 커밋 `mmake7/harbor-community@2d97ecc`
+  - 파일: `api/upload.js`, `api/shop.js` (`?view=product_create`), `public/index.html` (`ShopNewProduct`), `sql/005_seed_product_images.sql`
+  - 실제 업로드 검증은 `BLOB_READ_WRITE_TOKEN` 발급 후 (다음 세션 진입 시 첫 작업)
 - [ ] TossPayments 결제 동작 — 커밋 해시: TBD / 파일: TBD
 
 ## 검증 스크린샷
@@ -43,16 +41,22 @@
 
 ## 진행 상태
 
-- [x] 통합 구조 셋업 (이 README)
-- [x] 이미지 업로드 — Vercel Blob + `api/upload.js` + 상품 등록 UI
-- [ ] TossPayments 통합 — 결제 위젯 + webhook + status 동기화 (다음 세션)
+- [x] 통합 구조 셋업
+- [x] 이미지 업로드 (코드 완료, Blob 토큰 발급 후 실제 업로드 검증 필요)
+- [ ] TossPayments 통합 — 다음 세션
+- [ ] 유료잠금 페이지 — 다음 세션
 
-## 다음 세션 할 일
+## 다음 세션 진입 안내
 
-1. **Vercel 대시보드에서 Blob 스토어 생성** → `BLOB_READ_WRITE_TOKEN` 발급
-2. `.env.local`에 토큰 추가 + `vercel env add BLOB_READ_WRITE_TOKEN production`
-3. `/shop/new`에서 실제 이미지 업로드 동작 확인 (현재는 토큰 없이도 폼·시드 표시까지 검증됨)
-4. **TossPayments 결제 통합** 시작
+### 다음 세션 시작 시 첫 작업 (5분)
+1. Vercel 대시보드 → Storage → Blob 스토어 생성
+2. `BLOB_READ_WRITE_TOKEN` 발급
+3. `.env.local` + `vercel env add BLOB_READ_WRITE_TOKEN production`
+4. `/shop/new`에서 실제 업로드 동작 1회 확인
+
+### 다음 세션 본 작업
+- TossPayments 결제 통합 (quest #1 + quest #4 공유 모듈)
+- quest #4 유료잠금 페이지
 
 ## 참고 — 5주차 quest 맥락
 
