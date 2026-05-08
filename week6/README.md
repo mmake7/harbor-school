@@ -22,7 +22,7 @@
 | **#2** | 경쟁 서비스 deep dive (Radar v2) | ✅ 마감 | [`quest2-research-agent/`](./quest2-research-agent/) | `mmake7/harbor-school@45baeaf` |
 | **#3** | 기획서 3종 (MISSION/DEV/AUDIENCES, 형 기억) | ✅ 갈음 (정당화 README) | [`quest3-planning-docs/`](./quest3-planning-docs/) | dongne-golmok `MISSION/CONCEPT/ROADMAP/DEV` 4종으로 갈음 (1,260줄) |
 | **#4** | 유료잠금 미니 앱 | ✅ 마감 | [`quest4-paid-lock-mini-app/`](./quest4-paid-lock-mini-app/) | `mmake7/harbor-community@e483973` |
-| **#5** | 당근마켓 클론 → 동네골목 pivot | ⏳ pivot 진행 중 | [`MD/`](./MD/) (기획 문서 5건) + 별도 repo `mmake7/dongne-golmok` | (별도 repo) |
+| **#5** | 당근마켓 클론 → 동네골목 pivot | ✅ pivot 등록 (Phase 1·2·3 완료) | [`quest5-dongne-golmok/`](./quest5-dongne-golmok/) | 별도 repo `mmake7/dongne-golmok@51e24f5`, Phase 4 다음 세션 |
 
 각 quest 상세는 폴더 안 README 참조.
 
