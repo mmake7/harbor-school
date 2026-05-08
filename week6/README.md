@@ -21,7 +21,7 @@
 | **#1** | 쇼핑몰 보완 (이미지 업로드 + 결제) | ✅ 마감 | [`quest1-shopping-completion/`](./quest1-shopping-completion/) | `mmake7/harbor-community@e483973` |
 | **#2** | 경쟁 서비스 deep dive (Radar v2) | ✅ 마감 | [`quest2-research-agent/`](./quest2-research-agent/) | `mmake7/harbor-school@45baeaf` |
 | **#3** | 기획서 3종 (MISSION/DEV/AUDIENCES) | ✅ **본진 충족** (DEV/AUDIENCES v0.1 신규 작성) | [`quest3-planning-docs/`](./quest3-planning-docs/) | dongne-golmok 루트에 DEV.md + AUDIENCES.md push (`5c823ca`), MISSION은 docs/에 (이전 작성) |
-| **#4** | 유료잠금 미니 앱 | ✅ 마감 | [`quest4-paid-lock-mini-app/`](./quest4-paid-lock-mini-app/) | `mmake7/harbor-community@e483973` |
+| **#4** | 유료잠금 미니 앱 | ✅ **본진 + 라이브 + 보안 3중 게이트** | [`quest4-paid-lock-mini-app/`](./quest4-paid-lock-mini-app/) | `mmake7/harbor-community@5cf11d6`, https://harbor-community.vercel.app/#/premium |
 | **#5** | 당근마켓 클론 → 동네골목 pivot | ✅ pivot + **Phase 4 라이브 검증 완료** | [`quest5-dongne-golmok/`](./quest5-dongne-golmok/) | 별도 repo `mmake7/dongne-golmok@ca38e2f`, https://dongne-golmok.vercel.app/ |
 
 각 quest 상세는 폴더 안 README 참조.
