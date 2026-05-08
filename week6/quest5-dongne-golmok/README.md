@@ -2,6 +2,9 @@
 
 원래 6주차 quest #5 (형 기억): **"당근마켓 클론"**. 6주차 진행 중 *학습용 클론*에서 *본인 사업 자산*으로 격상되어 **동네골목** (별도 repo)으로 진화. 본 README는 그 pivot 결정과 현재 진행 상태를 등록한다.
 
+> ✅ **라이브 데모 검증 완료** (5/8): https://dongne-golmok.vercel.app/
+> 50개 가게 정적 데이터 + Claude Sonnet 4.6 컨시어지 + ephemeral 캐싱(10,737 tokens) 풀 동작.
+
 ---
 
 ## pivot 사유
@@ -42,10 +45,26 @@
 | Phase 1 | UI 골격 (단일 `index.html`, React CDN + Tailwind CDN + Babel standalone) | ✅ |
 | Phase 2 | 백엔드 서버리스 함수 (`api/*.js` Vercel + pg) — 목업 모드 | ✅ |
 | Phase 3 | AI 컨시어지 (Claude Sonnet 4.6 + 50개 가게 컨텍스트 + ephemeral 캐싱) | ✅ |
-| Phase 4 | Vercel 프로덕션 배포 + 8개 시나리오 풀 톤 검증 | ⏸ 다음 세션 (컨디션 좋을 때) |
+| **Phase 4** | **Vercel 프로덕션 배포 + 라이브 동작 검증** | **✅ (5/8)** |
 | v1.5 | 디자인 정교화 / DEV.md 보강 / AUDIENCES.md / PostgreSQL 본격 / fal 이미지 / PWA | ⏳ 사이드 영역 |
 
-마지막 dongne-golmok 커밋: `51e24f5 docs: README 갱신 — Phase 1·2·3 완료 + Phase 4 다음 세션 명시`
+마지막 dongne-golmok 커밋: `ca38e2f fix: AI 안내 문구 stale 라벨 갱신`
+
+### Phase 4 라이브 검증 (5/8)
+
+| 라이브 홈 (50개 가게 + AI 입력) | AI 컨시어지 응답 |
+|---|---|
+| ![](./live-01-home.png) | ![](./live-02-ai-response.png) |
+
+검증 항목:
+- ✅ `https://dongne-golmok.vercel.app/` 도달 (Vercel alias)
+- ✅ `/api/shops` — 50개 가게 정적 데이터 응답
+- ✅ `/api/ai` — Claude Sonnet 4.6 호출 + 톤 있는 응답 + 가게 ID 참조
+- ✅ ephemeral 캐싱 동작: 시스템 프롬프트(50개 가게 컨텍스트) 10,737 tokens가 `cache_creation_input_tokens`로 잡힘 → 후속 호출은 cache hit
+- ✅ KST 시간 정확 ("2026년 5월 8일 금요일 13:57")
+- ✅ UI 응답: 가게 카드 클릭 가능한 "👉 가게이름" 버튼 렌더
+
+라이브 검증 중 발견한 stale 라벨("Phase 1 — AI 컨시어지는 Phase 3에서 연결됩니다") 즉시 패치 → `ca38e2f` 재배포로 해결.
 
 ---
 
@@ -92,13 +111,24 @@ quest #2와 quest #5는 *서로 자산을 주고받는* 관계 — quest #2의 �
 
 ## 다음 세션 진입점
 
+Phase 4 마감 → 다음은 **데모 반응 수집** 인터벌 또는 **v1.5** 진입.
+
 | 옵션 | 작업 | 시간 |
 |---|---|---|
-| **A** | **Phase 4 배포** — `npx vercel link` (interactive, 형) → `vercel env add ANTHROPIC_API_KEY production` → `vercel --prod` → 배포 URL 시나리오 검증 → README URL 갱신 | 1시간 |
-| **B** | **v1.5** — 디자인 정교화 / DEV.md 보강 / AUDIENCES.md / PostgreSQL 본격 / fal 이미지 / PWA | 다세션 |
-| 추천 순서 | **A → 인터벌(데모 반응 수집) → B** | — |
+| **인터벌** | 협력자·투자자에게 라이브 URL 공유 + 반응 수집. 별도 작업 없음 (대기 모드) | — |
+| **v1.5** | 디자인 정교화 / AUDIENCES.md (반응 수집 후) / PostgreSQL 본격 / fal 이미지 / PWA | 다세션 |
+| 후속 패치 (선택) | 8개 시나리오 풀 톤 검증 (`docs/scenarios_mock.md`) — 톤 일관성·가게 매칭 정확도 | 1~2시간 |
 
-A 선행 이유: 데모 반응이 *v1.5 우선순위를 정함*. 데모 없이 v1.5 들어가면 *상상 기반 작업*이 됨.
+추천: **인터벌 우선.** v1.5는 데모 반응 보고 우선순위 결정.
+
+### Phase 4 셋업 메모 (참고용 — 이미 끝난 작업)
+
+```powershell
+cd D:\Dropbox\workspace\dongne-golmok
+vercel link --yes --scope mmake7-3440s-projects   # 새 프로젝트 자동 생성
+tr -d '\n' < /tmp/key.txt | vercel env add ANTHROPIC_API_KEY production   # 줄바꿈 함정 회피
+vercel --prod --yes   # alias https://dongne-golmok.vercel.app
+```
 
 ---
 

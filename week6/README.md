@@ -10,7 +10,7 @@
   - `#/shop` 쇼핑 + 이미지 업로드(ImageKit) + TossPayments 결제
   - `#/premium` 유료잠금 콘텐츠
   - 프로덕션 env 3개 박힘 (`IMAGEKIT_PRIVATE_KEY` / `TOSS_CLIENT_KEY` / `TOSS_SECRET_KEY`)
-- 🌙 동네골목 (별도 repo, Phase 4 배포 대기) — quest #5 pivot
+- 🌐 **https://dongne-golmok.vercel.app/** — 동네골목 v1 MVP, **Phase 4 라이브 검증 완료 (5/8)** — quest #5 pivot
 
 ---
 
@@ -22,7 +22,7 @@
 | **#2** | 경쟁 서비스 deep dive (Radar v2) | ✅ 마감 | [`quest2-research-agent/`](./quest2-research-agent/) | `mmake7/harbor-school@45baeaf` |
 | **#3** | 기획서 3종 (MISSION/DEV/AUDIENCES, 형 기억) | ✅ 갈음 (정당화 README) | [`quest3-planning-docs/`](./quest3-planning-docs/) | dongne-golmok `MISSION/CONCEPT/ROADMAP/DEV` 4종으로 갈음 (1,260줄) |
 | **#4** | 유료잠금 미니 앱 | ✅ 마감 | [`quest4-paid-lock-mini-app/`](./quest4-paid-lock-mini-app/) | `mmake7/harbor-community@e483973` |
-| **#5** | 당근마켓 클론 → 동네골목 pivot | ✅ pivot 등록 (Phase 1·2·3 완료) | [`quest5-dongne-golmok/`](./quest5-dongne-golmok/) | 별도 repo `mmake7/dongne-golmok@51e24f5`, Phase 4 다음 세션 |
+| **#5** | 당근마켓 클론 → 동네골목 pivot | ✅ pivot + **Phase 4 라이브 검증 완료** | [`quest5-dongne-golmok/`](./quest5-dongne-golmok/) | 별도 repo `mmake7/dongne-golmok@ca38e2f`, https://dongne-golmok.vercel.app/ |
 
 각 quest 상세는 폴더 안 README 참조.
 
@@ -39,7 +39,8 @@
 | 영역 | 작업 | 시점 |
 |---|---|---|
 | ~~라이브 데모 셋업~~ | ~~Vercel 프로덕션 env 3개 + 재배포~~ | ✅ 5/8 마감 |
-| **동네골목 Phase 4** | Vercel 배포 + 8개 시나리오 풀 톤 검증 | 컨디션 좋을 때 |
+| ~~동네골목 Phase 4~~ | ~~Vercel 배포 + 동작 검증~~ | ✅ 5/8 마감 |
+| 동네골목 8개 시나리오 풀 검증 | `docs/scenarios_mock.md` 풀 톤 일관성·가게 매칭 정확도 | 후속 패치 (선택) |
 | **동네골목 v1.5** | PostgreSQL / JWT / fal 이미지 / PWA로 확장 | 사이드 영역, 데모 반응 보고 |
 | **결제 후속** | 취소·환불 / Toss webhook / 카트 흐름 별도 E2E | 라이브 운영 진입 시점 |
 
