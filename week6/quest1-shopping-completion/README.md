@@ -26,9 +26,12 @@
 
 ## 충족 증적 (작업 진행하며 채움)
 
-- [x] 이미지 업로드 동작 (코드) — 커밋 `mmake7/harbor-community@2d97ecc` (Vercel Blob 초안) → ImageKit 교체 (당일 후속 커밋, 본 README 갱신 시점)
+- [x] **이미지 업로드 동작 (실 검증 완료)** — 커밋 `mmake7/harbor-community@88cf86c` (ImageKit 최종, `2d97ecc` Vercel Blob 초안에서 교체)
   - 파일: `api/upload.js`, `api/shop.js` (`?view=product_create`), `public/index.html` (`ShopNewProduct`), `sql/005_seed_product_images.sql`
-  - 실제 업로드 검증은 `IMAGEKIT_PRIVATE_KEY` 발급 후 (다음 세션 진입 시 첫 작업)
+  - 실 업로드 검증 (5/8 세션):
+    - `POST /api/upload` 테스트 PNG → ImageKit CDN URL 반환
+    - 업로드 URL 예시: `https://ik.imagekit.io/mmake7/products/u6-1778203102595_IerUK2Bqa.png` (HTTP 200, image/png)
+    - `POST /api/shop?view=product_create`로 해당 URL 박은 상품(id=11) 생성 → `/shop` 그리드에 카드 정상 렌더 (스크린샷 `shop-with-imagekit-upload.png`)
 - [ ] TossPayments 결제 동작 — 커밋 해시: TBD / 파일: TBD
 
 ## 검증 스크린샷
@@ -39,22 +42,24 @@
 ### 2. 로그인 사용자에게 ‘+ 상품 등록’ 폼 렌더 (이미지 파일 입력 포함)
 ![shop new form](./shop-new-form.png)
 
-> 폼은 파일 선택 → 자동 업로드 → URL 미리보기 → 상품 등록 흐름. 실제 업로드 동작은 `IMAGEKIT_PRIVATE_KEY` 환경변수 설정 후 검증 (https://imagekit.io 가입 → Developer Options → API Keys).
+### 3. ImageKit으로 실 업로드한 이미지가 카드에 정상 표시 (5/8 검증)
+![shop with imagekit upload](./shop-with-imagekit-upload.png)
+
+> 마지막 카드(id=11, "ImageKit 업로드 테스트 상품")가 `https://ik.imagekit.io/mmake7/products/...` URL로 렌더 — 업로드 → DB 저장 → 카드 표시 풀 파이프라인 완성.
 
 ## 진행 상태
 
 - [x] 통합 구조 셋업
-- [x] 이미지 업로드 (코드 완료, ImageKit 키 발급 후 실제 업로드 검증 필요)
+- [x] 이미지 업로드 (코드 + 실 검증 완료, ImageKit)
 - [ ] TossPayments 통합 — 다음 세션
 - [ ] 유료잠금 페이지 — 다음 세션
 
 ## 다음 세션 진입 안내
 
-### 다음 세션 시작 시 첫 작업 (5분)
-1. https://imagekit.io 가입 (무료, 결제수단 등록 X)
-2. Dashboard → Developer Options → API Keys에서 **Private Key** 복사 (Public Key, URL Endpoint는 우리 셋업에서 미사용)
-3. `.env.local`에 `IMAGEKIT_PRIVATE_KEY=...` 추가 + `vercel env add IMAGEKIT_PRIVATE_KEY production`
-4. `/shop/new`에서 실제 업로드 동작 1회 확인
+### 5/8 세션 완료
+- ImageKit 가입 + Private Key 발급 (테스트용 무료 계정)
+- 로컬 `.env.local`에 `IMAGEKIT_PRIVATE_KEY` 박음 → 실 업로드 동작 확인
+- ⚠ **프로덕션(Vercel) env는 미설정** — 라이브에서 업로드 쓰려면 `vercel env add IMAGEKIT_PRIVATE_KEY production` 후 재배포 필요. 데모만 한다면 로컬에서 충분.
 
 ### 다음 세션 본 작업
 - TossPayments 결제 통합 (quest #1 + quest #4 공유 모듈)

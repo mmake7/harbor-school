@@ -26,26 +26,23 @@ quest #1과 동일 SPA 안에 *유료잠금 라우트(예: `/locked`)*를 추가
 
 ## 충족 증적 (작업 진행하며 채움)
 
-- [x] 이미지 업로드 동작 (코드) — quest #1과 공유, 커밋 `mmake7/harbor-community@2d97ecc` (Vercel Blob 초안) → ImageKit 교체
-  - 검증 스크린샷은 [`../quest1-shopping-completion/`](../quest1-shopping-completion/) 참조
-  - 실제 업로드 검증은 `IMAGEKIT_PRIVATE_KEY` 발급 후 (다음 세션 진입 시 첫 작업)
+- [x] **이미지 업로드 동작 (실 검증 완료)** — quest #1과 공유, 커밋 `mmake7/harbor-community@88cf86c` (ImageKit 최종)
+  - 5/8 세션에서 ImageKit URL 직접 발급 + `/shop` 카드 렌더 확인
+  - 검증 스크린샷 3장 (`shop-with-images.png` / `shop-new-form.png` / `shop-with-imagekit-upload.png`) → [`../quest1-shopping-completion/`](../quest1-shopping-completion/) 참조
 - [ ] TossPayments 결제 동작 — 커밋 해시: TBD / 파일: TBD
 - [ ] 유료잠금 페이지 동작 — 커밋 해시: TBD / 파일: TBD
 
 ## 진행 상태
 
 - [x] 통합 구조 셋업
-- [x] 이미지 업로드 (코드 완료, ImageKit 키 발급 후 실제 업로드 검증 필요)
+- [x] 이미지 업로드 (코드 + 실 검증 완료, ImageKit / quest #1과 공유)
 - [ ] TossPayments 통합 — 다음 세션
 - [ ] 유료잠금 페이지 — 다음 세션
 
 ## 다음 세션 진입 안내
 
-### 다음 세션 시작 시 첫 작업 (5분)
-1. https://imagekit.io 가입 (무료, 결제수단 등록 X)
-2. Dashboard → Developer Options → API Keys에서 **Private Key** 복사
-3. `.env.local`에 `IMAGEKIT_PRIVATE_KEY=...` 추가 + `vercel env add IMAGEKIT_PRIVATE_KEY production`
-4. `/shop/new`에서 실제 업로드 동작 1회 확인
+### 5/8 세션 완료
+- ImageKit 키 발급 + 로컬 실 업로드 검증 (quest #1과 공유)
 
 ### 다음 세션 본 작업
 - TossPayments 결제 통합 (quest #1 + quest #4 공유 모듈)
