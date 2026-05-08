@@ -19,14 +19,16 @@
 
 ## 사용 라이브러리
 
-- **이미지 업로드**: Vercel Blob (`@vercel/blob`) — 배포 환경이 Vercel이라 가장 가벼움
+- **이미지 업로드**: ImageKit (`@imagekit/nodejs`) — 동네골목 v1.5에서 검토 중인 자산과 일치, 무료 20GB
 - **결제**: TossPayments (다음 세션)
+
+> 어제(5/7) 처음엔 Vercel Blob으로 셋업했으나 5/8 세션 시작 시 ImageKit으로 교체. 이유: 동네골목 v2 결제·이미지 자산 통합 라인이 ImageKit 쪽으로 이미 굳어져 있어 자산 재활용 효율이 더 큼.
 
 ## 충족 증적 (작업 진행하며 채움)
 
-- [x] 이미지 업로드 동작 (코드) — 커밋 `mmake7/harbor-community@2d97ecc`
+- [x] 이미지 업로드 동작 (코드) — 커밋 `mmake7/harbor-community@2d97ecc` (Vercel Blob 초안) → ImageKit 교체 (당일 후속 커밋, 본 README 갱신 시점)
   - 파일: `api/upload.js`, `api/shop.js` (`?view=product_create`), `public/index.html` (`ShopNewProduct`), `sql/005_seed_product_images.sql`
-  - 실제 업로드 검증은 `BLOB_READ_WRITE_TOKEN` 발급 후 (다음 세션 진입 시 첫 작업)
+  - 실제 업로드 검증은 `IMAGEKIT_PRIVATE_KEY` 발급 후 (다음 세션 진입 시 첫 작업)
 - [ ] TossPayments 결제 동작 — 커밋 해시: TBD / 파일: TBD
 
 ## 검증 스크린샷
@@ -37,21 +39,21 @@
 ### 2. 로그인 사용자에게 ‘+ 상품 등록’ 폼 렌더 (이미지 파일 입력 포함)
 ![shop new form](./shop-new-form.png)
 
-> 폼은 파일 선택 → 자동 업로드 → URL 미리보기 → 상품 등록 흐름. 실제 업로드 동작은 `BLOB_READ_WRITE_TOKEN` 환경변수 설정 후 검증 (Vercel 대시보드에서 Blob 스토어 생성).
+> 폼은 파일 선택 → 자동 업로드 → URL 미리보기 → 상품 등록 흐름. 실제 업로드 동작은 `IMAGEKIT_PRIVATE_KEY` 환경변수 설정 후 검증 (https://imagekit.io 가입 → Developer Options → API Keys).
 
 ## 진행 상태
 
 - [x] 통합 구조 셋업
-- [x] 이미지 업로드 (코드 완료, Blob 토큰 발급 후 실제 업로드 검증 필요)
+- [x] 이미지 업로드 (코드 완료, ImageKit 키 발급 후 실제 업로드 검증 필요)
 - [ ] TossPayments 통합 — 다음 세션
 - [ ] 유료잠금 페이지 — 다음 세션
 
 ## 다음 세션 진입 안내
 
 ### 다음 세션 시작 시 첫 작업 (5분)
-1. Vercel 대시보드 → Storage → Blob 스토어 생성
-2. `BLOB_READ_WRITE_TOKEN` 발급
-3. `.env.local` + `vercel env add BLOB_READ_WRITE_TOKEN production`
+1. https://imagekit.io 가입 (무료, 결제수단 등록 X)
+2. Dashboard → Developer Options → API Keys에서 **Private Key** 복사 (Public Key, URL Endpoint는 우리 셋업에서 미사용)
+3. `.env.local`에 `IMAGEKIT_PRIVATE_KEY=...` 추가 + `vercel env add IMAGEKIT_PRIVATE_KEY production`
 4. `/shop/new`에서 실제 업로드 동작 1회 확인
 
 ### 다음 세션 본 작업
