@@ -79,7 +79,25 @@
 - [x] **기본 완료 (10pt)** — MISSION + DEV + AUDIENCES 3개 md 모두 push 완료, 명세 항목 100% 충족
 - [x] **에이전트 활용 (5pt)** — Claude (claude.ai) + Claude Code 다회 대화로 기획 다듬음. quest #2 리서치 자산까지 결합
 - [x] **창의성 (5pt)** — 페르소나 3명 모두 *동네골목 컨텍스트에 맞는 구체적 사용 행동* 명시 (헛걸음 / 동네 친구 / 어르신 회원가입 X). 첫 10명 획득 전략 중 *"화요 순대차 시연 영상"*은 동네골목 특화 (트럭·노점이 핵심 차별점)
-- [ ] **공유 보너스 (5pt)** — 단톡방 공유 시 충족
+- [ ] **공유 보너스 (5pt)** — 단톡방 공유 *예정* (PDF 자산 준비 완료, 공유 후 [x] 갱신)
+
+---
+
+## 추가 자산 — 동네골목 통합 기획안 PDF
+
+본 quest 충족 자산이자 동네골목 본 프로젝트의 *외부 공유용 자산* 동시 활용:
+
+- **양쪽 repo 보관**:
+  - 동네골목 (public): [`docs/dongne-golmok-plan.pdf`](https://github.com/mmake7/dongne-golmok/blob/main/docs/dongne-golmok-plan.pdf) (`mmake7/dongne-golmok@9c31228`)
+  - 학습 quest 폴더 (이 폴더): [`./dongne-golmok-plan.pdf`](./dongne-golmok-plan.pdf) (자체완결성 위해 사본)
+- **크기**: 1.36 MB
+- **민감 정보 점검**: ✅ 완료 — **단톡방·외부 공유 자산** 처리
+- **활용 영역**:
+  - 투자자·협력자 1:1 시연 자료
+  - harbor.school quest #3 충족 자산
+  - 단톡방·외부 공유용
+
+PDF 내용은 분할 md 파일들(`MISSION.md` / `CONCEPT.md` / `ROADMAP.md` / `DEV.md` v0.1 / `AUDIENCES.md` v0.1)과 동일 내용 통합 + 비주얼 정리 추가.
 
 ---
 
@@ -89,6 +107,7 @@
 - [x] **MISSION.md 본문 1문단** (인용용):
   > "공식 상권 바깥에서 동네를 만드는 작은 가게들과, 그들을 단골로 누리는 주민들이, 서로를 자연스럽게 발견하는 동네 알림 생태계를 만든다."
 - [x] **AI 대화 스크린샷**: [`../SS/q3.png`](../SS/q3.png) — quest #3 진행 중 Claude와의 기획 대화 캡처
+- [x] **통합 기획안 PDF (over-deliver)**: [`./dongne-golmok-plan.pdf`](./dongne-golmok-plan.pdf) + [동네골목 repo 사본](https://github.com/mmake7/dongne-golmok/blob/main/docs/dongne-golmok-plan.pdf)
 
 ---
 
