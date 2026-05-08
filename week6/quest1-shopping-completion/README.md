@@ -32,7 +32,14 @@
     - `POST /api/upload` 테스트 PNG → ImageKit CDN URL 반환
     - 업로드 URL 예시: `https://ik.imagekit.io/mmake7/products/u6-1778203102595_IerUK2Bqa.png` (HTTP 200, image/png)
     - `POST /api/shop?view=product_create`로 해당 URL 박은 상품(id=11) 생성 → `/shop` 그리드에 카드 정상 렌더 (스크린샷 `shop-with-imagekit-upload.png`)
-- [ ] TossPayments 결제 동작 — 커밋 해시: TBD / 파일: TBD
+- [x] **TossPayments 결제 동작 (실 결제 검증 완료)** — 커밋 `mmake7/harbor-community@e483973`
+  - 파일:
+    - `sql/006_add_payment_columns.sql` — `shop_orders`에 `toss_order_id` / `payment_key` / `payment_method` / `paid_at` + unique index
+    - `api/payment.js` — `?view=config` (client key 내림) + `?view=confirm` (Toss `/v1/payments/confirm` 호출 + DB 동기화 + 멱등)
+    - `api/shop.js` `?view=order_create` — `toss_order_id` 자동 생성·응답
+    - `public/index.html` — `ShopCheckout` (Toss 위젯 V2) + `ShopPaymentSuccess` (콜백 → confirm) + `ShopPaymentFail` + parseHash pathname 분기 + ShopOrder 결제 메타 표시
+    - `dev-server.js` — SPA fallback (`/shop/payment/success` 같은 외부 진입 대응)
+  - **풀 E2E 검증**: `/premium` "결제하고 보기" → Toss 위젯 → 퀵계좌이체 데모(테스트비번 000000) → Toss → `/shop/payment/success` → confirm API → DB `status=paid` → `/premium` 잠금 해제까지 한 흐름 동작
 
 ## 검증 스크린샷
 
@@ -47,23 +54,41 @@
 
 > 마지막 카드(id=11, "ImageKit 업로드 테스트 상품")가 `https://ik.imagekit.io/mmake7/products/...` URL로 렌더 — 업로드 → DB 저장 → 카드 표시 풀 파이프라인 완성.
 
+### 4. TossPayments 결제 위젯 V2 정상 마운트 (5/8 검증)
+![checkout toss widget](./01-checkout-toss-widget.png)
+
+> 결제수단 6종(퀵계좌이체/카드/토스페이/페이코/카카오페이/네이버페이) + 약관 동의 + "1,000원 결제하기" 버튼. 테스트 환경 안내 배너 자동 표시.
+
+### 5. 결제 완료 후 주문 상세 화면 (5/8 검증)
+![order paid](./02-order-paid.png)
+
+> "결제 완료" 라벨 + "✅ 계좌이체 결제" 바 + `paid_at` 시각 + 주문 상품 스냅샷.
+
 ## 진행 상태
 
 - [x] 통합 구조 셋업
 - [x] 이미지 업로드 (코드 + 실 검증 완료, ImageKit)
-- [ ] TossPayments 통합 — 다음 세션
-- [ ] 유료잠금 페이지 — 다음 세션
+- [x] **TossPayments 통합** (코드 + 실 결제 검증 완료, 위젯 V2 + confirm + DB 동기화)
+- [x] **유료잠금 페이지** (quest #4 영역, 같은 세션에 마감)
 
 ## 다음 세션 진입 안내
 
 ### 5/8 세션 완료
-- ImageKit 가입 + Private Key 발급 (테스트용 무료 계정)
-- 로컬 `.env.local`에 `IMAGEKIT_PRIVATE_KEY` 박음 → 실 업로드 동작 확인
-- ⚠ **프로덕션(Vercel) env는 미설정** — 라이브에서 업로드 쓰려면 `vercel env add IMAGEKIT_PRIVATE_KEY production` 후 재배포 필요. 데모만 한다면 로컬에서 충분.
+- ImageKit Private Key 발급 + 로컬 실 업로드 검증
+- TossPayments 테스트 키 (docs key) `.env.local` 박음 + 실 결제 풀 흐름 검증
+- quest #1 본진 영역 *마감*
 
-### 다음 세션 본 작업
-- TossPayments 결제 통합 (quest #1 + quest #4 공유 모듈)
-- quest #4 유료잠금 페이지
+### 잔여 (라이브 데모 시점 작업)
+- 프로덕션 env 추가:
+  - `vercel env add IMAGEKIT_PRIVATE_KEY production`
+  - `vercel env add TOSS_CLIENT_KEY production`
+  - `vercel env add TOSS_SECRET_KEY production`
+  - `vercel --prod` 재배포
+
+### 의도적으로 미룬 것
+- 결제 취소·환불 (`/v1/payments/{paymentKey}/cancel`)
+- 결제 webhook 수신 (Toss → 우리 비동기)
+- 카트 흐름 E2E 별도 캡처 (order_one 흐름으로 같은 파이프라인 검증됨)
 
 ## 참고 — 5주차 quest 맥락
 
