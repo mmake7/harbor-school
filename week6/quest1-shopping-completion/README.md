@@ -2,6 +2,10 @@
 
 5주차 Q6 쇼핑(`harbor-community`)에 빠져 있던 **이미지 업로드**와 **TossPayments 결제**를 채운다.
 
+> ✅ **라이브 데모 검증 완료** (5/8): https://harbor-community.vercel.app/
+> 프로덕션 env 3개 박힘 (`IMAGEKIT_PRIVATE_KEY` / `TOSS_CLIENT_KEY` / `TOSS_SECRET_KEY`).
+> 라이브에서 새 사용자 등록 → /premium 결제 → 잠금 해제까지 풀 E2E 동작 확인 (주문 #5).
+
 ## 통합 처리 사유
 
 - quest #1 결제와 quest #4 결제는 모두 TossPayments
@@ -64,6 +68,14 @@
 
 > "결제 완료" 라벨 + "✅ 계좌이체 결제" 바 + `paid_at` 시각 + 주문 상품 스냅샷.
 
+### 6. 🌐 라이브 (`harbor-community.vercel.app`) — 풀 E2E 검증 (5/8)
+
+| 라이브 /shop (이미지 정상) | 라이브 결제 위젯 | 라이브 결제 완료 주문 |
+|---|---|---|
+| ![](./live-01-shop.png) | ![](./live-02-checkout.png) | ![](./live-03-order-paid.png) |
+
+> 새 사용자(`live-test@harbor.dev`, id=7)로 처음부터 끝까지: 회원가입 → /premium → 결제하고 보기 → Toss 위젯 → 퀵계좌이체 데모 → 결제 완료 → 주문 #5 paid 상태 확인. 프로덕션 env 3개(IMAGEKIT_PRIVATE_KEY / TOSS_CLIENT_KEY / TOSS_SECRET_KEY)가 모두 정상 동작.
+
 ## 진행 상태
 
 - [x] 통합 구조 셋업
@@ -74,16 +86,11 @@
 ## 다음 세션 진입 안내
 
 ### 5/8 세션 완료
-- ImageKit Private Key 발급 + 로컬 실 업로드 검증
-- TossPayments 테스트 키 (docs key) `.env.local` 박음 + 실 결제 풀 흐름 검증
-- quest #1 본진 영역 *마감*
-
-### 잔여 (라이브 데모 시점 작업)
-- 프로덕션 env 추가:
-  - `vercel env add IMAGEKIT_PRIVATE_KEY production`
-  - `vercel env add TOSS_CLIENT_KEY production`
-  - `vercel env add TOSS_SECRET_KEY production`
-  - `vercel --prod` 재배포
+- ImageKit Private Key 발급 + 로컬·라이브 실 업로드 검증
+- TossPayments 테스트 키(docs) `.env.local` + Vercel 프로덕션 env 박음
+- 로컬 + **라이브** 풀 결제 흐름 검증 (주문 #4 로컬, 주문 #5 라이브)
+- ⚠ 진단 중 발견·수정: `echo "value" | vercel env add`가 trailing `\n` 박아 ImageKit 403 + Toss 키 오염 → `printf "%s"`로 재등록 + 재배포로 해결
+- **quest #1 본진 영역 마감**
 
 ### 의도적으로 미룬 것
 - 결제 취소·환불 (`/v1/payments/{paymentKey}/cancel`)

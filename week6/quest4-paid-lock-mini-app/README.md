@@ -2,6 +2,9 @@
 
 콘텐츠를 *결제 후에만* 볼 수 있는 유료잠금 미니 앱. quest #1과 결제 모듈을 공유한다.
 
+> ✅ **라이브 데모 검증 완료** (5/8): https://harbor-community.vercel.app/#/premium
+> 새 사용자가 잠금 화면 → 결제 → 잠금 해제 + 본문 노출까지 한 흐름 동작 확인.
+
 ## 통합 처리 사유
 
 - quest #1 결제와 quest #4 결제는 모두 TossPayments
@@ -49,15 +52,23 @@ quest #1과 동일 SPA 안에 *유료잠금 라우트(예: `/locked`)*를 추가
 ## 다음 세션 진입 안내
 
 ### 5/8 세션 완료
-- ImageKit 키 발급 + 로컬 실 업로드 검증 (quest #1과 공유)
-- TossPayments 테스트 키(docs) → 실 결제 풀 흐름 검증
-- 유료잠금 페이지(PremiumPage) — 잠금/해제 양 상태 모두 동작 검증
+- ImageKit / TossPayments 라이브 데모 검증 완료 (quest #1과 공유)
+- 유료잠금 페이지(PremiumPage) — 로컬·라이브 양쪽에서 잠금/해제 흐름 검증
+- **quest #4 본진 영역 마감**
 
-### 검증 스크린샷
+### 검증 스크린샷 — 로컬 (5/7)
 
 | 1. 잠금 상태 (블러 + 결제 유도) | 2. 결제 완료 후 잠금 해제 + 본문 노출 |
 |---|---|
 | ![](./01-premium-locked.png) | ![](./02-premium-unlocked.png) |
+
+### 🌐 라이브 (`harbor-community.vercel.app`) — 풀 E2E 검증 (5/8)
+
+| 라이브 잠금 화면 | 라이브 잠금 해제 + 본문 |
+|---|---|
+| ![](./live-01-locked.png) | ![](./live-02-unlocked.png) |
+
+> 새 사용자(`live-test@harbor.dev`, id=7)로 처음부터 끝까지: 잠금 화면 → "1,000원 결제하고 보기" → Toss 퀵계좌이체 데모 → 결제 완료 → /premium 영구 잠금 해제 + 영수증("주문 #5 · 계좌이체 · 5/8 13:40").
 
 > 결제 흐름 자체 스크린샷(Toss 위젯, 주문 상세)은 [`../quest1-shopping-completion/`](../quest1-shopping-completion/) 참조 — 같은 결제 모듈 공유.
 

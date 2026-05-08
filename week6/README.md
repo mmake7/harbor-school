@@ -6,9 +6,10 @@
 
 ## 라이브
 
-- 🌐 https://harbor-community.vercel.app/ — quest #1·#4 통합 SPA
-  - `#/shop` 쇼핑 + 이미지 업로드 + TossPayments 결제
+- 🌐 **https://harbor-community.vercel.app/** — quest #1·#4 통합 SPA, **풀 E2E 검증 완료 (5/8)**
+  - `#/shop` 쇼핑 + 이미지 업로드(ImageKit) + TossPayments 결제
   - `#/premium` 유료잠금 콘텐츠
+  - 프로덕션 env 3개 박힘 (`IMAGEKIT_PRIVATE_KEY` / `TOSS_CLIENT_KEY` / `TOSS_SECRET_KEY`)
 - 🌙 동네골목 (별도 repo, Phase 4 배포 대기) — quest #5 pivot
 
 ---
@@ -37,18 +38,19 @@
 
 | 영역 | 작업 | 시점 |
 |---|---|---|
-| **라이브 데모 셋업** | Vercel 프로덕션 env 3개 + 재배포 | 데모 시점에 |
+| ~~라이브 데모 셋업~~ | ~~Vercel 프로덕션 env 3개 + 재배포~~ | ✅ 5/8 마감 |
 | **동네골목 Phase 4** | Vercel 배포 + 8개 시나리오 풀 톤 검증 | 컨디션 좋을 때 |
 | **동네골목 v1.5** | PostgreSQL / JWT / fal 이미지 / PWA로 확장 | 사이드 영역, 데모 반응 보고 |
 | **결제 후속** | 취소·환불 / Toss webhook / 카트 흐름 별도 E2E | 라이브 운영 진입 시점 |
 
-### Vercel 프로덕션 env 추가 (라이브 데모 시 1회)
+### 라이브 셋업 메모 (참고용 — 이미 끝난 작업)
 
 ```powershell
 cd D:\Dropbox\workspace\harbor-community
-vercel env add IMAGEKIT_PRIVATE_KEY production
-vercel env add TOSS_CLIENT_KEY production
-vercel env add TOSS_SECRET_KEY production
+# echo가 trailing \n 박는 것 주의 — printf "%s" 권장
+printf "%s" "private_..." | vercel env add IMAGEKIT_PRIVATE_KEY production
+printf "%s" "test_gck_..." | vercel env add TOSS_CLIENT_KEY production
+printf "%s" "test_gsk_..." | vercel env add TOSS_SECRET_KEY production
 vercel --prod
 ```
 
