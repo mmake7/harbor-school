@@ -20,7 +20,7 @@
 |---|---|---|---|---|
 | **#1** | 쇼핑몰 보완 (이미지 업로드 + 결제) | ✅ 마감 | [`quest1-shopping-completion/`](./quest1-shopping-completion/) | `mmake7/harbor-community@e483973` |
 | **#2** | 경쟁 서비스 deep dive (Radar v2) | ✅ 마감 | [`quest2-research-agent/`](./quest2-research-agent/) | `mmake7/harbor-school@45baeaf` |
-| **#3** | 정체 미상 | ⊘ 갈음 | — | (공식 문서 X, 로컬 어디에도 언급 X) |
+| **#3** | 기획서 3종 (MISSION/DEV/AUDIENCES, 형 기억) | ✅ 갈음 (정당화 README) | [`quest3-planning-docs/`](./quest3-planning-docs/) | dongne-golmok `MISSION/CONCEPT/ROADMAP/DEV` 4종으로 갈음 (1,260줄) |
 | **#4** | 유료잠금 미니 앱 | ✅ 마감 | [`quest4-paid-lock-mini-app/`](./quest4-paid-lock-mini-app/) | `mmake7/harbor-community@e483973` |
 | **#5** | 당근마켓 클론 → 동네골목 pivot | ⏳ pivot 진행 중 | [`MD/`](./MD/) (기획 문서 5건) + 별도 repo `mmake7/dongne-golmok` | (별도 repo) |
 
