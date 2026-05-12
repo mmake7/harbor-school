@@ -1,45 +1,44 @@
-> ⚠️ 골격본 — 클로드AI에서 받은 7주차 **퀘스트** 정식 명세는 아직 미수신. 형이 별도 프롬프트로 올릴 예정. 현재는 **고블린** 단위로 진입 중.
+# 7주차 — 디자인 시스템 + 개인 프로젝트 v1
 
-# 7주차 — (TBD: 퀘스트 명세 수신 후 제목 확정)
-
-5·6주차와 동일 형식 + 7주차 특수항목 (고블린).
+5·6주차와 달리 항목이 **3-tier 구조**로 들어옴: 워밍업 고블린 → 자동화 에이전트 → 디자인 퀘스트 → Final 개인 프로젝트.
 
 **용어 정의 (혼동 금지)**:
-- **고블린** = 클로드AI에서 형이 받아오는 수업 단위 프롬프트. 한 번에 하나씩 들어옴. 코드/디자인 산출물 단위.
-- **퀘스트** = 정식 명세. 별도 프롬프트로 들어올 예정. 아직 미수신.
+- **고블린** (🟢): 워밍업 단위. 톤 실험·간단 산출물. 클로드AI에서 받는 수업 단위 프롬프트.
+- **에이전트** (🟡): 고블린들의 패턴을 자동화하는 도구.
+- **퀘스트** (🟡): 디자인 시스템 적용 연습.
+- **Final** (🔴/🔵): 이번 주 메인 산출물 + 보너스.
 
 ---
 
 ## 라이브
 
-- (TBD) — 라이브로 배포되는 산출물이 있다면 URL · 검증 상태 기입
+- (TBD) — Final 진입 시 라이브 URL 확보
 
 ---
 
-## 고블린 처리 현황
+## 7주차 전체 지도
 
-| # | 고블린 | 상태 | 폴더 | 핵심 커밋 |
-|---|---|---|---|---|
-| **G1** | GPT Image 5톤 YouTube 썸네일 비주얼 생성기 (React 미니앱) | ✅ 마감 | [`thumbnail-generator/`](./thumbnail-generator/) | `mmake7/harbor-school@5c95d44` |
-| **G?** | (대기) | ⏳ | — | — |
+| 카테고리 | # | 항목 | 난이도 | 상태 | 폴더 | 핵심 커밋 |
+|---|---|---|---|---|---|---|
+| 🟢 고블린 | **G1** | YouTube 썸네일 1920×1080 (발표용 ✨) | 쉬움 | ✅ 마감 | [`thumbnail-generator/`](./thumbnail-generator/) | `mmake7/harbor-school@5c95d44`, `3663ac5` |
+| 🟢 고블린 | **G2** | 인스타 광고 카드 1080×1080 | 쉬움 | ⏳ | — | — |
+| 🟢 고블린 | **G3** | 내 프로필 카드 | 쉬움 | ⏳ | — | — |
+| 🟡 에이전트 | **A1** | `static-visual-maker` (G1·G2·G3 자동화) | 중 | ⏳ | — | — |
+| 🟡 퀘스트 | **Q1** | 카페 메뉴판 (디자인 시스템 적용 연습) | 중 | ⏳ | — | — |
+| 🟡 퀘스트 | **Q2** | 카페 신메뉴 포스터 (디자인 시스템 적용 연습) | 중 | ⏳ | — | — |
+| 🟡 퀘스트 | **Q3** | 내 명함 (톤 일관성 연습) | 중 | ⏳ | — | — |
+| 🔴 Final | **F1** | 개인 프로젝트 v1 (이번 주 **메인**, 신규 프로젝트 본체) | 큼 | ⏳ | — | — |
+| 🔵 Final 보너스 | **F2** | 오늘의집 클론 (여유 있으면) | 큼 | ⏳ | — | — |
 
-> 고블린은 형이 클로드AI에서 가져오는 순서대로 G1, G2, … 부여. 새 고블린 들어오면 `week7/<폴더명>/`로 잘라서 진입.
+### 자연 흐름 (난이도 순)
 
----
+```
+G1 ✅ → G2 → G3 → A1 (3개 패턴 추상화) → Q1·Q2·Q3 → F1 (메인) → F2 (보너스)
+```
 
-## Quest 충족 상태
-
-| # | 퀘스트 | 상태 | 폴더 | 핵심 커밋 |
-|---|---|---|---|---|
-| **#?** | (TBD — 정식 명세 수신 후 매핑) | ⏳ | — | — |
-
-> 퀘스트 정체는 정식 명세 수신 후 매핑. 마감된 고블린이 어떤 퀘스트에 충당될지 매칭도 그때 결정.
-
----
-
-## 7주차 회고
-
-(TBD — 퀘스트·고블린 모두 일단락된 후 한 단락)
+- G1·G2·G3가 워밍업이자 A1의 입력 패턴. **3개 다 끝나면 A1 자동화 가능**
+- Q1·Q2·Q3가 디자인 시스템 적용 — 동네골목 디자인 정교화에 직접 흘러들 수 있음
+- F1이 이번 주 진짜 메인. v1 시작점
 
 ---
 
@@ -47,66 +46,39 @@
 
 ```
 week7/
-├── README.md                  (이 파일 — 골격)
+├── README.md                  (이 파일 — 7주차 전체 지도)
 ├── poster-desktop-1440.png    (포스터 컨셉 페이지 데스크탑 1440 캡처)
 │
-├── thumbnail-generator/       ✅ 고블린 G1 — GPT Image 5톤 YouTube 썸네일 생성기
+├── thumbnail-generator/       ✅ G1 — GPT Image 5톤 YouTube 썸네일 생성기
 │   ├── server.js                Express + OpenAI + sharp (1920×1080 / 1080×1920 변환)
-│   ├── index.html / client.js   React CDN + Tailwind, 5톤 카드 그리드
+│   ├── index.html / client.js   React CDN + Tailwind, 5톤 카드 그리드 + 자동 로드
 │   ├── package.json             express · dotenv · openai · sharp
 │   ├── .env.example             키 형식 가이드 (.env는 .gitignore)
 │   ├── README.md                실행법 · 비용 · 결과 그리드
 │   └── generated/               생성 결과 10장 (가로 5 + 세로 5)
 │
 ├── movie-poster/              (영화 포스터 디자인 — 기리고 / If Wishes Could Kill)
-│   ├── INFO.md                  작품 리서치 v1.0 (작품 개요·인물 7인·비주얼 시그니처·흥행 지표)
-│   ├── index.html               포스터 컨셉 3선 비교 페이지 (React CDN + Tailwind)
-│   ├── assets/
-│   │   └── poster-chain.png       영정 그리드 컨셉 (gpt-image-1 생성)
-│   ├── prompts/                 4개 — v1-1 카운트다운 · v1-2 무당 · v2-1 친구 · v2-2 뱀 무당
-│   ├── research/
-│   │   ├── info.md                INFO.md와 동일 본문 사본
-│   │   └── prompt-chain.md        영정 그리드(죽음의 사슬) 프롬프트 — gpt-image-1 1024×1536
-│   ├── scripts/gen-stills.sh    fal.ai/flux-dev 호출 스크립트
-│   └── stills/
-│       ├── (수집) main-poster.webp / teaser-poster.webp / logo.webp / char-{sea|nari|gunwoo|hajun|hyungwook|haetsal|bangul}.webp
-│       ├── v1-realistic/           v1-1-countdown.jpg · v1-2-shaman.jpg
-│       └── v2-animals/             v2-1-friends.jpg · v2-2-snake-shaman.jpg
+│   ├── INFO.md / research/ / prompts/ / scripts/ / stills/ / assets/
+│   └── index.html               포스터 컨셉 3선 비교 페이지
 │
 ├── MD/                        (동네골목 기획 문서 5종 — 6주차 quest#3 자료와 동일 세트)
-│   ├── README.md  MISSION.md  CONCEPT.md  ROADMAP.md
-│   └── scenarios_mock.md  shops_mock.md
+│   └── README.md  MISSION.md  CONCEPT.md  ROADMAP.md  scenarios_mock.md  shops_mock.md
 │
 └── agents/                    (Claude Code subagent 정의 5종)
-    ├── app-mission-architect.md       앱 아이디어를 MISSION.md로 구체화
-    ├── dev-kickstart.md               MISSION.md → DEV.md 개발 계획
-    ├── single-react-dev.md            단일 index.html SPA (React CDN + Tailwind)
-    ├── single-server-specialist.md    server.js 미니 백엔드 (Express / http)
-    └── tosspayments-widget-integrator.md  TossPayments 결제위젯 통합
+    └── app-mission-architect / dev-kickstart / single-react-dev / single-server-specialist / tosspayments-widget-integrator
 ```
 
----
+### 정체 미상 자산 (지도에 매핑 필요)
 
-## 자산 사실 메모 (퀘스트 매핑 전 잡아둔 것)
+| 폴더/파일 | 추정 |
+|---|---|
+| `movie-poster/` | 영화 포스터 디자인 작업. 디자인 시스템 연습 맥락이라 Q1~Q3 어느 자리에 흘러들 가능성. 또는 G1·G2의 사전 디자인 실험 |
+| `MD/` | 동네골목 기획 문서 — **F1**(개인 프로젝트 v1)이 동네골목 v1.5라면 직접 연결 |
+| `agents/` | Claude Code subagent 5종 — A1(static-visual-maker)와 같은 자동화 라인. 참고 자료 |
+| `poster-desktop-1440.png` | movie-poster 페이지 캡처 |
+| `ss/` | (정체 미확인) |
 
-### movie-poster
-
-- **작품**: 〈기리고〉 / If Wishes Could Kill — Netflix 한국 오리지널, 2026-04-24 공개, 8부작
-- **장르**: 호러 / 학원 / 오컬트 / 스릴러 — 다층 장르를 한 화면에 응축해야 하는 디자인 과제
-- **핵심 모티프**: "소원의 대가는 죽음" — 앱 매개 저주
-- **생성 이미지 4장 (fal.ai/flux-dev)** + **영정 그리드 1장 (gpt-image-1)** 보유
-- **컨셉 비교 페이지** `index.html` 존재 — 데스크탑 1440 캡처 한 장 같이 있음
-- 어떤 고블린·퀘스트에 들어맞는지는 추후 판단
-
-### MD
-
-- 동네골목 기획 문서 5종 — 6주차에 본 것과 동일 세트
-- 수업 학습을 동네골목에 반영하는 시점 후보 (메모리 기반)
-
-### agents
-
-- 5종 모두 Claude Code subagent 정의 — single-react-dev / single-server-specialist 등
-- 7주차에 새로 작성된 건지, 재사용 자산인지 판단 보류
+→ 지도에 위 폴더들이 명시적으로 안 들어있음. 각 항목 진입 시점에 매핑 결정.
 
 ---
 
@@ -114,14 +86,17 @@ week7/
 
 | 영역 | 작업 | 시점 |
 |---|---|---|
-| 퀘스트 명세 매핑 | 클로드AI 정식 명세 수신 → 퀘스트 번호↔고블린/폴더 매칭 | 명세 수신 시 |
-| README 본문 채움 | 라이브 URL · 회고 · 핵심 커밋 | 명세 수신 후 |
-| .gitignore 점검 (movie-poster) | 대용량 자산(webp · jpg · png) push 여부 결정 | 해당 폴더 git add 직전 |
+| G2·G3 | 인스타 광고 카드, 프로필 카드 진입 | 다음 고블린 프롬프트 수신 시 |
+| A1 | 위 3개 고블린 패턴을 자동화하는 에이전트 | G3 마감 후 |
+| Q1~Q3 | 디자인 시스템 적용 연습 3종 | A1 후 또는 병행 |
+| F1 | 개인 프로젝트 v1 — 메인 산출물 | 디자인 라인 정리 후 진입 |
+| F2 | 오늘의집 클론 (보너스) | F1 여유 있을 때 |
+| movie-poster · MD · agents 등 | 어느 항목에 흘러드는지 매핑 + git 등록 | 해당 항목 진입 시 |
 
 ---
 
 ## 메모
 
 - 6주차와 마찬가지로 공식 미션 PDF가 있는지 명세 수신 시점에 같이 확인
-- 동네골목 메모리 기준 "7주차 디자인 수업 학습을 동네골목에 반영"이 다음 액션으로 박혀 있었음 (2026-05-08 EOD)
-- **고블린·퀘스트 구분**: 두 개념은 별개. 헷갈리지 말 것 (5/12 형 명시 정정)
+- 동네골목 메모리 기준 "7주차 디자인 수업 학습을 동네골목에 반영"이 다음 액션으로 박혀 있었음 (2026-05-08 EOD) — Q1~Q3(디자인 시스템) 또는 F1(개인 프로젝트 v1)에 직접 연결될 가능성 높음
+- **고블린·에이전트·퀘스트 구분**: 세 개념 모두 별개. 헷갈리지 말 것 (5/12 형 명시 + 전체 지도 수신 확정)
