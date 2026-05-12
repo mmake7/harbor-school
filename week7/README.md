@@ -21,7 +21,7 @@
 | 카테고리 | # | 항목 | 난이도 | 상태 | 폴더 | 핵심 커밋 |
 |---|---|---|---|---|---|---|
 | 🟢 고블린 | **G1** | YouTube 썸네일 1920×1080 (발표용 ✨) | 쉬움 | ✅ 마감 | [`thumbnail-generator/`](./thumbnail-generator/) | `mmake7/harbor-school@5c95d44`, `3663ac5` |
-| 🟢 고블린 | **G2** | 인스타 광고 카드 1080×1080 | 쉬움 | ⏳ | — | — |
+| 🟢 고블린 | **G2** | 인스타 광고 카드 1080×1080 | 쉬움 | ✅ 마감 | [`instagram-card-generator/`](./instagram-card-generator/) | (등록 시 갱신) |
 | 🟢 고블린 | **G3** | 내 프로필 카드 | 쉬움 | ⏳ | — | — |
 | 🟡 에이전트 | **A1** | `static-visual-maker` (G1·G2·G3 자동화) | 중 | ⏳ | — | — |
 | 🟡 퀘스트 | **Q1** | 카페 메뉴판 (디자인 시스템 적용 연습) | 중 | ⏳ | — | — |
@@ -56,6 +56,14 @@ week7/
 │   ├── .env.example             키 형식 가이드 (.env는 .gitignore)
 │   ├── README.md                실행법 · 비용 · 결과 그리드
 │   └── generated/               생성 결과 10장 (가로 5 + 세로 5)
+│
+├── instagram-card-generator/  ✅ G2 — GPT Image 5톤 인스타 광고 카드 (1080×1080)
+│   ├── server.js                Express + OpenAI + sharp (1024×1024 → 1080×1080 resize)
+│   ├── index.html / client.js   React CDN + Tailwind, 5톤 2열 그리드 + 자동 로드
+│   ├── package.json             G1과 동일 deps
+│   ├── .env.example             키 형식 가이드 (.env는 .gitignore, G1 키 재사용)
+│   ├── README.md                G1과의 차이 비교표 + 결과 그리드 5장
+│   └── generated/               생성 결과 5장 (정사각형 1종)
 │
 ├── movie-poster/              (영화 포스터 디자인 — 기리고 / If Wishes Could Kill)
 │   ├── INFO.md / research/ / prompts/ / scripts/ / stills/ / assets/
