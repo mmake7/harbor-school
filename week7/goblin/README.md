@@ -55,6 +55,34 @@ G1 동일 5톤 × 1200×630 가로 = **5장**. OG / 블로그 / LinkedIn 카드.
 
 ---
 
+## G1 — YouTube 썸네일 풀세트 (10장)
+
+| 톤 | 가로 1920×1080 | 세로 1080×1920 |
+|---|---|---|
+| **Deep Navy & Gold** | ![](thumbnail-generator/generated/TONE_1_DEEP_NAVY_GOLD_1920x1080.png) | ![](thumbnail-generator/generated/TONE_1_DEEP_NAVY_GOLD_1080x1920.png) |
+| **Ink Wash (수묵)** | ![](thumbnail-generator/generated/TONE_2_INK_WASH_1920x1080.png) | ![](thumbnail-generator/generated/TONE_2_INK_WASH_1080x1920.png) |
+| **Sepia Diary** | ![](thumbnail-generator/generated/TONE_3_SEPIA_DIARY_1920x1080.png) | ![](thumbnail-generator/generated/TONE_3_SEPIA_DIARY_1080x1920.png) |
+| **Cool Midnight** | ![](thumbnail-generator/generated/TONE_4_COOL_MIDNIGHT_1920x1080.png) | ![](thumbnail-generator/generated/TONE_4_COOL_MIDNIGHT_1080x1920.png) |
+| **Dawn Mist** | ![](thumbnail-generator/generated/TONE_5_DAWN_MIST_1920x1080.png) | ![](thumbnail-generator/generated/TONE_5_DAWN_MIST_1080x1920.png) |
+
+## G2 — Instagram 광고 카드 풀세트 (5장)
+
+| Deep Navy & Gold | Ink Wash | Sepia Diary | Cool Midnight | Dawn Mist |
+|---|---|---|---|---|
+| ![](instagram-card-generator/generated/TONE_1_DEEP_NAVY_GOLD_1080x1080.png) | ![](instagram-card-generator/generated/TONE_2_INK_WASH_1080x1080.png) | ![](instagram-card-generator/generated/TONE_3_SEPIA_DIARY_1080x1080.png) | ![](instagram-card-generator/generated/TONE_4_COOL_MIDNIGHT_1080x1080.png) | ![](instagram-card-generator/generated/TONE_5_DAWN_MIST_1080x1080.png) |
+
+## G3 — 프로필 카드 풀세트 (5장)
+
+| 톤 | 1200×630 |
+|---|---|
+| **Deep Navy & Gold** | ![](profile-card-generator/generated/TONE_1_DEEP_NAVY_GOLD_1200x630.png) |
+| **Ink Wash (수묵)** | ![](profile-card-generator/generated/TONE_2_INK_WASH_1200x630.png) |
+| **Sepia Diary** | ![](profile-card-generator/generated/TONE_3_SEPIA_DIARY_1200x630.png) |
+| **Cool Midnight** | ![](profile-card-generator/generated/TONE_4_COOL_MIDNIGHT_1200x630.png) |
+| **Dawn Mist** | ![](profile-card-generator/generated/TONE_5_DAWN_MIST_1200x630.png) |
+
+---
+
 ## 다음
 
 세 고블린의 공통 패턴은 [`../agent/static-visual-maker/`](../agent/static-visual-maker/)로 추상화됨 (A1 에이전트).

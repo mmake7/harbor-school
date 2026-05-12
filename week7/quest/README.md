@@ -59,3 +59,27 @@
 | Q2 메뉴판 | 1차 | ~$0.10 | menu.png · PDF |
 | Q3 포스터 | 1차 | ~$0.06 | poster.png · PDF |
 | **합** | | **~$0.52** | |
+
+---
+
+## 출력물 미리보기
+
+### Q1 — 명함 (앞·뒤)
+
+| 앞면 | 뒷면 |
+|---|---|
+| ![Q1 front](business-card/output/front.png) | ![Q1 back](business-card/output/back.png) |
+
+> PDF (인쇄용 합본): [`business-card/output/business-card.pdf`](./business-card/output/business-card.pdf)
+
+### Q2 — TYPA 카페 메뉴판
+
+![Q2 menu](cafe-menu-typa/output/menu.png)
+
+> PDF: [`cafe-menu-typa/output/menu.pdf`](./cafe-menu-typa/output/menu.pdf)
+
+### Q3 — TYPA 라벤더 크림 소다 신메뉴 포스터
+
+![Q3 poster](cafe-poster-typa-lavender/output/poster.png)
+
+> PDF: [`cafe-poster-typa-lavender/output/poster.pdf`](./cafe-poster-typa-lavender/output/poster.pdf)

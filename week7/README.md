@@ -26,6 +26,32 @@
 
 ---
 
+## 출력물 갤러리
+
+### 🟢 Goblin (G1·G2·G3)
+| G1 YouTube 썸네일 (가로) | G2 Instagram 카드 | G3 프로필 카드 (OG/블로그) |
+|---|---|---|
+| ![G1](goblin/thumbnail-generator/generated/TONE_1_DEEP_NAVY_GOLD_1920x1080.png) | ![G2](goblin/instagram-card-generator/generated/TONE_1_DEEP_NAVY_GOLD_1080x1080.png) | ![G3](goblin/profile-card-generator/generated/TONE_1_DEEP_NAVY_GOLD_1200x630.png) |
+| 1920×1080 | 1080×1080 | 1200×630 |
+
+> TONE_1 Deep Navy & Gold만 미리보기. 5톤 풀세트는 [`goblin/README.md`](./goblin/README.md) 참조.
+
+### 🟡 Agent (A1)
+| A1 Static Visual Maker — 스모크 (TONE_1 × instagram-card) |
+|---|
+| ![A1](agent/static-visual-maker/generated/TONE_1_DEEP_NAVY_GOLD__instagram-card__square_1080x1080.png) |
+
+### 🟠 Quest (Q1·Q2·Q3)
+| Q1 명함 (앞) | Q1 명함 (뒤) |
+|---|---|
+| ![Q1 front](quest/business-card/output/front.png) | ![Q1 back](quest/business-card/output/back.png) |
+
+| Q2 TYPA 카페 메뉴판 | Q3 라벤더 크림 소다 포스터 |
+|---|---|
+| ![Q2](quest/cafe-menu-typa/output/menu.png) | ![Q3](quest/cafe-poster-typa-lavender/output/poster.png) |
+
+---
+
 ## 폴더 구조
 
 ```

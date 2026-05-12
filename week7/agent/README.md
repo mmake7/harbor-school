@@ -38,3 +38,13 @@ G1·G2·G3 세 고블린의 공통 코드를 `shared/` 4 모듈로 추상화한 
 | G3 톤·SUFFIX·사이즈 | `tones.js` + `visualTypes[2]` (Profile) | 동일 결과 |
 
 G1·G2·G3 폴더는 **학습 비교용으로 그대로 보존** ([`../goblin/`](../goblin/)).
+
+---
+
+## 스모크 결과
+
+통합 흐름 검증용 1장 (TONE_1 × instagram-card):
+
+![A1 스모크](static-visual-maker/generated/TONE_1_DEEP_NAVY_GOLD__instagram-card__square_1080x1080.png)
+
+> 풀 5톤 × 3타입 = 20장 생성은 비용 통제 위해 미실행. 필요 시 브라우저에서 톤별 버튼 클릭 (톤당 ~$0.04~$0.12).
