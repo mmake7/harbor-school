@@ -1,19 +1,38 @@
 -- ============================================================
--- today-room (오늘의집 클론) — DB 스키마 + RLS
--- 모든 테이블에 tr_ prefix (기존 Supabase 프로젝트 재활용 가능)
--- Supabase SQL Editor에서 그대로 실행
+-- today-room — 자체 JWT 인증 스키마 (Supabase Auth/RLS/Storage 미사용)
+-- 모든 테이블 tr_ prefix, RLS 없음, 트리거 없음, 권한 처리는 서버(API route)에서 JWT 검증
 -- ============================================================
 
+-- pgcrypto for gen_random_uuid()
+create extension if not exists pgcrypto;
+
 -- ============================================================
--- 1. Tables (tr_ prefix)
+-- 1. Profiles + Sessions (자체 인증)
 -- ============================================================
 
 create table if not exists tr_profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  email text,
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  password_hash text not null,
   neighborhood text,
   created_at timestamptz default now()
 );
+create index if not exists tr_profiles_email_idx on tr_profiles (lower(email));
+
+create table if not exists tr_auth_sessions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references tr_profiles(id) on delete cascade,
+  token_hash text not null,
+  expires_at timestamptz not null,
+  revoked_at timestamptz,
+  created_at timestamptz default now()
+);
+create index if not exists tr_auth_sessions_token_idx on tr_auth_sessions (token_hash);
+create index if not exists tr_auth_sessions_user_idx on tr_auth_sessions (user_id);
+
+-- ============================================================
+-- 2. Products
+-- ============================================================
 
 create table if not exists tr_products (
   id uuid primary key default gen_random_uuid(),
@@ -22,13 +41,17 @@ create table if not exists tr_products (
   price integer not null,
   description text,
   category text not null check (category in ('furniture','lighting','accessory','fabric','plant')),
-  images text[] default '{}',
+  images text[] default '{}',  -- ImageKit URL 최대 3장
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
-
 create index if not exists tr_products_category_idx on tr_products (category);
 create index if not exists tr_products_created_desc_idx on tr_products (created_at desc);
+create index if not exists tr_products_user_idx on tr_products (user_id);
+
+-- ============================================================
+-- 3. Favorites
+-- ============================================================
 
 create table if not exists tr_favorites (
   user_id uuid not null references tr_profiles(id) on delete cascade,
@@ -36,6 +59,10 @@ create table if not exists tr_favorites (
   created_at timestamptz default now(),
   primary key (user_id, product_id)
 );
+
+-- ============================================================
+-- 4. Chats + Messages
+-- ============================================================
 
 create table if not exists tr_chats (
   id uuid primary key default gen_random_uuid(),
@@ -45,6 +72,8 @@ create table if not exists tr_chats (
   created_at timestamptz default now(),
   unique (product_id, buyer_id)
 );
+create index if not exists tr_chats_buyer_idx on tr_chats (buyer_id);
+create index if not exists tr_chats_seller_idx on tr_chats (seller_id);
 
 create table if not exists tr_messages (
   id uuid primary key default gen_random_uuid(),
@@ -53,127 +82,25 @@ create table if not exists tr_messages (
   content text not null,
   created_at timestamptz default now()
 );
-
 create index if not exists tr_messages_chat_time_idx on tr_messages (chat_id, created_at);
 
 -- ============================================================
--- 2. RLS — enable on all tr_* tables
+-- 5. Orders (TossPayments 결제)
 -- ============================================================
 
-alter table tr_profiles enable row level security;
-alter table tr_products enable row level security;
-alter table tr_favorites enable row level security;
-alter table tr_chats enable row level security;
-alter table tr_messages enable row level security;
-
--- tr_profiles -----------------------------------------------
-drop policy if exists "tr_profiles_select_all" on tr_profiles;
-create policy "tr_profiles_select_all" on tr_profiles for select using (true);
-
-drop policy if exists "tr_profiles_insert_own" on tr_profiles;
-create policy "tr_profiles_insert_own" on tr_profiles for insert with check (auth.uid() = id);
-
-drop policy if exists "tr_profiles_update_own" on tr_profiles;
-create policy "tr_profiles_update_own" on tr_profiles for update using (auth.uid() = id);
-
--- tr_products -----------------------------------------------
-drop policy if exists "tr_products_select_all" on tr_products;
-create policy "tr_products_select_all" on tr_products for select using (true);
-
-drop policy if exists "tr_products_insert_own" on tr_products;
-create policy "tr_products_insert_own" on tr_products for insert with check (auth.uid() = user_id);
-
-drop policy if exists "tr_products_update_own" on tr_products;
-create policy "tr_products_update_own" on tr_products for update using (auth.uid() = user_id);
-
-drop policy if exists "tr_products_delete_own" on tr_products;
-create policy "tr_products_delete_own" on tr_products for delete using (auth.uid() = user_id);
-
--- tr_favorites ----------------------------------------------
-drop policy if exists "tr_favorites_select_own" on tr_favorites;
-create policy "tr_favorites_select_own" on tr_favorites for select using (auth.uid() = user_id);
-
-drop policy if exists "tr_favorites_insert_own" on tr_favorites;
-create policy "tr_favorites_insert_own" on tr_favorites for insert with check (auth.uid() = user_id);
-
-drop policy if exists "tr_favorites_delete_own" on tr_favorites;
-create policy "tr_favorites_delete_own" on tr_favorites for delete using (auth.uid() = user_id);
-
--- tr_chats --------------------------------------------------
-drop policy if exists "tr_chats_select_participant" on tr_chats;
-create policy "tr_chats_select_participant" on tr_chats for select
-  using (auth.uid() = buyer_id or auth.uid() = seller_id);
-
-drop policy if exists "tr_chats_insert_buyer" on tr_chats;
-create policy "tr_chats_insert_buyer" on tr_chats for insert
-  with check (auth.uid() = buyer_id);
-
--- tr_messages -----------------------------------------------
-drop policy if exists "tr_messages_select_participant" on tr_messages;
-create policy "tr_messages_select_participant" on tr_messages for select
-  using (
-    exists (
-      select 1 from tr_chats
-      where tr_chats.id = tr_messages.chat_id
-        and (tr_chats.buyer_id = auth.uid() or tr_chats.seller_id = auth.uid())
-    )
-  );
-
-drop policy if exists "tr_messages_insert_participant" on tr_messages;
-create policy "tr_messages_insert_participant" on tr_messages for insert
-  with check (
-    auth.uid() = sender_id
-    and exists (
-      select 1 from tr_chats
-      where tr_chats.id = tr_messages.chat_id
-        and (tr_chats.buyer_id = auth.uid() or tr_chats.seller_id = auth.uid())
-    )
-  );
-
--- ============================================================
--- 3. Storage — tr-product-images bucket
--- ============================================================
--- Run separately in Supabase Dashboard > Storage:
--- 1) Create bucket: tr-product-images (Public)
--- 2) Apply policies below in SQL Editor:
-
-drop policy if exists "tr_product_images_read_all" on storage.objects;
-create policy "tr_product_images_read_all" on storage.objects for select
-  using (bucket_id = 'tr-product-images');
-
-drop policy if exists "tr_product_images_insert_own" on storage.objects;
-create policy "tr_product_images_insert_own" on storage.objects for insert
-  with check (
-    bucket_id = 'tr-product-images'
-    and auth.uid()::text = (storage.foldername(name))[1]
-  );
-
-drop policy if exists "tr_product_images_delete_own" on storage.objects;
-create policy "tr_product_images_delete_own" on storage.objects for delete
-  using (
-    bucket_id = 'tr-product-images'
-    and auth.uid()::text = (storage.foldername(name))[1]
-  );
-
--- ============================================================
--- 4. Profile auto-create trigger (on signup)
--- 기존 handle_new_user 함수·트리거와 분리 (handle_new_tr_user)
--- ============================================================
-
-create or replace function public.handle_new_tr_user()
-returns trigger
-language plpgsql
-security definer set search_path = public
-as $$
-begin
-  insert into public.tr_profiles (id, email)
-  values (new.id, new.email)
-  on conflict (id) do nothing;
-  return new;
-end;
-$$;
-
-drop trigger if exists on_auth_user_created_tr on auth.users;
-create trigger on_auth_user_created_tr
-  after insert on auth.users
-  for each row execute function public.handle_new_tr_user();
+create table if not exists tr_orders (
+  id uuid primary key default gen_random_uuid(),
+  buyer_id uuid not null references tr_profiles(id),
+  product_id uuid not null references tr_products(id),
+  amount integer not null,
+  toss_order_id text not null unique,  -- TossPayments orderId (클라이언트 생성)
+  payment_key text,                     -- Toss 결제 승인 후 저장
+  payment_method text,
+  status text not null default 'pending' check (status in ('pending','paid','canceled','failed')),
+  paid_at timestamptz,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+create index if not exists tr_orders_buyer_idx on tr_orders (buyer_id);
+create index if not exists tr_orders_toss_idx on tr_orders (toss_order_id);
+create index if not exists tr_orders_status_idx on tr_orders (status);

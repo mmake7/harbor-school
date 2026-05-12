@@ -1,5 +1,5 @@
-// Manually maintained types
-// 모든 DB 테이블은 tr_ prefix (today-room 식별, 기존 Supabase 프로젝트 재활용)
+// 자체 JWT 인증 + 직접 pg 연결 (Supabase Auth/RLS 미사용)
+// 모든 DB 테이블 tr_ prefix
 
 export type Category = "furniture" | "lighting" | "accessory" | "fabric" | "plant"
 
@@ -14,8 +14,21 @@ export const CATEGORIES: { id: Category; label: string }[] = [
 // table: tr_profiles
 export type Profile = {
   id: string
-  email: string | null
+  email: string
   neighborhood: string | null
+  created_at: string
+}
+
+// 서버 내부용 (password_hash 포함). 클라이언트엔 절대 노출 X
+export type ProfileWithHash = Profile & { password_hash: string }
+
+// table: tr_auth_sessions
+export type AuthSession = {
+  id: string
+  user_id: string
+  token_hash: string
+  expires_at: string
+  revoked_at: string | null
   created_at: string
 }
 
@@ -27,7 +40,7 @@ export type Product = {
   price: number
   description: string | null
   category: Category
-  images: string[]
+  images: string[]  // ImageKit URL 0~3개
   created_at: string
   updated_at: string
 }
@@ -57,5 +70,22 @@ export type Message = {
   created_at: string
 }
 
-// Storage bucket: tr-product-images (public)
-export const STORAGE_BUCKET = "tr-product-images"
+// table: tr_orders
+export type OrderStatus = "pending" | "paid" | "canceled" | "failed"
+export type Order = {
+  id: string
+  buyer_id: string
+  product_id: string
+  amount: number
+  toss_order_id: string
+  payment_key: string | null
+  payment_method: string | null
+  status: OrderStatus
+  paid_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+// 로그인 응답 user 객체
+export type AuthUser = Profile
+export type AuthResponse = { user: AuthUser; token: string }
