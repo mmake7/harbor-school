@@ -23,7 +23,7 @@
 | 🟢 고블린 | **G1** | YouTube 썸네일 1920×1080 (발표용 ✨) | 쉬움 | ✅ 마감 | [`thumbnail-generator/`](./thumbnail-generator/) | `mmake7/harbor-school@5c95d44`, `3663ac5` |
 | 🟢 고블린 | **G2** | 인스타 광고 카드 1080×1080 | 쉬움 | ✅ 마감 | [`instagram-card-generator/`](./instagram-card-generator/) | (등록 시 갱신) |
 | 🟢 고블린 | **G3** | 내 프로필 카드 (1200×630 OG/블로그/LinkedIn) | 쉬움 | ✅ 마감 | [`profile-card-generator/`](./profile-card-generator/) | (등록 시 갱신) |
-| 🟡 에이전트 | **A1** | `static-visual-maker` (G1·G2·G3 자동화) | 중 | ⏳ | — | — |
+| 🟡 에이전트 | **A1** | `static-visual-maker` (G1·G2·G3 통합 + config 추상화) | 중 | ✅ 마감 | [`static-visual-maker/`](./static-visual-maker/) | (등록 시 갱신) |
 | 🟡 퀘스트 | **Q1** | 카페 메뉴판 (디자인 시스템 적용 연습) | 중 | ⏳ | — | — |
 | 🟡 퀘스트 | **Q2** | 카페 신메뉴 포스터 (디자인 시스템 적용 연습) | 중 | ⏳ | — | — |
 | 🟡 퀘스트 | **Q3** | 내 명함 (톤 일관성 연습) | 중 | ⏳ | — | — |
@@ -72,6 +72,16 @@ week7/
 │   ├── .env.example             키 형식 가이드 (.env는 .gitignore, G1 키 재사용)
 │   ├── README.md                G1·G2 비교표 + 결과 그리드 5장 + 좌측 가중치 분석
 │   └── generated/               생성 결과 5장 (1200×630 가로 1종)
+│
+├── static-visual-maker/       ✅ A1 — G1·G2·G3 통합 에이전트 (config 기반 확장)
+│   ├── server.js                메인 서버 (shared/ 사용, 라우트 5개)
+│   ├── index.html / client.js   1단계 타입 선택 → 2단계 톤별 카드 → 결과 그리드
+│   ├── package.json             G1과 동일 deps
+│   ├── .env.example             키 형식 가이드 (.env는 .gitignore, 동일 키)
+│   ├── shared/                  공통 코드 — tones · visualTypes · imageGenerator · results
+│   ├── README.md                A1 개요 + G1·G2·G3 관계
+│   ├── USAGE.md                 새 톤·새 타입 추가 방법 (확장성 문서)
+│   └── generated/               결과물 (TONE__TYPE__OUTPUT_WxH.png 패턴)
 │
 ├── movie-poster/              (영화 포스터 디자인 — 기리고 / If Wishes Could Kill)
 │   ├── INFO.md / research/ / prompts/ / scripts/ / stills/ / assets/
