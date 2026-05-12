@@ -3,9 +3,10 @@
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import * as React from "react"
-import { CATEGORIES, type Product } from "@/types/database.types"
+import { toast } from "sonner"
+import { CATEGORIES, type Product, type Chat } from "@/types/database.types"
 import { useAuth } from "@/components/auth-provider"
-import { apiGet } from "@/lib/auth-client"
+import { apiGet, apiPost, apiFetch } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -14,6 +15,7 @@ type ProductWithSeller = Product & {
   seller_email: string | null
   seller_neighborhood: string | null
 }
+type FavoriteRow = { id: string }
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -21,6 +23,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const [product, setProduct] = React.useState<ProductWithSeller | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [activeImage, setActiveImage] = React.useState(0)
+  const [favorited, setFavorited] = React.useState(false)
+  const [busy, setBusy] = React.useState(false)
 
   React.useEffect(() => {
     apiGet<{ product?: ProductWithSeller; error?: string }>(`/api/products/${params.id}`).then((r) => {
@@ -28,6 +32,38 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       setLoading(false)
     })
   }, [params.id])
+
+  React.useEffect(() => {
+    if (!user) return
+    apiGet<{ favorites: FavoriteRow[] }>(`/api/favorites`).then((r) => {
+      if (r.ok) setFavorited(r.data.favorites.some((f) => f.id === params.id))
+    })
+  }, [user, params.id])
+
+  async function toggleFavorite() {
+    if (!user) return router.push("/auth/login")
+    setBusy(true)
+    if (favorited) {
+      const res = await apiFetch(`/api/favorites?product_id=${params.id}`, { method: "DELETE" })
+      if (res.ok) setFavorited(false)
+    } else {
+      const r = await apiPost(`/api/favorites`, { product_id: params.id })
+      if (r.ok) setFavorited(true)
+    }
+    setBusy(false)
+  }
+
+  async function startChat() {
+    if (!user) return router.push("/auth/login")
+    setBusy(true)
+    const r = await apiPost<{ chat?: Chat; error?: string }>(`/api/chats`, { product_id: params.id })
+    setBusy(false)
+    if (r.ok && r.data.chat) {
+      router.push(`/chat/${r.data.chat.id}`)
+    } else {
+      toast.error(r.data.error || "채팅방 생성 실패")
+    }
+  }
 
   if (loading) return <main className="container mx-auto p-6"><p className="text-muted-foreground">로딩…</p></main>
   if (!product) return <main className="container mx-auto p-6"><p className="text-muted-foreground">상품 없음</p></main>
@@ -81,11 +117,13 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           </div>
 
           {isMine ? (
-            <p className="text-sm text-muted-foreground">내 상품 (수정·삭제는 마이페이지에서 — Phase 6)</p>
+            <p className="text-sm text-muted-foreground">내 상품 (수정·삭제는 Phase 7)</p>
           ) : user ? (
             <div className="flex gap-2">
-              <Button className="flex-1" disabled>채팅 (Phase 6)</Button>
-              <Button variant="outline" disabled>찜 (Phase 6)</Button>
+              <Button className="flex-1" onClick={startChat} disabled={busy}>채팅 시작</Button>
+              <Button variant="outline" onClick={toggleFavorite} disabled={busy}>
+                {favorited ? "♥ 찜 해제" : "♡ 찜"}
+              </Button>
               <Button variant="outline" disabled>구매 (Phase 7)</Button>
             </div>
           ) : (
