@@ -1,9 +1,98 @@
+"use client"
+
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import * as React from "react"
+import { CATEGORIES, type Product } from "@/types/database.types"
+import { useAuth } from "@/components/auth-provider"
+import { apiGet } from "@/lib/auth-client"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+
+type ProductWithSeller = Product & {
+  seller_email: string | null
+  seller_neighborhood: string | null
+}
+
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
+  const router = useRouter()
+  const { user } = useAuth()
+  const [product, setProduct] = React.useState<ProductWithSeller | null>(null)
+  const [loading, setLoading] = React.useState(true)
+  const [activeImage, setActiveImage] = React.useState(0)
+
+  React.useEffect(() => {
+    apiGet<{ product?: ProductWithSeller; error?: string }>(`/api/products/${params.id}`).then((r) => {
+      if (r.ok && r.data.product) setProduct(r.data.product)
+      setLoading(false)
+    })
+  }, [params.id])
+
+  if (loading) return <main className="container mx-auto p-6"><p className="text-muted-foreground">로딩…</p></main>
+  if (!product) return <main className="container mx-auto p-6"><p className="text-muted-foreground">상품 없음</p></main>
+
+  const isMine = user && user.id === product.user_id
+  const categoryLabel = CATEGORIES.find((c) => c.id === product.category)?.label || product.category
+
   return (
-    <main className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">상품 상세</h1>
-      <p className="text-sm text-muted-foreground">ID: {params.id}</p>
-      <p className="text-muted-foreground mt-4">TODO: 2단계에서 구현 (이미지·정보·구매·채팅·찜)</p>
+    <main className="container mx-auto max-w-3xl p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <div className="relative aspect-square bg-muted rounded overflow-hidden">
+            {product.images[activeImage] ? (
+              <Image src={product.images[activeImage]} alt={product.title} fill sizes="500px" className="object-cover" />
+            ) : (
+              <div className="flex h-full items-center justify-center text-sm text-muted-foreground">no image</div>
+            )}
+          </div>
+          {product.images.length > 1 && (
+            <div className="flex gap-2">
+              {product.images.map((u, i) => (
+                <button
+                  key={u}
+                  onClick={() => setActiveImage(i)}
+                  className={`relative h-16 w-16 rounded overflow-hidden border-2 ${i === activeImage ? "border-primary" : "border-transparent"}`}
+                >
+                  <Image src={u} alt={`thumb-${i}`} fill sizes="64px" className="object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <Badge variant="outline" className="mb-2">{categoryLabel}</Badge>
+            <h1 className="text-2xl font-bold">{product.title}</h1>
+            <p className="text-2xl font-bold mt-2">₩{product.price.toLocaleString()}</p>
+          </div>
+
+          {product.description && (
+            <Card>
+              <CardContent className="p-4 text-sm whitespace-pre-wrap">{product.description}</CardContent>
+            </Card>
+          )}
+
+          <div className="text-sm text-muted-foreground space-y-1">
+            <p>판매자: {product.seller_email?.split("@")[0] || "—"}</p>
+            <p>동네: {product.seller_neighborhood || "—"}</p>
+            <p>등록: {new Date(product.created_at).toLocaleDateString("ko-KR")}</p>
+          </div>
+
+          {isMine ? (
+            <p className="text-sm text-muted-foreground">내 상품 (수정·삭제는 마이페이지에서 — Phase 6)</p>
+          ) : user ? (
+            <div className="flex gap-2">
+              <Button className="flex-1" disabled>채팅 (Phase 6)</Button>
+              <Button variant="outline" disabled>찜 (Phase 6)</Button>
+              <Button variant="outline" disabled>구매 (Phase 7)</Button>
+            </div>
+          ) : (
+            <Button onClick={() => router.push("/auth/login")}>로그인 후 거래 시작</Button>
+          )}
+        </div>
+      </div>
     </main>
   )
 }
