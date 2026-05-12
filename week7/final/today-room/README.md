@@ -33,14 +33,14 @@
 
 | 단계 | 내용 | 상태 |
 |---|---|---|
-| **1단계** | Next.js + shadcn 셋업, 폴더 구조 | ✅ |
-| **2단계** | 자체 JWT 인프라 (lib/db·auth·upload + API route 7) | ✅ (Phase 3) |
-| 3단계 | Auth UI (signup/login 폼 + me 훅) | ⏳ |
-| 4단계 | 상품 CRUD + 이미지 업로드 | ⏳ |
-| 5단계 | 찜·검색·카테고리 필터 | ⏳ |
-| 6단계 | 채팅 (Polling) | ⏳ |
-| 7단계 | 구매 (TossPayments) | ⏳ |
-| 8단계 | Vercel 배포 | ⏳ |
+| 1단계 | Next.js + shadcn 셋업 | ✅ |
+| 2단계 | JWT 인프라 (lib/db·auth·upload + API auth/upload/payment) | ✅ |
+| 3단계 | Auth UI (signup/login + Provider + Header) | ✅ |
+| 4단계 | 상품 CRUD + 이미지 업로드 (등록·목록·상세) | ✅ |
+| 5단계 | 카테고리·검색 필터 | ✅ |
+| 6단계 | 찜 + 채팅 polling + 마이페이지 | ✅ |
+| 7단계 | 구매(TossPayments) + 상품 수정·삭제 | ✅ |
+| 8단계 | Vercel 배포 | ⏳ 형 액션 |
 
 ---
 
@@ -158,6 +158,33 @@ TOSS_SECRET_KEY=test_gsk_...
 npm run dev
 # → http://localhost:3000
 ```
+
+### 6. Vercel 배포
+
+```powershell
+# 한 번만
+npm install -g vercel
+vercel login
+
+# 프로젝트 연결 + 미리보기 배포
+cd week7/final/today-room
+vercel
+
+# 환경변수 7개 등록 (Production·Preview·Development 모두 선택)
+printf "%s" "<DATABASE_URL>" | vercel env add DATABASE_URL production
+printf "%s" "<JWT_SECRET>" | vercel env add JWT_SECRET production
+printf "%s" "<IMAGEKIT_PUBLIC_KEY>" | vercel env add IMAGEKIT_PUBLIC_KEY production
+printf "%s" "<IMAGEKIT_PRIVATE_KEY>" | vercel env add IMAGEKIT_PRIVATE_KEY production
+printf "%s" "<IMAGEKIT_URL_ENDPOINT>" | vercel env add IMAGEKIT_URL_ENDPOINT production
+printf "%s" "<NEXT_PUBLIC_TOSS_CLIENT_KEY>" | vercel env add NEXT_PUBLIC_TOSS_CLIENT_KEY production
+printf "%s" "<TOSS_SECRET_KEY>" | vercel env add TOSS_SECRET_KEY production
+
+# 프로덕션 배포
+vercel --prod
+```
+
+> `printf "%s"`는 `echo`의 trailing newline 문제 회피 (6주차 메모).
+> 또는 Vercel Dashboard → Settings → Environment Variables에서 직접 입력.
 
 ### 6. 동작 확인 (cURL)
 

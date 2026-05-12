@@ -65,6 +65,18 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     }
   }
 
+  async function buyNow() {
+    if (!user) return router.push("/auth/login")
+    setBusy(true)
+    const r = await apiPost<{ order?: { id: string }; error?: string }>(`/api/orders`, { product_id: params.id })
+    setBusy(false)
+    if (r.ok && r.data.order) {
+      router.push(`/checkout/${r.data.order.id}`)
+    } else {
+      toast.error(r.data.error || "주문 생성 실패")
+    }
+  }
+
   if (loading) return <main className="container mx-auto p-6"><p className="text-muted-foreground">로딩…</p></main>
   if (!product) return <main className="container mx-auto p-6"><p className="text-muted-foreground">상품 없음</p></main>
 
@@ -117,14 +129,28 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           </div>
 
           {isMine ? (
-            <p className="text-sm text-muted-foreground">내 상품 (수정·삭제는 Phase 7)</p>
-          ) : user ? (
             <div className="flex gap-2">
-              <Button className="flex-1" onClick={startChat} disabled={busy}>채팅 시작</Button>
-              <Button variant="outline" onClick={toggleFavorite} disabled={busy}>
-                {favorited ? "♥ 찜 해제" : "♡ 찜"}
-              </Button>
-              <Button variant="outline" disabled>구매 (Phase 7)</Button>
+              <Button variant="outline" className="flex-1" onClick={() => router.push(`/products/${product.id}/edit`)}>수정</Button>
+              <Button variant="destructive" onClick={async () => {
+                if (!confirm("정말 삭제할까요?")) return
+                const res = await apiFetch(`/api/products/${product.id}`, { method: "DELETE" })
+                if (res.ok) {
+                  toast.success("삭제됨")
+                  router.push("/mypage")
+                } else {
+                  toast.error("삭제 실패")
+                }
+              }}>삭제</Button>
+            </div>
+          ) : user ? (
+            <div className="flex flex-col gap-2">
+              <Button className="w-full" onClick={buyNow} disabled={busy}>구매하기</Button>
+              <div className="flex gap-2">
+                <Button variant="outline" className="flex-1" onClick={startChat} disabled={busy}>채팅 시작</Button>
+                <Button variant="outline" onClick={toggleFavorite} disabled={busy}>
+                  {favorited ? "♥ 찜 해제" : "♡ 찜"}
+                </Button>
+              </div>
             </div>
           ) : (
             <Button onClick={() => router.push("/auth/login")}>로그인 후 거래 시작</Button>
