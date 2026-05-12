@@ -21,8 +21,8 @@
 | **Q1** | 🟠 Quest | 명함 (DAONi 박인수, Tech Minimal + 한지) | ✅ | [`quest/business-card/`](./quest/business-card/) |
 | **Q2** | 🟠 Quest | TYPA 카페 메뉴판 (엔젤코어 + 다크 고딕) | ✅ | [`quest/cafe-menu-typa/`](./quest/cafe-menu-typa/) |
 | **Q3** | 🟠 Quest | TYPA 라벤더 크림 소다 신메뉴 포스터 | ✅ | [`quest/cafe-poster-typa-lavender/`](./quest/cafe-poster-typa-lavender/) |
-| **F1** | 🔴 Final | 개인 프로젝트 v1 (이번 주 메인) | ⏳ | [`final/`](./final/) |
-| **F2** | 🔵 Final | 오늘의집 클론 (보너스) | ⏳ | [`final/`](./final/) |
+| **F1** | 🔴 Final | 오늘의집 클론 (today-room) — Next.js 14 + 자체 JWT + pg + ImageKit + TossPayments | 🛠️ 코드 완성, Vercel 배포 대기 | [`final/today-room/`](./final/today-room/) |
+| **F2** | 🔵 Final | 보너스 | ⏳ | — |
 
 ---
 
