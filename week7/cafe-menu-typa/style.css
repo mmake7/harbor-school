@@ -1,0 +1,263 @@
+/* ============================================================
+   TYPA Cafe Menu — 1080×1350 (Instagram 4:5)
+   Tones: Black #0A0A0A / Off-white #F8F6F1 / Baby Pink #F4C2D7
+   Fonts: UnifrakturMaguntia (display) + Pretendard / Inter (body)
+   ============================================================ */
+
+@page {
+  size: 96mm 120mm;
+  margin: 0;
+}
+
+:root {
+  --black: #0A0A0A;
+  --off: #F8F6F1;
+  --pink: #F4C2D7;
+  --off-soft: rgba(248, 246, 241, 0.72);
+  --off-dim: rgba(248, 246, 241, 0.42);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #1a1a1a;
+  color: var(--off);
+  font-family: 'Pretendard Variable', Pretendard, 'Inter', sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.poster {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--black);
+  background-image: url('/assets/bg-dark-pink.png');
+  background-size: cover;
+  background-position: center;
+  color: var(--off);
+  box-shadow: 0 8px 64px rgba(0,0,0,0.5);
+  padding: 70px 80px 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Soft dark overlay so text reads cleanly over background art */
+.poster::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.35) 40%, rgba(10,10,10,0.6) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.poster > * { position: relative; z-index: 2; }
+
+/* ========== HEADER ========== */
+
+.head { text-align: center; margin-bottom: 38px; }
+
+.logo-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+}
+
+.logo {
+  font-family: 'UnifrakturMaguntia', serif;
+  font-size: 124px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--off);
+}
+
+.cross {
+  font-size: 48px;
+  color: var(--pink);
+  line-height: 1;
+  opacity: 0.85;
+}
+
+.tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 0.32em;
+  color: var(--off-soft);
+  text-transform: lowercase;
+  margin-top: 14px;
+}
+
+.divider {
+  width: 90px;
+  height: 1px;
+  background: var(--off-dim);
+  margin: 24px auto 0;
+}
+
+/* ========== MENU ========== */
+
+.menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.cat-title {
+  font-family: 'UnifrakturMaguntia', serif;
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--off);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.cat-note {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  color: var(--off-dim);
+  text-transform: uppercase;
+}
+
+.cat ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+.cat li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.cat .name {
+  font-family: 'Pretendard Variable', Pretendard, sans-serif;
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--off);
+  letter-spacing: 0.005em;
+}
+
+.cat .name em {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  color: var(--off-dim);
+  margin-left: 8px;
+}
+
+.cat .price {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--off);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Signature emphasis */
+.signature {
+  position: relative;
+  padding: 4px 0 8px;
+}
+
+.signature .name,
+.signature .price {
+  color: var(--pink);
+  font-size: 24px;
+  font-weight: 500;
+  text-shadow: 0 0 16px rgba(244,194,215,0.35);
+}
+
+.signature .name em {
+  color: rgba(244,194,215,0.7);
+  font-size: 15px;
+}
+
+.signature .price { font-size: 22px; }
+
+.sig-art {
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translate(-12px, -50%);
+  width: 64px;
+  height: 64px;
+}
+
+.sig-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: lighten;
+  filter: brightness(1.15) contrast(1.1);
+}
+
+/* ========== FOOTER ========== */
+
+.foot { text-align: center; padding-top: 28px; }
+
+.foot .divider { margin: 0 auto 18px; }
+
+.foot p {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  color: var(--off-soft);
+  line-height: 1.5;
+}
+
+.foot .hours { letter-spacing: 0.22em; }
+
+.foot .addr {
+  font-family: 'Pretendard Variable', Pretendard, sans-serif;
+  font-size: 13px;
+  color: var(--off-dim);
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+.foot .insta {
+  margin-top: 12px;
+  color: var(--pink);
+  letter-spacing: 0.24em;
+  font-weight: 400;
+}
+
+.foot .motifs {
+  margin-top: 12px;
+  font-size: 18px;
+  letter-spacing: 0.4em;
+  color: var(--off-dim);
+}
+
+/* ========== PRINT MODE ========== */
+
+body.print {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  display: block;
+  min-height: 0;
+}
+
+body.print .poster {
+  box-shadow: none;
+}
