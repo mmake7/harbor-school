@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TYPA — 세 번째 천사 · Lavender Angel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="poster">
+
+    <!-- Top label -->
+    <div class="top-label">
+      <span class="dot">●</span>
+      <span class="label-text">TYPA NEW · 신메뉴</span>
+      <span class="dot">●</span>
+    </div>
+
+    <!-- Main visual -->
+    <div class="visual">
+      <img src="/assets/main-visual.png" alt="Lavender Cream Soda — Lavender Angel">
+      <!-- Decorative SVG doodles -->
+      <svg class="doodle doodle-tl" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30 5 L33 25 L52 28 L34 32 L30 52 L26 32 L8 28 L27 25 Z" fill="#D4C5E3" opacity="0.85"/>
+      </svg>
+      <svg class="doodle doodle-tr" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 32 C20 26, 14 22, 10 22 C6 22, 4 26, 6 30 C8 34, 14 36, 20 38 C26 36, 32 34, 34 30 C36 26, 34 22, 30 22 C26 22, 20 26, 20 32 Z" fill="none" stroke="#F8F6F1" stroke-width="2"/>
+      </svg>
+      <svg class="doodle doodle-br" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+        <path d="M25 8 L27 22 L41 24 L28 26 L25 42 L22 26 L9 24 L23 22 Z" fill="#F8F6F1" opacity="0.8"/>
+      </svg>
+    </div>
+
+    <!-- Big copy -->
+    <div class="copy">
+      <h1 class="main-copy">세 번째 천사.</h1>
+      <h2 class="sub-copy">Lavender Angel</h2>
+    </div>
+
+    <!-- Info row -->
+    <div class="info">
+      <div class="info-left">
+        <div class="price">₩7,500</div>
+        <div class="season">2026.06 – 08 · SUMMER LIMITED</div>
+      </div>
+      <div class="info-right">
+        <div class="brand">TYPA</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    if (params.get('print') === '1') document.body.classList.add('print');
+  </script>
+</body>
+</html>
