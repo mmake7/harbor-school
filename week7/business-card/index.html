@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>박인수 — DAONi 명함</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="preview-wrap">
+    <div class="preview-label">앞면 · 90×54mm (블리드 96×60mm)</div>
+    <div class="card front">
+      <div class="card-inner">
+        <div class="brand-block">
+          <img class="logo logo-lg" src="/assets/logo.svg" alt="DAONi">
+          <div class="brand-ko">다온이</div>
+          <div class="tagline">보고, 챙기고, 대신 처리하는 — 농부의 AI</div>
+        </div>
+
+        <div class="person-block">
+          <div class="name-row">
+            <span class="name-ko">박인수</span>
+            <span class="name-en">PARK INSOO</span>
+          </div>
+          <div class="title">Founder &amp; CEO</div>
+        </div>
+
+        <div class="contact-block">
+          <div class="row"><span class="label">E</span><span class="value">makehill@naver.com</span></div>
+          <div class="row"><span class="label">T</span><span class="value">010-2649-4695</span></div>
+          <div class="row"><span class="label">K</span><span class="value">maketour</span></div>
+        </div>
+
+        <div class="qr-box"><img src="/api/qr.svg" alt="vCard QR"></div>
+      </div>
+    </div>
+
+    <div class="preview-label">뒷면 · 90×54mm</div>
+    <div class="card back">
+      <div class="card-inner">
+        <div class="back-center">
+          <img class="logo logo-xl" src="/assets/logo.svg" alt="DAONi">
+          <div class="brand-ko brand-ko-center">다온이</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    if (params.get('print') === '1') {
+      document.body.classList.add('print');
+      const side = params.get('side');
+      if (side) document.body.dataset.side = side;
+    }
+  </script>
+</body>
+</html>

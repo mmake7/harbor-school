@@ -20,6 +20,7 @@
 | G2 Instagram 카드 | `cd instagram-card-generator && node server.js` → `:3000` | [generated/ 5장](./instagram-card-generator/generated/) |
 | G3 프로필 카드 | `cd profile-card-generator && node server.js` → `:3000` | [generated/ 5장](./profile-card-generator/generated/) |
 | A1 Static Visual Maker | `cd static-visual-maker && node server.js` → `:3000` | [generated/ 1장 (스모크)](./static-visual-maker/generated/) |
+| Q3 명함 (DAONi 박인수) | `cd business-card && node server.js` → `:3000` | [output/ 앞·뒤 PNG + 합본 PDF](./business-card/output/) |
 
 > 각 앱은 `gpt-image-1` API를 호출하므로 `.env`에 `OPENAI_API_KEY` 필요. `.env.example` 참조.
 >
@@ -39,15 +40,15 @@
 | 🟡 에이전트 | **A1** | `static-visual-maker` (G1·G2·G3 통합 + config 추상화) | 중 | ✅ 마감 | [`static-visual-maker/`](./static-visual-maker/) | (등록 시 갱신) |
 | 🟡 퀘스트 | **Q1** | 카페 메뉴판 (디자인 시스템 적용 연습) | 중 | ⏳ | — | — |
 | 🟡 퀘스트 | **Q2** | 카페 신메뉴 포스터 (디자인 시스템 적용 연습) | 중 | ⏳ | — | — |
-| 🟡 퀘스트 | **Q3** | 내 명함 (톤 일관성 연습) | 중 | ⏳ | — | — |
+| 🟡 퀘스트 | **Q3** | 내 명함 (DAONi 박인수, 90×54mm 인쇄용 PDF + 단톡방 공유용 PNG) | 중 | ✅ 마감 | [`business-card/`](./business-card/) | (등록 시 갱신) |
 | 🔴 Final | **F1** | 개인 프로젝트 v1 (이번 주 **메인**, 신규 프로젝트 본체) | 큼 | ⏳ | — | — |
 | 🔵 Final 보너스 | **F2** | 오늘의집 클론 (여유 있으면) | 큼 | ⏳ | — | — |
 
 ### 자연 흐름 (난이도 순)
 
 ```
-G1 ✅ → G2 ✅ → G3 ✅ → A1 ✅ → [Q1·Q2·Q3 · F1 · F2 — 재정렬 예정]
-        전반전(고블린+에이전트) 마감             형이 클로드AI와 협의 중
+G1 ✅ → G2 ✅ → G3 ✅ → A1 ✅ → Q3 ✅ → [Q1·Q2·F1·F2 — 재정렬 예정]
+        전반전(고블린+에이전트) 마감     명함 마감   형이 클로드AI와 협의 중
 ```
 
 > ⚠️ **퀘스트 + Final 구간은 재정렬 예정**. 클로드AI와 형이 순서·내용 조정 중 (5/12). 위 표의 Q1~F2는 초안 지도일 뿐 변경 가능.

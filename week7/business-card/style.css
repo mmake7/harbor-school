@@ -1,0 +1,267 @@
+/* ============================================================
+   Business card v4 (final) — Tech Minimal + Hanji
+   Front: 4-block (brand TL / person R / contact BL / QR BR)
+   Back: centered DAONi logo only
+   ============================================================ */
+
+@page {
+  size: 96mm 60mm;
+  margin: 0;
+}
+
+:root {
+  --hanji: #F5F1E8;
+  --ink: #1A1A1A;
+  --gold: #B8946B;
+  --ink-soft: #5A5048;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #2a2a2a;
+  color: var(--ink);
+  font-family: 'Pretendard Variable', Pretendard, 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.preview-wrap {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.preview-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 300;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.card {
+  width: 96mm;
+  height: 60mm;
+  background-color: var(--hanji);
+  position: relative;
+  overflow: hidden;
+  color: var(--ink);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+}
+
+/* Hanji base + faded watermark (bees + hexagons) */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/assets/hanji-bee-tech-bg-minimal.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+  z-index: 0;
+}
+
+.card-inner {
+  position: absolute;
+  inset: 3mm;
+  z-index: 2;
+  padding: 4mm;
+}
+
+/* ========== FRONT ========== */
+
+/* Brand block (top-left) */
+.brand-block {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1mm;
+}
+
+.logo {
+  display: block;
+}
+
+.logo-lg { height: 7.5mm; width: auto; }
+.logo-xl { height: 9mm;   width: auto; }
+
+.brand-ko {
+  font-family: 'Pretendard Variable', Pretendard, sans-serif;
+  font-size: 2.6mm;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  color: var(--ink-soft);
+  line-height: 1;
+  margin-top: 0.5mm;
+}
+
+.tagline {
+  font-family: 'Pretendard Variable', Pretendard, sans-serif;
+  font-size: 2.6mm;
+  font-weight: 400;
+  color: var(--gold);
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  margin-top: 2.8mm;
+  white-space: nowrap;
+}
+
+/* Person block (right, vertically centered toward bottom) */
+.person-block {
+  position: absolute;
+  right: 0;
+  bottom: 19mm;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1mm;
+}
+
+.title {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.16mm;
+  font-weight: 300;
+  color: var(--ink-soft);
+  letter-spacing: 0.1em;
+  line-height: 1;
+  margin-top: 1.4mm;
+}
+
+.name-row {
+  display: flex;
+  align-items: baseline;
+  gap: 2.5mm;
+}
+
+.name-ko {
+  font-family: 'Pretendard Variable', Pretendard, sans-serif;
+  font-size: 5.5mm;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.name-en {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.5mm;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  line-height: 1;
+}
+
+/* Contact block (bottom-left) */
+.contact-block {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5mm;
+}
+
+.contact-block .row {
+  display: flex;
+  align-items: baseline;
+  gap: 2.5mm;
+  font-family: 'Inter', sans-serif;
+  line-height: 1;
+}
+
+.contact-block .label {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.3mm;
+  font-weight: 300;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  width: 3mm;
+  display: inline-block;
+}
+
+.contact-block .value {
+  font-family: 'Inter', sans-serif;
+  font-size: 3.2mm;
+  font-weight: 300;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+
+/* QR box (bottom-right) */
+.qr-box {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 15mm;
+  height: 15mm;
+  padding: 0.6mm;
+  background: rgba(255,255,255,0.5);
+  border: 0.2mm solid rgba(26,26,26,0.1);
+}
+
+.qr-box img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ========== BACK (centered logo only) ========== */
+
+.card.back .card-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5mm;
+}
+
+.brand-ko-center {
+  font-size: 3mm;
+  letter-spacing: 0.22em;
+  margin-top: 0;
+}
+
+/* ========== PRINT MODE ========== */
+
+body.print {
+  background: transparent;
+  margin: 0;
+}
+
+body.print .preview-wrap {
+  padding: 0;
+  gap: 0;
+}
+
+body.print .preview-label {
+  display: none;
+}
+
+body.print .card {
+  box-shadow: none;
+  page-break-after: always;
+}
+
+body.print .card:last-child {
+  page-break-after: auto;
+}
+
+body.print[data-side="front"] .card.back,
+body.print[data-side="back"] .card.front {
+  display: none;
+}
