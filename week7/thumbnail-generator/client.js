@@ -8,7 +8,7 @@ function ImageCell({ label, data, filename }) {
       </div>
     );
   }
-  const src = `data:image/png;base64,${data.b64}`;
+  const src = data.b64 ? `data:image/png;base64,${data.b64}` : data.url;
   return (
     <div className="flex flex-col items-center gap-2">
       <img src={src} alt={label} className="w-full rounded border border-neutral-700" />
@@ -16,18 +16,17 @@ function ImageCell({ label, data, filename }) {
         <span>{label}</span>
         <span className="text-neutral-600">·</span>
         <span>{data.size}</span>
-        <span className="text-neutral-600">·</span>
-        <span>{(data.ms / 1000).toFixed(1)}s</span>
+        {data.ms != null && <><span className="text-neutral-600">·</span><span>{(data.ms / 1000).toFixed(1)}s</span></>}
         <a href={src} download={filename} className="ml-2 px-2 py-1 bg-neutral-800 hover:bg-neutral-700 rounded text-neutral-200">⬇ 다운로드</a>
       </div>
     </div>
   );
 }
 
-function ToneCard({ tone }) {
-  const [status, setStatus] = useState('idle');
-  const [landscape, setLandscape] = useState(null);
-  const [portrait, setPortrait] = useState(null);
+function ToneCard({ tone, initial }) {
+  const [status, setStatus] = useState(initial ? 'done' : 'idle');
+  const [landscape, setLandscape] = useState(initial?.landscape || null);
+  const [portrait, setPortrait] = useState(initial?.portrait || null);
   const [error, setError] = useState(null);
 
   async function generate() {
@@ -91,9 +90,21 @@ function ToneCard({ tone }) {
 
 function App() {
   const [tones, setTones] = useState([]);
+  const [initial, setInitial] = useState({});
 
   useEffect(() => {
-    fetch('/api/tones').then(r => r.json()).then(setTones);
+    Promise.all([
+      fetch('/api/tones').then(r => r.json()),
+      fetch('/api/results').then(r => r.json())
+    ]).then(([t, results]) => {
+      setTones(t);
+      const grouped = {};
+      for (const r of results) {
+        if (!grouped[r.tone]) grouped[r.tone] = {};
+        grouped[r.tone][r.orientation] = r;
+      }
+      setInitial(grouped);
+    });
   }, []);
 
   return (
@@ -102,10 +113,11 @@ function App() {
         <h1 className="text-3xl font-bold">YouTube 썸네일 톤 생성기</h1>
         <p className="text-neutral-400 mt-2">5개 톤 × (가로 1920×1080 + 세로 1080×1920) = 10장. 톤별 버튼 클릭 시 가로·세로 동시 생성.</p>
         <p className="text-xs text-neutral-500 mt-2">모델 gpt-image-1 (medium) · 톤당 약 $0.08 · 가사 텍스트 합성 없음, 순수 비주얼.</p>
+        <p className="text-xs text-neutral-600 mt-2">기존 생성물은 페이지 로드 시 자동 표시. "재생성" 버튼은 추가 비용 발생.</p>
       </header>
 
       <div className="flex flex-col gap-6">
-        {tones.map(t => <ToneCard key={t.key} tone={t} />)}
+        {tones.map(t => <ToneCard key={t.key} tone={t} initial={initial[t.key]} />)}
       </div>
     </div>
   );

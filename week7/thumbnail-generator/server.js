@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const sharp = require('sharp');
 const OpenAI = require('openai');
 
@@ -42,6 +43,19 @@ app.use(express.static(path.join(__dirname)));
 app.get('/api/tones', (req, res) => {
   const list = Object.entries(TONES).map(([key, v]) => ({ key, name: v.name, summary: v.summary }));
   res.json(list);
+});
+
+app.get('/api/results', (req, res) => {
+  const dir = path.join(__dirname, 'generated');
+  if (!fs.existsSync(dir)) return res.json([]);
+  const out = [];
+  for (const f of fs.readdirSync(dir)) {
+    const m = f.match(/^(TONE_\d+_[A-Z_]+)_(\d+)x(\d+)\.png$/);
+    if (!m) continue;
+    const [, tone, w, h] = m;
+    out.push({ tone, orientation: +w > +h ? 'landscape' : 'portrait', size: `${w}x${h}`, url: `/generated/${f}` });
+  }
+  res.json(out);
 });
 
 app.post('/api/generate', async (req, res) => {
