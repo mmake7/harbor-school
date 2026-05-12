@@ -1,4 +1,5 @@
-// Manually maintained types (regenerate via `supabase gen types typescript` if CLI installed)
+// Manually maintained types
+// 모든 DB 테이블은 tr_ prefix (today-room 식별, 기존 Supabase 프로젝트 재활용)
 
 export type Category = "furniture" | "lighting" | "accessory" | "fabric" | "plant"
 
@@ -10,6 +11,7 @@ export const CATEGORIES: { id: Category; label: string }[] = [
   { id: "plant", label: "식물" },
 ]
 
+// table: tr_profiles
 export type Profile = {
   id: string
   email: string | null
@@ -17,6 +19,7 @@ export type Profile = {
   created_at: string
 }
 
+// table: tr_products
 export type Product = {
   id: string
   user_id: string
@@ -29,12 +32,14 @@ export type Product = {
   updated_at: string
 }
 
+// table: tr_favorites
 export type Favorite = {
   user_id: string
   product_id: string
   created_at: string
 }
 
+// table: tr_chats
 export type Chat = {
   id: string
   product_id: string
@@ -43,6 +48,7 @@ export type Chat = {
   created_at: string
 }
 
+// table: tr_messages
 export type Message = {
   id: string
   chat_id: string
@@ -50,3 +56,6 @@ export type Message = {
   content: string
   created_at: string
 }
+
+// Storage bucket: tr-product-images (public)
+export const STORAGE_BUCKET = "tr-product-images"
