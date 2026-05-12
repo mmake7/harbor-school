@@ -1,4 +1,4 @@
-# 명함 디자인 — DAONi (Q3)
+# 명함 디자인 — DAONi (Q1)
 
 박인수 (DAONi / 다온이) 명함. **HTML+CSS → Puppeteer 렌더 → PNG·PDF 출력**. 6차 디자인 사이클 거쳐 최종 확정.
 
