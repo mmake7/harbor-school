@@ -20,8 +20,11 @@ export function Header({ variant = "customer" }: { variant?: "customer" | "admin
   return (
     <header className="border-b border-border bg-base">
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
-        <Link href="/" className="text-lg font-bold text-ink tracking-tight">
-          {FARM.name}
+        <Link href="/" className="leading-none">
+          <span className="text-lg font-bold tracking-tight text-ink">
+            D<span className="text-primary">A</span>ON<span className="text-primary">i</span>
+          </span>
+          <span className="block text-[11px] text-muted mt-0.5">{FARM.name}</span>
         </Link>
         <nav className="flex items-center gap-1 text-sm">
           {nav.map((n) => (
