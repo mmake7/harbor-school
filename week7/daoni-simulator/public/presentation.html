@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAONi simulator · 8주차 발표</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.40.0/tabler-icons.min.css">
+<style>
+:root {
+  --base: #FFFFFF;
+  --surface: #F4F7F5;
+  --page-bg: #F1F5F9;
+  --primary: #10B981;
+  --primary-dark: #047857;
+  --primary-light: #ECFDF5;
+  --ink: #0F172A;
+  --ink-soft: #1E293B;
+  --muted: #64748B;
+  --muted-light: #94A3B8;
+  --border: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --season-q1: #FF4757;
+  --season-q2: #4F46E5;
+  --season-q3: #F59E0B;
+  --season-q4: #84CC16;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--page-bg);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+.slide {
+  max-width: 1280px;
+  margin: 2rem auto;
+  background: var(--base);
+  border-radius: 16px;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.header {
+  background: var(--ink);
+  border-radius: 12px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.header-label {
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.header-meta {
+  font-size: 12px;
+  color: #64748B;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.header-title {
+  font-size: 30px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.header-title .accent {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.header-subtitle {
+  font-size: 15px;
+  color: #94A3B8;
+  margin: 10px 0 0;
+}
+
+/* 라이브 데모 박스 */
+.live-demo {
+  background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%);
+  border: 1px solid #A7F3D0;
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+}
+
+.live-demo-text {
+  flex: 1;
+}
+
+.live-demo-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary-dark);
+  font-weight: 600;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.live-demo-url {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: -0.01em;
+}
+
+.live-demo-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.qr-box {
+  background: #FFFFFF;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.qr-box svg {
+  display: block;
+  width: 110px;
+  height: 110px;
+}
+
+.section-label {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 2rem 0 14px;
+}
+
+svg.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 5 모듈 그리드 */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.module {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 18px 14px;
+  text-align: center;
+  position: relative;
+}
+
+.module-icon {
+  font-size: 22px;
+  color: var(--primary-dark);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.module-name {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--ink);
+}
+
+.module-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 4px 0 6px;
+}
+
+.module-live {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--primary-dark);
+  background: var(--primary-light);
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+}
+
+/* 시연 흐름 */
+.demo-flow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.demo-step {
+  background: var(--base);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  position: relative;
+}
+
+.demo-step-num {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.demo-step-title {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+
+.demo-step-path {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  margin: 0 0 6px;
+}
+
+.demo-step-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* 표 */
+.table-wrap {
+  margin-top: 1.25rem;
+  background: var(--base);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead { background: var(--surface); }
+
+th {
+  text-align: left;
+  padding: 11px 16px;
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+td {
+  padding: 13px 16px;
+  vertical-align: top;
+}
+
+tbody tr {
+  border-top: 1px solid var(--border);
+}
+
+td:first-child {
+  font-weight: 600;
+  width: 60px;
+  color: var(--ink);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+td:nth-child(2) {
+  color: var(--ink-soft);
+}
+
+td:nth-child(3) {
+  color: var(--muted);
+  width: 240px;
+}
+
+/* 재활용 패턴 카드 그리드 */
+.reuse-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.reuse-card {
+  background: var(--base);
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  border-radius: 8px;
+  padding: 13px 14px;
+}
+
+.reuse-card-w5 { border-left-color: #10B981; }
+.reuse-card-w6 { border-left-color: #4F46E5; }
+.reuse-card-w7 { border-left-color: #F59E0B; }
+
+.reuse-source {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.reuse-week-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-family: 'Pretendard Variable', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.reuse-card-w5 .reuse-week-badge { background: #ECFDF5; color: #047857; }
+.reuse-card-w6 .reuse-week-badge { background: #EEF2FF; color: #3730A3; }
+.reuse-card-w7 .reuse-week-badge { background: #FEF3C7; color: #92400E; }
+
+.reuse-pattern {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 6px;
+  line-height: 1.4;
+}
+
+.reuse-target {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.reuse-target .arrow {
+  color: var(--primary);
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.reuse-target code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  background: var(--surface);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+
+/* 기술 스택 */
+.tech-stack {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.tech-box, .limits-box {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.tech-title, .limits-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tech-row, .limit-row {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 6px 0;
+  display: flex;
+  gap: 8px;
+}
+
+.tech-row strong, .limit-row strong {
+  color: var(--ink);
+  font-weight: 500;
+  min-width: 95px;
+  flex-shrink: 0;
+}
+
+.limits-box {
+  background: #FEF3C7;
+  border: 1px solid #FCD34D;
+}
+
+.limits-title { color: #92400E; }
+
+.limit-row { color: #78350F; }
+.limit-row strong { color: #451A03; }
+
+.footer {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted-light);
+  line-height: 1.7;
+}
+
+@media (max-width: 720px) {
+  .slide { padding: 1.5rem 1.5rem; margin: 1rem auto; border-radius: 12px; }
+  .header { padding: 1.25rem 1.25rem; }
+  .header-title { font-size: 22px; }
+  .live-demo { flex-direction: column; align-items: stretch; }
+  .qr-box { align-self: center; }
+  .module-grid { grid-template-columns: repeat(2, 1fr); }
+  .demo-flow { grid-template-columns: 1fr; }
+  .reuse-grid { grid-template-columns: 1fr; }
+  .tech-stack { grid-template-columns: 1fr; }
+  td:nth-child(3) { width: auto; }
+  table { font-size: 12px; }
+}
+
+@media print {
+  body { background: #FFFFFF; }
+  .slide { box-shadow: none; margin: 0; max-width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="slide">
+
+<!-- 헤더 -->
+<div class="header">
+<div class="header-top">
+<span class="header-label">8주차 · daoni simulator</span>
+<span class="header-meta">harbor.school · 주말반 2기</span>
+</div>
+<p class="header-title">동네 한가운데 1인 농장 — 사장의 <span class="accent">AI 운영자</span></p>
+<p class="header-subtitle">시장을 보고 · 작물을 고르고 · 키우고 · 알리고 · 팔고 · 정산하는 — 농부의 AI</p>
+</div>
+
+<!-- 라이브 데모 박스 -->
+<div class="live-demo">
+<div class="live-demo-text">
+<p class="live-demo-label"><span class="live-dot"></span>Live · 다오니가 일하는 중</p>
+<p class="live-demo-url">daoni-simulator.vercel.app</p>
+<p class="live-demo-note">QR 스캔하면 다오니가 실제로 운영하는 농장으로 — 5 모듈 라이브 작동</p>
+</div>
+<div class="qr-box">
+<svg viewBox="0 0 33 33" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="QR code to daoni-simulator.vercel.app"><path d="M2,2H3V3H2zM3,2H4V3H3zM4,2H5V3H4zM5,2H6V3H5zM6,2H7V3H6zM7,2H8V3H7zM8,2H9V3H8zM10,2H11V3H10zM11,2H12V3H11zM13,2H14V3H13zM14,2H15V3H14zM24,2H25V3H24zM25,2H26V3H25zM26,2H27V3H26zM27,2H28V3H27zM28,2H29V3H28zM29,2H30V3H29zM30,2H31V3H30zM2,3H3V4H2zM8,3H9V4H8zM13,3H14V4H13zM14,3H15V4H14zM18,3H19V4H18zM19,3H20V4H19zM20,3H21V4H20zM21,3H22V4H21zM24,3H25V4H24zM30,3H31V4H30zM2,4H3V5H2zM4,4H5V5H4zM5,4H6V5H5zM6,4H7V5H6zM8,4H9V5H8zM11,4H12V5H11zM12,4H13V5H12zM14,4H15V5H14zM15,4H16V5H15zM17,4H18V5H17zM18,4H19V5H18zM19,4H20V5H19zM21,4H22V5H21zM22,4H23V5H22zM24,4H25V5H24zM26,4H27V5H26zM27,4H28V5H27zM28,4H29V5H28zM30,4H31V5H30zM2,5H3V6H2zM4,5H5V6H4zM5,5H6V6H5zM6,5H7V6H6zM8,5H9V6H8zM10,5H11V6H10zM11,5H12V6H11zM12,5H13V6H12zM16,5H17V6H16zM17,5H18V6H17zM18,5H19V6H18zM21,5H22V6H21zM24,5H25V6H24zM26,5H27V6H26zM27,5H28V6H27zM28,5H29V6H28zM30,5H31V6H30zM2,6H3V7H2zM4,6H5V7H4zM5,6H6V7H5zM6,6H7V7H6zM8,6H9V7H8zM10,6H11V7H10zM12,6H13V7H12zM15,6H16V7H15zM16,6H17V7H16zM18,6H19V7H18zM19,6H20V7H19zM20,6H21V7H20zM24,6H25V7H24zM26,6H27V7H26zM27,6H28V7H27zM28,6H29V7H28zM30,6H31V7H30zM2,7H3V8H2zM8,7H9V8H8zM10,7H11V8H10zM13,7H14V8H13zM15,7H16V8H15zM16,7H17V8H16zM17,7H18V8H17zM19,7H20V8H19zM21,7H22V8H21zM22,7H23V8H22zM24,7H25V8H24zM30,7H31V8H30zM2,8H3V9H2zM3,8H4V9H3zM4,8H5V9H4zM5,8H6V9H5zM6,8H7V9H6zM7,8H8V9H7zM8,8H9V9H8zM10,8H11V9H10zM12,8H13V9H12zM14,8H15V9H14zM16,8H17V9H16zM18,8H19V9H18zM20,8H21V9H20zM22,8H23V9H22zM24,8H25V9H24zM25,8H26V9H25zM26,8H27V9H26zM27,8H28V9H27zM28,8H29V9H28zM29,8H30V9H29zM30,8H31V9H30zM10,9H11V10H10zM11,9H12V10H11zM12,9H13V10H12zM16,9H17V10H16zM19,9H20V10H19zM22,9H23V10H22zM2,10H3V11H2zM6,10H7V11H6zM8,10H9V11H8zM9,10H10V11H9zM10,10H11V11H10zM12,10H13V11H12zM13,10H14V11H13zM15,10H16V11H15zM16,10H17V11H16zM17,10H18V11H17zM19,10H20V11H19zM21,10H22V11H21zM23,10H24V11H23zM24,10H25V11H24zM25,10H26V11H25zM26,10H27V11H26zM27,10H28V11H27zM30,10H31V11H30zM2,11H3V12H2zM3,11H4V12H3zM4,11H5V12H4zM5,11H6V12H5zM7,11H8V12H7zM9,11H10V12H9zM10,11H11V12H10zM11,11H12V12H11zM12,11H13V12H12zM13,11H14V12H13zM14,11H15V12H14zM24,11H25V12H24zM25,11H26V12H25zM26,11H27V12H26zM27,11H28V12H27zM28,11H29V12H28zM29,11H30V12H29zM30,11H31V12H30zM3,12H4V13H3zM7,12H8V13H7zM8,12H9V13H8zM9,12H10V13H9zM10,12H11V13H10zM12,12H13V13H12zM14,12H15V13H14zM15,12H16V13H15zM16,12H17V13H16zM17,12H18V13H17zM18,12H19V13H18zM20,12H21V13H20zM22,12H23V13H22zM23,12H24V13H23zM25,12H26V13H25zM26,12H27V13H26zM30,12H31V13H30zM3,13H4V14H3zM4,13H5V14H4zM5,13H6V14H5zM6,13H7V14H6zM9,13H10V14H9zM12,13H13V14H12zM14,13H15V14H14zM15,13H16V14H15zM17,13H18V14H17zM18,13H19V14H18zM19,13H20V14H19zM24,13H25V14H24zM26,13H27V14H26zM27,13H28V14H27zM29,13H30V14H29zM30,13H31V14H30zM2,14H3V15H2zM4,14H5V15H4zM5,14H6V15H5zM8,14H9V15H8zM10,14H11V15H10zM11,14H12V15H11zM13,14H14V15H13zM14,14H15V15H14zM15,14H16V15H15zM18,14H19V15H18zM19,14H20V15H19zM21,14H22V15H21zM22,14H23V15H22zM29,14H30V15H29zM2,15H3V16H2zM3,15H4V16H3zM6,15H7V16H6zM13,15H14V16H13zM15,15H16V16H15zM16,15H17V16H16zM17,15H18V16H17zM18,15H19V16H18zM20,15H21V16H20zM24,15H25V16H24zM25,15H26V16H25zM26,15H27V16H26zM27,15H28V16H27zM28,15H29V16H28zM29,15H30V16H29zM30,15H31V16H30zM2,16H3V17H2zM3,16H4V17H3zM4,16H5V17H4zM5,16H6V17H5zM6,16H7V17H6zM7,16H8V17H7zM8,16H9V17H8zM11,16H12V17H11zM13,16H14V17H13zM14,16H15V17H14zM17,16H18V17H17zM18,16H19V17H18zM19,16H20V17H19zM20,16H21V17H20zM26,16H27V17H26zM27,16H28V17H27zM28,16H29V17H28zM30,16H31V17H30zM2,17H3V18H2zM3,17H4V18H3zM4,17H5V18H4zM7,17H8V18H7zM9,17H10V18H9zM13,17H14V18H13zM14,17H15V18H14zM16,17H17V18H16zM17,17H18V18H17zM18,17H19V18H18zM19,17H20V18H19zM20,17H21V18H20zM22,17H23V18H22zM24,17H25V18H24zM26,17H27V18H26zM29,17H30V18H29zM30,17H31V18H30zM4,18H5V19H4zM6,18H7V19H6zM8,18H9V19H8zM9,18H10V19H9zM11,18H12V19H11zM13,18H14V19H13zM15,18H16V19H15zM16,18H17V19H16zM18,18H19V19H18zM19,18H20V19H19zM22,18H23V19H22zM23,18H24V19H23zM29,18H30V19H29zM2,19H3V20H2zM3,19H4V20H3zM4,19H5V20H4zM6,19H7V20H6zM7,19H8V20H7zM10,19H11V20H10zM14,19H15V20H14zM17,19H18V20H17zM18,19H19V20H18zM23,19H24V20H23zM24,19H25V20H24zM25,19H26V20H25zM26,19H27V20H26zM27,19H28V20H27zM29,19H30V20H29zM30,19H31V20H30zM4,20H5V21H4zM8,20H9V21H8zM11,20H12V21H11zM12,20H13V21H12zM15,20H16V21H15zM16,20H17V21H16zM17,20H18V21H17zM22,20H23V21H22zM23,20H24V21H23zM24,20H25V21H24zM28,20H29V21H28zM30,20H31V21H30zM4,21H5V22H4zM5,21H6V22H5zM9,21H10V22H9zM10,21H11V22H10zM15,21H16V22H15zM17,21H18V22H17zM18,21H19V22H18zM19,21H20V22H19zM22,21H23V22H22zM25,21H26V22H25zM29,21H30V22H29zM30,21H31V22H30zM2,22H3V23H2zM3,22H4V23H3zM6,22H7V23H6zM7,22H8V23H7zM8,22H9V23H8zM14,22H15V23H14zM15,22H16V23H15zM19,22H20V23H19zM21,22H22V23H21zM22,22H23V23H22zM23,22H24V23H23zM24,22H25V23H24zM25,22H26V23H25zM26,22H27V23H26zM27,22H28V23H27zM30,22H31V23H30zM10,23H11V24H10zM12,23H13V24H12zM14,23H15V24H14zM15,23H16V24H15zM16,23H17V24H16zM17,23H18V24H17zM18,23H19V24H18zM20,23H21V24H20zM22,23H23V24H22zM26,23H27V24H26zM30,23H31V24H30zM2,24H3V25H2zM3,24H4V25H3zM4,24H5V25H4zM5,24H6V25H5zM6,24H7V25H6zM7,24H8V25H7zM8,24H9V25H8zM10,24H11V25H10zM13,24H14V25H13zM17,24H18V25H17zM18,24H19V25H18zM21,24H22V25H21zM22,24H23V25H22zM24,24H25V25H24zM26,24H27V25H26zM27,24H28V25H27zM28,24H29V25H28zM30,24H31V25H30zM2,25H3V26H2zM8,25H9V26H8zM11,25H12V26H11zM13,25H14V26H13zM14,25H15V26H14zM16,25H17V26H16zM19,25H20V26H19zM20,25H21V26H20zM21,25H22V26H21zM22,25H23V26H22zM26,25H27V26H26zM29,25H30V26H29zM2,26H3V27H2zM4,26H5V27H4zM5,26H6V27H5zM6,26H7V27H6zM8,26H9V27H8zM10,26H11V27H10zM11,26H12V27H11zM12,26H13V27H12zM13,26H14V27H13zM15,26H16V27H15zM16,26H17V27H16zM17,26H18V27H17zM19,26H20V27H19zM21,26H22V27H21zM22,26H23V27H22zM23,26H24V27H23zM24,26H25V27H24zM25,26H26V27H25zM26,26H27V27H26zM27,26H28V27H27zM2,27H3V28H2zM4,27H5V28H4zM5,27H6V28H5zM6,27H7V28H6zM8,27H9V28H8zM12,27H13V28H12zM14,27H15V28H14zM15,27H16V28H15zM17,27H18V28H17zM20,27H21V28H20zM22,27H23V28H22zM23,27H24V28H23zM30,27H31V28H30zM2,28H3V29H2zM4,28H5V29H4zM5,28H6V29H5zM6,28H7V29H6zM8,28H9V29H8zM12,28H13V29H12zM14,28H15V29H14zM17,28H18V29H17zM18,28H19V29H18zM19,28H20V29H19zM20,28H21V29H20zM21,28H22V29H21zM22,28H23V29H22zM23,28H24V29H23zM27,28H28V29H27zM28,28H29V29H28zM29,28H30V29H29zM30,28H31V29H30zM2,29H3V30H2zM8,29H9V30H8zM11,29H12V30H11zM14,29H15V30H14zM17,29H18V30H17zM19,29H20V30H19zM20,29H21V30H20zM22,29H23V30H22zM23,29H24V30H23zM25,29H26V30H25zM27,29H28V30H27zM29,29H30V30H29zM30,29H31V30H30zM2,30H3V31H2zM3,30H4V31H3zM4,30H5V31H4zM5,30H6V31H5zM6,30H7V31H6zM7,30H8V31H7zM8,30H9V31H8zM10,30H11V31H10zM11,30H12V31H11zM13,30H14V31H13zM15,30H16V31H15zM17,30H18V31H17zM19,30H20V31H19zM22,30H23V31H22zM23,30H24V31H23zM25,30H26V31H25zM26,30H27V31H26zM27,30H28V31H27zM29,30H30V31H29z" fill="#0F172A"/></svg>
+</div>
+</div>
+
+<!-- 1년 사이클 -->
+<p class="section-label">1년 사이클 — 분기마다 다오니가 결정</p>
+
+<svg viewBox="0 0 680 130" xmlns="http://www.w3.org/2000/svg" role="img" class="diagram" aria-label="다오니 1년 사이클">
+<defs>
+<marker id="arr1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<g>
+<rect x="20" y="30" width="130" height="52" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="0.5"/>
+<text x="85" y="54" text-anchor="middle" font-size="14" font-weight="500" fill="#0F172A">외부 시장</text>
+<text x="85" y="72" text-anchor="middle" font-size="12" fill="#64748B">뉴스·가격</text>
+</g>
+
+<g>
+<rect x="190" y="30" width="130" height="52" rx="8" fill="#10B981" stroke="#047857" stroke-width="0.5"/>
+<text x="255" y="54" text-anchor="middle" font-size="14" font-weight="500" fill="#FFFFFF">다오니 결정</text>
+<text x="255" y="72" text-anchor="middle" font-size="12" fill="#D1FAE5">분기마다 4번</text>
+</g>
+
+<g>
+<rect x="360" y="30" width="130" height="52" rx="8" fill="#ECFEFF" stroke="#67E8F9" stroke-width="0.5"/>
+<text x="425" y="54" text-anchor="middle" font-size="14" font-weight="500" fill="#155E75">실행</text>
+<text x="425" y="72" text-anchor="middle" font-size="12" fill="#0E7490">재배·마케팅·판매</text>
+</g>
+
+<g>
+<rect x="530" y="30" width="130" height="52" rx="8" fill="#FAF5FF" stroke="#D8B4FE" stroke-width="0.5"/>
+<text x="595" y="54" text-anchor="middle" font-size="14" font-weight="500" fill="#6B21A8">데이터 누적</text>
+<text x="595" y="72" text-anchor="middle" font-size="12" fill="#7E22CE">다오니 자산</text>
+</g>
+
+<line x1="150" y1="56" x2="182" y2="56" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr1)"/>
+<line x1="320" y1="56" x2="352" y2="56" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr1)"/>
+<line x1="490" y1="56" x2="522" y2="56" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr1)"/>
+<path d="M 595 82 L 595 110 L 255 110 L 255 82" fill="none" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr1)"/>
+</svg>
+
+<!-- 5 모듈 -->
+<div class="module-grid">
+<div class="module">
+<i class="ti ti-bulb module-icon" aria-hidden="true"></i>
+<p class="module-name">Decide</p>
+<p class="module-desc">작물 결정</p>
+<span class="module-live">● live</span>
+</div>
+<div class="module">
+<i class="ti ti-eye module-icon" aria-hidden="true"></i>
+<p class="module-name">Watch</p>
+<p class="module-desc">24h 관찰</p>
+<span class="module-live">● live</span>
+</div>
+<div class="module">
+<i class="ti ti-shield module-icon" aria-hidden="true"></i>
+<p class="module-name">Care</p>
+<p class="module-desc">진단·대응</p>
+<span class="module-live">● live</span>
+</div>
+<div class="module">
+<i class="ti ti-message module-icon" aria-hidden="true"></i>
+<p class="module-name">Tell</p>
+<p class="module-desc">콘텐츠</p>
+<span class="module-live">● live</span>
+</div>
+<div class="module">
+<i class="ti ti-shopping-cart module-icon" aria-hidden="true"></i>
+<p class="module-name">Sell</p>
+<p class="module-desc">판매·정산</p>
+<span class="module-live">● live</span>
+</div>
+</div>
+
+<!-- 5분 시연 흐름 -->
+<p class="section-label">5분 시연 흐름 — 다오니의 1년이 손끝에서</p>
+
+<div class="demo-flow">
+<div class="demo-step">
+<span class="demo-step-num">01</span>
+<p class="demo-step-title">Q1 작물 결정</p>
+<p class="demo-step-path">/admin/decide?day=30</p>
+<p class="demo-step-note">시장 보고 "딸기로 정했어요" 1인칭 reasoning + 예상 매출 ₩12.96M</p>
+</div>
+<div class="demo-step">
+<span class="demo-step-num">02</span>
+<p class="demo-step-title">생육 + 일일 브리핑</p>
+<p class="demo-step-path">/admin/farm?day=88</p>
+<p class="demo-step-note">진척 94%, 환경 센서, 다오니 액션 로그</p>
+</div>
+<div class="demo-step">
+<span class="demo-step-num">03</span>
+<p class="demo-step-title">한 클릭 수확</p>
+<p class="demo-step-path">/admin/harvest?day=88</p>
+<p class="demo-step-note">수확 → 자동 등록 → 콘텐츠 생성 체크리스트 흐름</p>
+</div>
+<div class="demo-step">
+<span class="demo-step-num">04</span>
+<p class="demo-step-title">자동 콘텐츠</p>
+<p class="demo-step-path">/admin/content</p>
+<p class="demo-step-note">인스타 카피 + 블로그 글 + 썸네일 이미지 자동 발행</p>
+</div>
+<div class="demo-step">
+<span class="demo-step-num">05</span>
+<p class="demo-step-title">손님 쇼핑</p>
+<p class="demo-step-path">/shop → /checkout</p>
+<p class="demo-step-note">자동 등록된 상품 → 장바구니 → 결제 (TossPayments mock)</p>
+</div>
+<div class="demo-step">
+<span class="demo-step-num">06</span>
+<p class="demo-step-title">다오니와 대화</p>
+<p class="demo-step-path">/admin/daoni</p>
+<p class="demo-step-note">"오늘 어땠어?" — 농장 컨텍스트로 1인칭 응답</p>
+</div>
+</div>
+
+<!-- 1-7주차 자산 활용 -->
+<p class="section-label">1-7주차 자산이 다오니 v1로 집결</p>
+
+<svg viewBox="0 0 680 140" xmlns="http://www.w3.org/2000/svg" role="img" class="diagram" aria-label="1-7주차 자산 활용 도식">
+<defs>
+<marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<g>
+<rect x="25" y="10" width="78" height="32" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="0.5"/>
+<text x="64" y="30" text-anchor="middle" font-size="12" fill="#64748B">1주차</text>
+</g>
+<g>
+<rect x="117" y="10" width="78" height="32" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="0.5"/>
+<text x="156" y="30" text-anchor="middle" font-size="12" fill="#64748B">2주차</text>
+</g>
+<g>
+<rect x="209" y="10" width="78" height="32" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="0.5"/>
+<text x="248" y="30" text-anchor="middle" font-size="12" fill="#64748B">3주차</text>
+</g>
+<g>
+<rect x="301" y="10" width="78" height="32" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="0.5"/>
+<text x="340" y="30" text-anchor="middle" font-size="12" fill="#64748B">4주차</text>
+</g>
+<g>
+<rect x="393" y="10" width="78" height="32" rx="6" fill="#ECFDF5" stroke="#10B981" stroke-width="0.5"/>
+<text x="432" y="30" text-anchor="middle" font-size="14" font-weight="500" fill="#047857">5주차</text>
+</g>
+<g>
+<rect x="485" y="10" width="78" height="32" rx="6" fill="#ECFDF5" stroke="#10B981" stroke-width="0.5"/>
+<text x="524" y="30" text-anchor="middle" font-size="14" font-weight="500" fill="#047857">6주차</text>
+</g>
+<g>
+<rect x="577" y="10" width="78" height="32" rx="6" fill="#ECFDF5" stroke="#10B981" stroke-width="0.5"/>
+<text x="616" y="30" text-anchor="middle" font-size="14" font-weight="500" fill="#047857">7주차</text>
+</g>
+
+<line x1="64" y1="42" x2="64" y2="62" stroke="#94A3B8" stroke-width="0.5" stroke-dasharray="3 3"/>
+<line x1="156" y1="42" x2="156" y2="62" stroke="#94A3B8" stroke-width="0.5" stroke-dasharray="3 3"/>
+<line x1="248" y1="42" x2="248" y2="62" stroke="#94A3B8" stroke-width="0.5" stroke-dasharray="3 3"/>
+<line x1="340" y1="42" x2="340" y2="62" stroke="#94A3B8" stroke-width="0.5" stroke-dasharray="3 3"/>
+<line x1="432" y1="42" x2="432" y2="62" stroke="#94A3B8" stroke-width="0.5" stroke-dasharray="3 3"/>
+<line x1="524" y1="42" x2="524" y2="62" stroke="#94A3B8" stroke-width="0.5" stroke-dasharray="3 3"/>
+<line x1="616" y1="42" x2="616" y2="62" stroke="#94A3B8" stroke-width="0.5" stroke-dasharray="3 3"/>
+<line x1="64" y1="62" x2="616" y2="62" stroke="#94A3B8" stroke-width="0.5" stroke-dasharray="3 3"/>
+<line x1="340" y1="62" x2="340" y2="86" stroke="#64748B" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+<g>
+<rect x="200" y="90" width="280" height="40" rx="8" fill="#10B981" stroke="#047857" stroke-width="1"/>
+<text x="340" y="115" text-anchor="middle" font-size="14" font-weight="500" fill="#FFFFFF">DAONi simulator v1</text>
+</g>
+</svg>
+
+<!-- 매핑 표 -->
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>주차</th>
+<th>스터디그룹에서 만든 자산 (INVENTORY 검증)</th>
+<th>다오니 v1 활용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-4</td>
+<td>Claude Code 기본기 · Playwright · my-chatgpt · study-agent · 4축 챗봇 (Haiku 4.5)</td>
+<td>개발 기반 · JSON 구조 응답 패턴</td>
+</tr>
+<tr>
+<td>5</td>
+<td>문카페 /me 듀오 페르소나 (moon.js) · Promise.all 병렬 + Open-Meteo + Google News · Playwright 딥리서치 (vLLM·양봉 AI) · 4축 분석 가계부 (analyze.js)</td>
+<td>일일 브리핑 + 다오니 챗 + 시장 분석 코어</td>
+</tr>
+<tr>
+<td>6</td>
+<td>dongne-golmok pivot (Claude Sonnet 4.6 + ephemeral caching + 정적 JSON, no build) — 동네 컨시어지 라이브</td>
+<td>claude.ts ephemeral caching · 정적 JSON 시드 데이터 패턴 · 동네 톤 세계관</td>
+</tr>
+<tr>
+<td>7</td>
+<td>today-room 풀세트 (Next 14 + JWT + Postgres + TossPayments + ImageKit + shadcn) · 5톤 시스템 (gpt-image-1) · Tech Spike sandbox</td>
+<td>Next 14 베이스 · shadcn 토큰 · gpt-image-2 (시드 4장 + 라이브 토글) · sandbox 분리</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- 12개 재활용 패턴 -->
+<p class="section-label">스터디그룹에서 배운 12개 패턴 — 다오니 어디에 들어갔나</p>
+
+<div class="reuse-grid">
+
+<!-- 5주차 카드 4개 -->
+<div class="reuse-card reuse-card-w5">
+<p class="reuse-source"><span class="reuse-week-badge">5주차</span>moon.js · 420줄</p>
+<p class="reuse-pattern">Promise.all 병렬 데이터 + LLM</p>
+<p class="reuse-target"><span class="arrow">→</span><code>lib/recommend.ts</code> · <code>briefing.ts</code> · 날씨·시즌·재고 3 데이터 동시 수집</p>
+</div>
+
+<div class="reuse-card reuse-card-w5">
+<p class="reuse-source"><span class="reuse-week-badge">5주차</span>moon.js Open-Meteo</p>
+<p class="reuse-pattern">키 없는 날씨 API 직접 호출</p>
+<p class="reuse-target"><span class="arrow">→</span>염창동 좌표 <code>37.55, 126.86</code> · WMO 코드 한글 매핑 그대로</p>
+</div>
+
+<div class="reuse-card reuse-card-w5">
+<p class="reuse-source"><span class="reuse-week-badge">5주차</span>quest3 analyze.js · 4축</p>
+<p class="reuse-pattern">JSON 구조화 응답 (마크다운 X)</p>
+<p class="reuse-target"><span class="arrow">→</span>5개 라이브 API 모두 JSON: recommend · briefing · decide · tell · chat</p>
+</div>
+
+<div class="reuse-card reuse-card-w5">
+<p class="reuse-source"><span class="reuse-week-badge">5주차</span>quest2 research-agent</p>
+<p class="reuse-pattern">Playwright 시장·뉴스 딥리서치</p>
+<p class="reuse-target"><span class="arrow">→</span><code>data/mock-market.ts</code> MarketSignal 구조 (가격·뉴스·트렌드)</p>
+</div>
+
+<!-- 6주차 카드 4개 -->
+<div class="reuse-card reuse-card-w6">
+<p class="reuse-source"><span class="reuse-week-badge">6주차</span>dongne-golmok ai.js</p>
+<p class="reuse-pattern">Claude ephemeral prompt caching</p>
+<p class="reuse-target"><span class="arrow">→</span><code>lib/claude.ts</code> system blocks <code>cache_control: ephemeral</code></p>
+</div>
+
+<div class="reuse-card reuse-card-w6">
+<p class="reuse-source"><span class="reuse-week-badge">6주차</span>dongne-golmok shops.json</p>
+<p class="reuse-pattern">정적 JSON 시드 데이터 (no build)</p>
+<p class="reuse-target"><span class="arrow">→</span><code>data/</code> 전체 (farm·crops·recipes·quarters·daily·market)</p>
+</div>
+
+<div class="reuse-card reuse-card-w6">
+<p class="reuse-source"><span class="reuse-week-badge">6주차</span>dongne-golmok 페르소나</p>
+<p class="reuse-pattern">동네 컨시어지 1인칭 톤</p>
+<p class="reuse-target"><span class="arrow">→</span>다오니 PERSONA + 염창동 세계관 일관 (chat·briefing·decide)</p>
+</div>
+
+<div class="reuse-card reuse-card-w6">
+<p class="reuse-source"><span class="reuse-week-badge">6주차</span>dongne-golmok 컨소시엄</p>
+<p class="reuse-pattern">동네 단위 1인 메이커 세계관</p>
+<p class="reuse-target"><span class="arrow">→</span>다오니 농장이 동네골목 51번째 가게로 자연 합류 가능 (JV 시드)</p>
+</div>
+
+<!-- 7주차 카드 4개 -->
+<div class="reuse-card reuse-card-w7">
+<p class="reuse-source"><span class="reuse-week-badge">7주차</span>today-room app/</p>
+<p class="reuse-pattern">Next 14 App Router + shadcn 토큰</p>
+<p class="reuse-target"><span class="arrow">→</span>다오니 베이스 스택 + 디자인 시스템 (Pretendard · Tabler · 12 컬러)</p>
+</div>
+
+<div class="reuse-card reuse-card-w7">
+<p class="reuse-source"><span class="reuse-week-badge">7주차</span>today-room api/payment</p>
+<p class="reuse-pattern">TossPayments confirm + searchParams 라우팅</p>
+<p class="reuse-target"><span class="arrow">→</span><code>/checkout</code> mock 흐름 + admin <code>?day=N</code> 시연 통제</p>
+</div>
+
+<div class="reuse-card reuse-card-w7">
+<p class="reuse-source"><span class="reuse-week-badge">7주차</span>agent/static-visual-maker</p>
+<p class="reuse-pattern">gpt-image-1 호출 + b64_json 처리</p>
+<p class="reuse-target"><span class="arrow">→</span><code>lib/openai.ts</code> gpt-image-2 업그레이드 + Tell 시드 4장 + 라이브 토글</p>
+</div>
+
+<div class="reuse-card reuse-card-w7">
+<p class="reuse-source"><span class="reuse-week-badge">7주차</span>Tech Spike sandbox 패턴</p>
+<p class="reuse-pattern">본 코드와 격리된 위험 검증</p>
+<p class="reuse-target"><span class="arrow">→</span><code>sandbox/test-gpt-image-2.mjs</code> · <code>generate-seed-images.mjs</code> 분리</p>
+</div>
+
+</div>
+
+<!-- 기술 스택 + 알려진 제약 -->
+<p class="section-label">기술 스택 · 알려진 제약</p>
+
+<div class="tech-stack">
+<div class="tech-box">
+<p class="tech-title"><i class="ti ti-stack-2" aria-hidden="true"></i> Stack</p>
+<div class="tech-row"><strong>Frontend</strong>Next.js 14 App Router · TypeScript · Tailwind 3 · shadcn 톤</div>
+<div class="tech-row"><strong>AI</strong>Anthropic Claude Sonnet 4.6 (ephemeral cache) + OpenAI gpt-image-2</div>
+<div class="tech-row"><strong>Hosting</strong>Vercel (icn1 서울 리전) · 빌드 ~1분</div>
+<div class="tech-row"><strong>Data</strong>정적 JSON 시드 + localStorage (DB·인증 없음)</div>
+<div class="tech-row"><strong>라이브 API</strong>recommend · briefing · decide · tell · chat (5개, maxDuration 30s)</div>
+</div>
+<div class="limits-box">
+<p class="limits-title"><i class="ti ti-alert-triangle" aria-hidden="true"></i> 제약</p>
+<div class="limit-row"><strong>gpt-image-2</strong>~70초 응답, Vercel 60초 한도 → 시드 폴백</div>
+<div class="limit-row"><strong>시연 환경</strong>localhost 권장 (라이브 이미지 보장)</div>
+<div class="limit-row"><strong>결제</strong>TossPayments mock (실제 PG 통합 X)</div>
+</div>
+</div>
+
+<!-- 푸터 -->
+<div class="footer">
+DAONi simulator · 2026<br>
+Built with Claude Code · Anthropic + OpenAI API · Next.js 14 · Vercel
+</div>
+
+</div>
+</body>
+</html>
