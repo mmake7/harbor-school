@@ -141,9 +141,22 @@ npm install
 
 > Supabase Auth·Storage 기능은 사용하지 않음. **DB(Postgres)만 사용**. RLS도 비활성 그대로 (서버에서 JWT로 권한 처리).
 
-### 3. 스키마 적용
+### 3. 스키마 적용 ⚠ 필수
 
-Supabase SQL Editor → [`supabase/schema.sql`](./supabase/schema.sql) 통째 붙여넣기 → Run.
+**.env.local의 DATABASE_URL이 박힌 다음**, 두 옵션 중 하나로 schema.sql을 DB에 적용한다. **이 단계를 빠뜨리면 회원가입부터 500 (`relation "tr_profiles" does not exist`)**.
+
+**옵션 A — 스크립트 한 방 (권장)**
+
+```powershell
+node scripts/apply-schema.mjs
+# → connected → schema applied → tr_* tables: tr_auth_sessions, tr_chats, ...
+```
+
+내부적으로 `.env.local`의 `DATABASE_URL`을 읽어 `supabase/schema.sql`을 통째 실행. 모두 `create ... if not exists`라 재실행 안전 (idempotent).
+
+**옵션 B — Supabase SQL Editor**
+
+Supabase 대시보드 → SQL Editor → [`supabase/schema.sql`](./supabase/schema.sql) 통째 붙여넣기 → Run.
 
 → 7 테이블 생성: `tr_profiles`, `tr_auth_sessions`, `tr_products`, `tr_favorites`, `tr_chats`, `tr_messages`, `tr_orders`.
 
@@ -177,6 +190,8 @@ npm run dev
 ```
 
 ### 6. Vercel 배포
+
+> ⚠ **env 5개 박는 것만으로는 안 됨.** Production DB도 위 3단계로 schema가 적용되어 있어야 함. 안 그러면 첫 회원가입에서 500 (`relation "tr_profiles" does not exist`). `node scripts/apply-schema.mjs`는 `.env.local`의 `DATABASE_URL`을 그대로 읽으므로, Vercel과 같은 DB(Supabase 단일 프로젝트)를 쓰면 한 번만 돌리면 양쪽 다 정리됨.
 
 **현재 배포 상태**
 

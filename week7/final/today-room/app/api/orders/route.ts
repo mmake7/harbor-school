@@ -1,6 +1,5 @@
-// POST /api/orders { product_id }
-// → 201: { order: { id, toss_order_id, amount, product_title } }
-// 흐름: 상품 조회 → 본인 상품 X · amount > 0 검증 → tr_orders pending insert
+// GET  /api/orders         — 본인 주문 목록 (Bearer)
+// POST /api/orders { product_id } — 결제 대상 주문 생성 (Bearer, 본인 상품 X)
 import { NextRequest, NextResponse } from "next/server"
 import { getPool } from "@/lib/db"
 import { verifyTokenWithRevoke } from "@/lib/auth"
@@ -8,6 +7,29 @@ import { verifyTokenWithRevoke } from "@/lib/auth"
 function genTossOrderId() {
   // 6자 이상 64자 이내 (Toss 규칙)
   return `tr-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const auth = await verifyTokenWithRevoke(req.headers)
+    if (!auth) return NextResponse.json({ error: "인증 필요" }, { status: 401 })
+
+    const r = await getPool().query(
+      `SELECT o.id, o.amount, o.toss_order_id, o.payment_method, o.status,
+              o.paid_at, o.created_at,
+              p.id AS product_id, p.title AS product_title, p.images AS product_images
+         FROM tr_orders o
+         JOIN tr_products p ON p.id = o.product_id
+        WHERE o.buyer_id = $1
+        ORDER BY o.created_at DESC
+        LIMIT 50`,
+      [auth.uid]
+    )
+    return NextResponse.json({ orders: r.rows })
+  } catch (e: unknown) {
+    console.error("[orders GET]", e)
+    return NextResponse.json({ error: "서버 오류" }, { status: 500 })
+  }
 }
 
 export async function POST(req: NextRequest) {
