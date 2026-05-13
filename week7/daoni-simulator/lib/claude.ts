@@ -43,3 +43,20 @@ export async function callClaude(
     messages: [{ role: "user", content: userMessage }],
   });
 }
+
+// 멀티턴 챗 — messages 배열 그대로 전달
+export type ChatTurnMessage = { role: "user" | "assistant"; content: string };
+
+export async function callClaudeMessages(
+  systemBlocks: SystemBlock[],
+  messages: ChatTurnMessage[],
+  opts?: { maxTokens?: number; temperature?: number }
+) {
+  return getClient().messages.create({
+    model: MODEL,
+    max_tokens: opts?.maxTokens ?? 600,
+    temperature: opts?.temperature,
+    system: systemBlocks,
+    messages,
+  });
+}
