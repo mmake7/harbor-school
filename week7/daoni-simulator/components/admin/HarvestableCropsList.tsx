@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { generateDayState } from "@/data/seed-daily";
 import { CROPS } from "@/data/crops";
 import { QUARTERS } from "@/data/seed-quarters";
@@ -8,10 +9,12 @@ import { saveHarvest, makeHarvestId } from "@/lib/harvest";
 import { listProductFromHarvest } from "@/lib/sell";
 
 type Status = "growing" | "soon" | "ready";
+type FlowStep = "harvest" | "list" | "tell" | "done";
 
 export function HarvestableCropsList({ day }: { day: number }) {
   const [harvested, setHarvested] = React.useState<Set<string>>(new Set());
   const [daoni, setDaoni] = React.useState<string | null>(null);
+  const [flow, setFlow] = React.useState<{ cropId: string; step: FlowStep } | null>(null);
 
   const ds = generateDayState(day);
   const q = QUARTERS.find((x) => x.id === ds.quarter);
@@ -23,7 +26,12 @@ export function HarvestableCropsList({ day }: { day: number }) {
   const cropQty = Math.round(60 * (ds.cropProgress / 100));
   const honeyQty = crop?.honey ? Math.round(8 * (ds.cropProgress / 100)) : 0;
 
-  function handleHarvest(target: { itemId: string; itemName: string; quantity: number; unit: "pack" | "kg" }) {
+  async function handleHarvest(target: {
+    itemId: string;
+    itemName: string;
+    quantity: number;
+    unit: "pack" | "kg";
+  }) {
     if (!crop) return;
     const harvest = {
       harvestId: makeHarvestId(),
@@ -36,17 +44,34 @@ export function HarvestableCropsList({ day }: { day: number }) {
       registeredAt: new Date().toISOString(),
       autoListed: true,
     };
+
+    setFlow({ cropId: crop.id, step: "harvest" });
     saveHarvest(harvest);
+    setFlow({ cropId: crop.id, step: "list" });
     listProductFromHarvest(harvest);
+    setFlow({ cropId: crop.id, step: "tell" });
+
     setHarvested((prev) => {
       const next = new Set(prev);
       next.add(target.itemId);
       return next;
     });
+
+    try {
+      await fetch("/api/tell/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cropId: crop.id, day, useLiveImage: false }),
+      });
+    } catch {
+      // Tell 실패는 비치명 — 흐름 진행
+    }
+
+    setFlow({ cropId: crop.id, step: "done" });
     setDaoni(
-      `${target.itemName} ${target.quantity}${target.unit === "pack" ? "팩" : "kg"} 수확했어요. 곧 쇼핑몰에 등록할게요.`
+      `${target.itemName} ${target.quantity}${target.unit === "pack" ? "팩" : "kg"} 수확했어요. 콘텐츠도 함께 정리해 둘게요.`
     );
-    window.setTimeout(() => setDaoni(null), 4000);
+    window.setTimeout(() => setDaoni(null), 6000);
   }
 
   if (!crop) {
@@ -67,6 +92,7 @@ export function HarvestableCropsList({ day }: { day: number }) {
         unit="pack"
         status={status}
         harvested={harvested.has(crop.id)}
+        busy={flow?.cropId === crop.id && flow.step !== "done"}
         onHarvest={() =>
           handleHarvest({
             itemId: crop.id,
@@ -86,6 +112,7 @@ export function HarvestableCropsList({ day }: { day: number }) {
           unit="kg"
           status={status}
           harvested={harvested.has(crop.honey.id)}
+          busy={flow?.cropId === crop.id && flow.step !== "done"}
           onHarvest={() =>
             handleHarvest({
               itemId: crop.honey!.id,
@@ -95,6 +122,37 @@ export function HarvestableCropsList({ day }: { day: number }) {
             })
           }
         />
+      )}
+
+      {flow && (
+        <div className="bg-surface border-[0.5px] border-border rounded-lg p-4 space-y-2">
+          <div className="text-xs text-muted mb-1">자동 흐름</div>
+          <FlowItem state="done" text="수확 처리" />
+          <FlowItem
+            state={
+              ["list", "tell", "done"].includes(flow.step) ? "done" : "pending"
+            }
+            text="쇼핑몰 자동 등록"
+          />
+          <FlowItem
+            state={
+              flow.step === "done"
+                ? "done"
+                : flow.step === "tell"
+                ? "loading"
+                : "pending"
+            }
+            text="콘텐츠 생성"
+          />
+          {flow.step === "done" && (
+            <Link
+              href={`/admin/content?cropId=${flow.cropId}&day=${day}`}
+              className="inline-block mt-2 text-sm text-primary-dark underline"
+            >
+              콘텐츠 보러 가기 →
+            </Link>
+          )}
+        </div>
       )}
 
       {daoni && (
@@ -107,6 +165,24 @@ export function HarvestableCropsList({ day }: { day: number }) {
   );
 }
 
+function FlowItem({ state, text }: { state: "done" | "loading" | "pending"; text: string }) {
+  const icon =
+    state === "done" ? (
+      <span className="text-primary-dark">✓</span>
+    ) : state === "loading" ? (
+      <span className="text-muted animate-pulse">⌛</span>
+    ) : (
+      <span className="text-muted-light">·</span>
+    );
+  const textClass = state === "pending" ? "text-muted-light" : "text-ink";
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <span className="w-4 inline-block text-center">{icon}</span>
+      <span className={textClass}>{text}</span>
+    </div>
+  );
+}
+
 function HarvestCard(props: {
   cropColor: string;
   title: string;
@@ -115,6 +191,7 @@ function HarvestCard(props: {
   unit: "pack" | "kg";
   status: Status;
   harvested: boolean;
+  busy: boolean;
   onHarvest: () => void;
 }) {
   const badge = props.harvested
@@ -158,10 +235,10 @@ function HarvestCard(props: {
       </div>
       <button
         onClick={props.onHarvest}
-        disabled={props.status !== "ready" || props.harvested}
+        disabled={props.status !== "ready" || props.harvested || props.busy}
         className="bg-primary text-white text-sm font-medium rounded-md px-4 py-1.5 hover:bg-primary-dark disabled:opacity-40 shrink-0"
       >
-        수확 처리
+        {props.busy ? "처리 중…" : "수확 처리"}
       </button>
     </div>
   );

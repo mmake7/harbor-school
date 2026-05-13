@@ -3,10 +3,16 @@ import { QUARTERS } from "@/data/seed-quarters";
 import { MARKET_SIGNALS_BY_QUARTER } from "@/data/mock-market";
 import { generateDayState } from "@/data/seed-daily";
 
-const CURRENT_DAY = 30;
+const DEFAULT_DAY = 30;
 
-export default function DecidePage() {
-  const ds = generateDayState(CURRENT_DAY);
+export default function DecidePage({
+  searchParams,
+}: {
+  searchParams: { day?: string };
+}) {
+  const parsed = searchParams.day ? parseInt(searchParams.day, 10) : DEFAULT_DAY;
+  const day = Math.max(1, Math.min(365, Number.isFinite(parsed) ? parsed : DEFAULT_DAY));
+  const ds = generateDayState(day);
   const q = QUARTERS.find((x) => x.id === ds.quarter);
   const signals = q ? MARKET_SIGNALS_BY_QUARTER[q.id] ?? [] : [];
 
@@ -15,11 +21,11 @@ export default function DecidePage() {
       <header>
         <h1 className="text-2xl font-bold text-ink">결정</h1>
         <p className="text-sm text-muted mt-1">
-          이번 시즌은 시장 신호를 보고 추천합니다.
+          {q ? `${q.id} ${q.monthRange} · Day ${day}` : `Day ${day}`} · 시장 신호를 보고 추천합니다.
         </p>
       </header>
 
-      <DecideRecommendationCard day={CURRENT_DAY} />
+      <DecideRecommendationCard day={day} />
 
       {q && (
         <section>

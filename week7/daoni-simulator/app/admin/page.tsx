@@ -1,10 +1,18 @@
 import Link from "next/link";
 import { AdminBriefingCard } from "@/components/admin/AdminBriefingCard";
 import { StatTile } from "@/components/admin/StatTile";
+import { TimeEngineControl } from "@/components/simulator/TimeEngineControl";
 
-const CURRENT_DAY = 30;
+const DEFAULT_DAY = 30;
 
-export default function AdminDashboard() {
+export default function AdminDashboard({
+  searchParams,
+}: {
+  searchParams: { day?: string };
+}) {
+  const parsed = searchParams.day ? parseInt(searchParams.day, 10) : DEFAULT_DAY;
+  const day = Math.max(1, Math.min(365, Number.isFinite(parsed) ? parsed : DEFAULT_DAY));
+
   return (
     <div className="space-y-6">
       <header>
@@ -14,7 +22,9 @@ export default function AdminDashboard() {
         </p>
       </header>
 
-      <AdminBriefingCard day={CURRENT_DAY} />
+      <TimeEngineControl currentDay={day} />
+
+      <AdminBriefingCard day={day} />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatTile label="농장 상태"   value="정상"      hint="작물 4종 평균 65% 생육" icon="ti-plant-2" />
@@ -28,10 +38,10 @@ export default function AdminDashboard() {
           빠른 진입
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <QuickLink href="/admin/decide"  label="결정"      icon="ti-bulb" />
-          <QuickLink href="/admin/farm"    label="농장"      icon="ti-plant-2" />
-          <QuickLink href="/admin/harvest" label="수확"      icon="ti-basket" />
-          <QuickLink href="/admin/daoni"   label="다온이 챗" icon="ti-robot" />
+          <QuickLink href={`/admin/decide?day=${day}`}  label="결정"      icon="ti-bulb" />
+          <QuickLink href={`/admin/farm?day=${day}`}    label="농장"      icon="ti-plant-2" />
+          <QuickLink href={`/admin/harvest?day=${day}`} label="수확"      icon="ti-basket" />
+          <QuickLink href={`/admin/daoni?day=${day}`}   label="다온이 챗" icon="ti-robot" />
         </div>
       </div>
     </div>
