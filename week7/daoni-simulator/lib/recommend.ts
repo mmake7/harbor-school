@@ -57,7 +57,7 @@ const WEATHER_CODE_KO: Record<number, string> = {
   95: "뇌우", 96: "뇌우 우박", 99: "강한 뇌우 우박",
 };
 
-async function getWeather(): Promise<WeatherSnapshot> {
+export async function getWeather(): Promise<WeatherSnapshot> {
   // 염창동 좌표 (37.55, 126.86), Open-Meteo 키 X
   const url =
     "https://api.open-meteo.com/v1/forecast?latitude=37.55&longitude=126.86&current=temperature_2m,relative_humidity_2m,weather_code&timezone=Asia%2FSeoul";
