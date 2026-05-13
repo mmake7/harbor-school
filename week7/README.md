@@ -22,7 +22,7 @@
 | **Q2** | 🟠 Quest | TYPA 카페 메뉴판 (엔젤코어 + 다크 고딕) | ✅ | [`quest/cafe-menu-typa/`](./quest/cafe-menu-typa/) |
 | **Q3** | 🟠 Quest | TYPA 라벤더 크림 소다 신메뉴 포스터 | ✅ | [`quest/cafe-poster-typa-lavender/`](./quest/cafe-poster-typa-lavender/) |
 | **F1** | 🔴 Final | 오늘의집 클론 (today-room) — Next.js 14 + 자체 JWT + pg + ImageKit + TossPayments | ✅ 9/9 시나리오 검증 + gpt-image-1 5종 시드 / 🌐 [today-room.vercel.app](https://today-room.vercel.app) | [`final/today-room/`](./final/today-room/) |
-| **F2** | 🔵 Final | 보너스 | ⏳ | — |
+| **F2** | 🔵 Final | 다오니 시뮬레이터 (daoni-simulator) — Next.js 14 + Claude Sonnet 4.6 + gpt-image-2, 5 모듈(Decide·Watch·Care·Tell·Sell) 라이브 운영 시스템 미니 | ✅ 라이브 5 API + 시연 자동 흐름 / 🌐 [daoni-simulator.vercel.app](https://daoni-simulator.vercel.app) · 📺 [/presentation.html](https://daoni-simulator.vercel.app/presentation.html) | [`daoni-simulator/`](./daoni-simulator/) |
 
 ---
 
@@ -64,6 +64,16 @@ today-room — 오늘의집 클론. Next.js 14 App Router + 자체 JWT + Supabas
 
 > 시연 흐름·검증 결과·발견·해결 이슈는 [`final/today-room/README.md`](./final/today-room/README.md) 참조.
 
+### 🔵 Final (F2) — 다오니 시뮬레이터
+
+**염창동 옥상농장**을 자율 운영하는 AI 농부 **다온이**. 손님 쇼핑몰 + 관리자 자율 운영 5 모듈 통합.
+
+- 🌐 라이브: [daoni-simulator.vercel.app](https://daoni-simulator.vercel.app)
+- 📺 발표: [daoni-simulator.vercel.app/presentation.html](https://daoni-simulator.vercel.app/presentation.html)
+- 5 모듈 라이브: **Decide**(작물 결정·시장 분석) · **Watch**(생육·센서) · **Care**(1인칭 챗) · **Tell**(콘텐츠 자동 생성, gpt-image-2 시드 4장) · **Sell**(localStorage 카트·주문·자동 등록)
+- 14 페이지 + 5 API · 시연 흐름: 수확 한 클릭 → 자동 등록 → 콘텐츠 → "보러 가기"
+- 작업 로그·기술 결정은 [`daoni-simulator/README.md`](./daoni-simulator/README.md) 참조
+
 ---
 
 ## 폴더 구조
@@ -89,13 +99,24 @@ week7/
 │   ├── cafe-menu-typa/        (Q2)
 │   └── cafe-poster-typa-lavender/ (Q3)
 │
-└── final/                     🔴 Final
-    └── today-room/            (F1 — 오늘의집 클론, Next.js 14 + Supabase + Toss)
-        ├── README.md          (시연 흐름·검증 결과·발견 이슈)
-        ├── app/  components/  lib/  types/  middleware.ts
-        ├── supabase/schema.sql
-        ├── scripts/           (apply-schema · check-imagekit · generate-product-images)
-        └── screenshots/       (라이브 검증 5장)
+├── final/                     🔴 Final
+│   └── today-room/            (F1 — 오늘의집 클론, Next.js 14 + Supabase + Toss)
+│       ├── README.md          (시연 흐름·검증 결과·발견 이슈)
+│       ├── app/  components/  lib/  types/  middleware.ts
+│       ├── supabase/schema.sql
+│       ├── scripts/           (apply-schema · check-imagekit · generate-product-images)
+│       └── screenshots/       (라이브 검증 5장)
+│
+└── daoni-simulator/           🔵 Final (F2 — 다오니 시뮬레이터, 5 모듈 라이브 운영)
+    ├── README.md              (컨셉·스택·페이지·작업 로그)
+    ├── INVENTORY.md           (Day 0 — 1~7주차 자산 매핑)
+    ├── DESIGN.md              (모던 도시농부 톤·디자인 토큰)
+    ├── app/                   (14 페이지 + 5 API route)
+    ├── components/{shop,admin,shared,simulator}/
+    ├── lib/                   (claude · openai · briefing · decide · tell · chat · cart · sell · harvest · simulator · recommend)
+    ├── data/                  (farm · crops · recipes · seed-quarters · seed-daily · mock-market)
+    ├── public/seed-images/    (4 작물 gpt-image-2 시드)
+    └── public/presentation.html (발표 자료)
 ```
 
 각 카테고리 README에서 상세 확인.
