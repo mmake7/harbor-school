@@ -5,6 +5,7 @@ import { generateDayState } from "@/data/seed-daily";
 import { CROPS } from "@/data/crops";
 import { QUARTERS } from "@/data/seed-quarters";
 import { saveHarvest, makeHarvestId } from "@/lib/harvest";
+import { listProductFromHarvest } from "@/lib/sell";
 
 type Status = "growing" | "soon" | "ready";
 
@@ -24,7 +25,7 @@ export function HarvestableCropsList({ day }: { day: number }) {
 
   function handleHarvest(target: { itemId: string; itemName: string; quantity: number; unit: "pack" | "kg" }) {
     if (!crop) return;
-    saveHarvest({
+    const harvest = {
       harvestId: makeHarvestId(),
       cropId: crop.id,
       itemId: target.itemId,
@@ -33,8 +34,10 @@ export function HarvestableCropsList({ day }: { day: number }) {
       quantity: target.quantity,
       unit: target.unit,
       registeredAt: new Date().toISOString(),
-      autoListed: false,
-    });
+      autoListed: true,
+    };
+    saveHarvest(harvest);
+    listProductFromHarvest(harvest);
     setHarvested((prev) => {
       const next = new Set(prev);
       next.add(target.itemId);
