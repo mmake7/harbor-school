@@ -21,7 +21,7 @@
 | **Q1** | 🟠 Quest | 명함 (DAONi 박인수, Tech Minimal + 한지) | ✅ | [`quest/business-card/`](./quest/business-card/) |
 | **Q2** | 🟠 Quest | TYPA 카페 메뉴판 (엔젤코어 + 다크 고딕) | ✅ | [`quest/cafe-menu-typa/`](./quest/cafe-menu-typa/) |
 | **Q3** | 🟠 Quest | TYPA 라벤더 크림 소다 신메뉴 포스터 | ✅ | [`quest/cafe-poster-typa-lavender/`](./quest/cafe-poster-typa-lavender/) |
-| **F1** | 🔴 Final | 오늘의집 클론 (today-room) — Next.js 14 + 자체 JWT + pg + ImageKit + TossPayments | ✅ 🌐 [today-room.vercel.app](https://today-room.vercel.app) | [`final/today-room/`](./final/today-room/) |
+| **F1** | 🔴 Final | 오늘의집 클론 (today-room) — Next.js 14 + 자체 JWT + pg + ImageKit + TossPayments | ✅ 9/9 시나리오 검증 + gpt-image-1 5종 시드 / 🌐 [today-room.vercel.app](https://today-room.vercel.app) | [`final/today-room/`](./final/today-room/) |
 | **F2** | 🔵 Final | 보너스 | ⏳ | — |
 
 ---
@@ -50,6 +50,20 @@
 |---|---|
 | ![Q2](quest/cafe-menu-typa/output/menu.png) | ![Q3](quest/cafe-poster-typa-lavender/output/poster.png) |
 
+### 🔴 Final (F1)
+
+today-room — 오늘의집 클론. Next.js 14 App Router + 자체 JWT + Supabase Postgres + ImageKit + TossPayments. 9/9 시나리오 라이브 검증 완료. 라이브: [today-room.vercel.app](https://today-room.vercel.app)
+
+| F1 메인 (gpt-image-1 시드 5종) | F1 상품 상세 |
+|---|---|
+| ![F1 home](final/today-room/screenshots/01-home-catalog.png) | ![F1 detail](final/today-room/screenshots/02-product-detail.png) |
+
+| F1 채팅 (3초 polling) | F1 결제 (TossPayments) | F1 마이페이지 (주문·찜) |
+|---|---|---|
+| ![F1 chat](final/today-room/screenshots/03-chat-buyer.png) | ![F1 pay](final/today-room/screenshots/04-payment-success.png) | ![F1 mypage](final/today-room/screenshots/05-mypage-buyer.png) |
+
+> 시연 흐름·검증 결과·발견·해결 이슈는 [`final/today-room/README.md`](./final/today-room/README.md) 참조.
+
 ---
 
 ## 폴더 구조
@@ -75,7 +89,13 @@ week7/
 │   ├── cafe-menu-typa/        (Q2)
 │   └── cafe-poster-typa-lavender/ (Q3)
 │
-└── final/                     🔴 Final (F1·F2 — 대기)
+└── final/                     🔴 Final
+    └── today-room/            (F1 — 오늘의집 클론, Next.js 14 + Supabase + Toss)
+        ├── README.md          (시연 흐름·검증 결과·발견 이슈)
+        ├── app/  components/  lib/  types/  middleware.ts
+        ├── supabase/schema.sql
+        ├── scripts/           (apply-schema · check-imagekit · generate-product-images)
+        └── screenshots/       (라이브 검증 5장)
 ```
 
 각 카테고리 README에서 상세 확인.

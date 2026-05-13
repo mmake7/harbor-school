@@ -8,6 +8,20 @@
 
 ---
 
+## 시연 갤러리
+
+| 메인 카탈로그 (gpt-image-1 시드 5종) | 상품 상세 |
+|---|---|
+| ![home](./screenshots/01-home-catalog.png) | ![detail](./screenshots/02-product-detail.png) |
+
+| 채팅 (3초 polling 양방향) | 결제 완료 (TossPayments 테스트 키) | 마이페이지 (주문·찜) |
+|---|---|---|
+| ![chat](./screenshots/03-chat-buyer.png) | ![pay](./screenshots/04-payment-success.png) | ![mypage](./screenshots/05-mypage-buyer.png) |
+
+> 상품 이미지 5종은 `gpt-image-1` (medium 1024×1024)로 카테고리별 1장씩 — Korean minimal interior product photography 톤. 생성·업로드·DB 시드 한 번에: `node scripts/generate-product-images.mjs`.
+
+---
+
 ## 스택
 
 - **Next.js 14** App Router · TypeScript · Tailwind · ESLint
@@ -254,22 +268,63 @@ curl http://localhost:3000/api/auth/me -H "Authorization: Bearer <jwt>"
 
 ---
 
-## 배포 검증 시나리오
+## 배포 검증 시나리오 — 9/9 ✅
 
-라이브: https://today-room.vercel.app
+Playwright MCP로 라이브(https://today-room.vercel.app) 자동 검증. 두 계정(판매자 `validate-20260513@today-room.test` 마조로 / 구매자 `buyer-20260513@today-room.test` 염창동)으로 전 시나리오 통과.
 
-| # | 경로 | 동작 | 백엔드 |
+| # | 경로 | 검증 내용 | 결과 |
 |---|---|---|---|
-| 1 | `/` | 메인 페이지 로딩 | — |
-| 2 | `/auth/signup` | 회원가입 → JWT 발급 | `POST /api/auth/register` → `tr_profiles` INSERT |
-| 3 | `/auth/login` | 로그인 → 헤더에 사용자 표시 | `POST /api/auth/login` + `tr_auth_sessions` INSERT |
-| 4 | `/products/new` | 이미지 업로드 + 상품 등록 | `POST /api/upload` (ImageKit) → `POST /api/products` |
-| 5 | `/products` | 카테고리 5종 + 검색(LIKE) | `GET /api/products?category=&q=` |
-| 6 | `/products/[id]` | 상세 + 찜 토글 + 채팅 시작 | `GET /api/products/[id]`, `POST /api/favorites`, `POST /api/chats` |
-| 7 | `/checkout/[orderId]` → `/payment/success` | TossPayments 테스트 결제 | `GET /api/payment/config` → `POST /api/payment/confirm` → `tr_orders` UPDATE |
-| 8 | `/mypage` | 내 상품·찜·주문 표시 | `GET /api/products?mine=1`, `/api/favorites`, `/api/orders` |
+| S1 | `/` | 카테고리 5종 + 최근 상품 5개 카드 | ✅ |
+| S2 | `/auth/signup` | 가입 → JWT 발급 → 헤더 갱신 | ✅ |
+| S3 | `/auth/login` | 로그아웃 ↔ 재로그인 양방향 | ✅ |
+| S4 | `/products/new` | 이미지 업로드 + 상품 등록 → 상세 redirect | ✅ |
+| S5 | `/products` | 카테고리 필터 + 제목 LIKE 검색 (`원목` ↔ `소파`) | ✅ |
+| S6 | `/products/[id]` | 상세 표시 + 찜 토글 (`♡` ↔ `♥ 찜 해제`) | ✅ |
+| S7 | `/checkout/[orderId]` → `/payment/success` | Toss 위젯 → 퀵계좌이체 → success 콜백 → `tr_orders.status=paid` | ✅ |
+| S8 | `/mypage` | 프로필 + 내 상품 + **주문(결제 완료 배지)** + 찜 4종 | ✅ |
+| S9 | `/chat`, `/chat/[id]` | 채팅 시작 → 양방향 송수신 + 3초 polling 자동 수신 + 권한 체크(403) | ✅ |
 
-**테스트 결제 카드**: TossPayments 테스트 키(`test_gck_docs_*`)라서 위젯 안에서 임의 카드번호로 진행 가능. 실제 청구되지 않음.
+**테스트 결제 카드**: TossPayments 테스트 키(`test_gck_docs_*`)라 위젯 안에서 휴대폰번호·계좌비번 모두 자동 입력. 실제 청구 X.
+
+### 검증 중 발견·해결한 인프라 이슈 2건
+
+| # | 증상 | 원인 | 해결 |
+|---|---|---|---|
+| INF-1 | `POST /api/auth/register` 500 (`relation "tr_profiles" does not exist`) | env 5개는 박혔지만 Production DB에 schema.sql 미적용 | `scripts/apply-schema.mjs` 작성 → 7개 테이블 한 방 적용 |
+| INF-2 | `POST /api/upload` 500 (`403 Your account cannot be authenticated`) | Vercel `IMAGEKIT_PRIVATE_KEY` 빈 값 (등록 단계 실수 추정) | 로컬 키 valid 확인(`scripts/check-imagekit.mjs`) → `vercel env rm/add` 재등록 → `vercel --prod` |
+
+→ 두 도구는 [`scripts/`](./scripts/)에 박아 둠. 다른 환경 셋업이나 시연 재현 시 그대로 쓸 수 있음.
+
+### 검증 중 발견·해결한 코드 이슈 4건
+
+| # | 위치 | 문제 → 해결 |
+|---|---|---|
+| FIX-1 | `app/page.tsx` | "최근 상품" `TODO: 5단계에서 구현` placeholder → server component + `force-dynamic`으로 LIMIT 5 카드 그리드 |
+| FIX-2 | `README.md` | 배포 가이드에 schema 적용 단계 누락 → ⚠ 박스 + `apply-schema.mjs` 안내 |
+| FIX-3 | `app/api/orders/route.ts`, `app/mypage/page.tsx` | `/api/orders` GET 부재 → 마이페이지 주문 섹션 미구현 → GET 추가 + 주문 카드 리스트(상품·금액·`결제 완료` 배지·결제 시각·Toss order ID) |
+| FIX-4 | `app/mypage/page.tsx` | 프로필에 `Phase 7 (구매 마감 후) 또는 차후` dev placeholder 노출 → 제거 |
+
+### 시드 카탈로그 (시연용)
+
+`scripts/generate-product-images.mjs` 실행 결과 — `validate-20260513` 판매자가 5종 등록한 상태로 시연 시작.
+
+| 카테고리 | 상품 | 가격 |
+|---|---|---|
+| 가구 | 원목 6인용 다이닝 테이블 | ₩320,000 |
+| 조명 | 린넨 갓 펜던트 조명 | ₩89,000 |
+| 소품 | 세라믹 화병 (중) | ₩45,000 |
+| 패브릭 | 워시드 린넨 쿠션 커버 | ₩28,000 |
+| 식물 | 몬스테라 델리시오사 (대) | ₩65,000 |
+
+총 비용 ≈ $0.20 (gpt-image-1 medium × 5장). 톤: Korean minimal interior product photography (warm beige + natural wood + soft studio lighting). 카테고리당 1장이라 메인 / 카테고리 필터 / 상세 어디서 봐도 단일한 결.
+
+### 시연 영상 1분 권장 흐름
+
+1. (~10s) 메인 — 5종 카탈로그 + 카테고리 칩
+2. (~15s) 상세 — 이미지 + 가격 + 채팅·찜·구매 버튼
+3. (~10s) 채팅 — 메시지 1회, 답장 polling 도착
+4. (~15s) 결제 — Toss 위젯 → 퀵계좌이체 → success 콜백
+5. (~10s) 마이페이지 — 결제 완료 배지 + 찜 노출
 
 ---
 
