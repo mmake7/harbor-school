@@ -16,7 +16,7 @@ export default function HomePage() {
         </section>
 
         <section className="mb-10">
-          <TodayTableCard />
+          <TodayTableCard day={30} />
         </section>
 
         <section>
