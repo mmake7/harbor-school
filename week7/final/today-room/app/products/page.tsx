@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import * as React from "react"
+import { Suspense } from "react"
 import { CATEGORIES, type Category, type Product } from "@/types/database.types"
 import { apiGet } from "@/lib/auth-client"
 import { Input } from "@/components/ui/input"
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
-export default function ProductsListPage() {
+function ProductsListInner() {
   const router = useRouter()
   const params = useSearchParams()
   const category = params.get("category") as Category | null
@@ -48,7 +49,7 @@ export default function ProductsListPage() {
   }
 
   return (
-    <main className="container mx-auto p-6">
+    <>
       <h1 className="text-2xl font-bold mb-4">상품 목록</h1>
 
       <form onSubmit={applySearch} className="flex gap-2 mb-4">
@@ -104,6 +105,16 @@ export default function ProductsListPage() {
           ))}
         </div>
       )}
+    </>
+  )
+}
+
+export default function ProductsListPage() {
+  return (
+    <main className="container mx-auto p-6">
+      <Suspense fallback={<p className="text-muted-foreground">로딩…</p>}>
+        <ProductsListInner />
+      </Suspense>
     </main>
   )
 }
