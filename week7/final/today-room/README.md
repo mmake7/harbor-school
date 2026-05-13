@@ -318,14 +318,6 @@ Playwright MCP로 라이브(https://today-room.vercel.app) 자동 검증. 두 �
 
 총 비용 ≈ $0.20 (gpt-image-1 medium × 5장). 톤: Korean minimal interior product photography (warm beige + natural wood + soft studio lighting). 카테고리당 1장이라 메인 / 카테고리 필터 / 상세 어디서 봐도 단일한 결.
 
-### 시연 영상 1분 권장 흐름
-
-1. (~10s) 메인 — 5종 카탈로그 + 카테고리 칩
-2. (~15s) 상세 — 이미지 + 가격 + 채팅·찜·구매 버튼
-3. (~10s) 채팅 — 메시지 1회, 답장 polling 도착
-4. (~15s) 결제 — Toss 위젯 → 퀵계좌이체 → success 콜백
-5. (~10s) 마이페이지 — 결제 완료 배지 + 찜 노출
-
 ---
 
 ## 6주차 패턴 출처
