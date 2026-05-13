@@ -2,6 +2,8 @@
 
 7주차 Final 1. **빠른 클리어** 목표의 미니 마켓플레이스. 6주차 harbor-community 패턴(자체 JWT + pg + ImageKit + TossPayments)을 Next.js 14 App Router로 이식.
 
+🌐 **라이브**: https://today-room.vercel.app
+
 > 10시간 이내 완료 지향. shadcn 기본 컴포넌트만, 디자인 커스터마이징 X.
 
 ---
@@ -40,7 +42,7 @@
 | 5단계 | 카테고리·검색 필터 | ✅ |
 | 6단계 | 찜 + 채팅 polling + 마이페이지 | ✅ |
 | 7단계 | 구매(TossPayments) + 상품 수정·삭제 | ✅ |
-| 8단계 | Vercel 배포 | ⏳ 형 액션 |
+| 8단계 | Vercel 배포 | ✅ ([today-room.vercel.app](https://today-room.vercel.app)) |
 
 ---
 
@@ -62,14 +64,17 @@ today-room/
 │   │       ├── config/route.ts       GET    Toss client key
 │   │       └── confirm/route.ts      POST   Toss 결제 승인 + DB 동기화
 │   ├── auth/
-│   │   ├── login/page.tsx            ⏳ 3단계
-│   │   └── signup/page.tsx           ⏳ 3단계
+│   │   ├── login/page.tsx            로그인
+│   │   └── signup/page.tsx           회원가입
 │   ├── products/
-│   │   ├── page.tsx                  ⏳ 4단계 (목록·필터)
-│   │   ├── [id]/page.tsx             ⏳ 4단계 (상세)
-│   │   └── new/page.tsx              ⏳ 4단계 (등록 + 이미지)
-│   ├── chat/{page,[id]/page}.tsx     ⏳ 6단계
-│   └── mypage/page.tsx               ⏳ 5단계
+│   │   ├── page.tsx                  목록·카테고리·검색
+│   │   ├── [id]/page.tsx             상세 + 찜·채팅·구매
+│   │   ├── [id]/edit/page.tsx        수정
+│   │   └── new/page.tsx              등록 (ImageKit 업로드)
+│   ├── checkout/[orderId]/page.tsx   TossPayments 위젯
+│   ├── payment/{success,fail}/page.tsx  결제 콜백
+│   ├── chat/{page,[id]/page}.tsx     채팅 목록·방
+│   └── mypage/page.tsx               내 상품·찜·주문
 │
 ├── components/ui/                shadcn 11종
 │
@@ -97,8 +102,17 @@ today-room/
 | GET  `/api/auth/me` | Bearer | 현재 사용자 정보 |
 | POST `/api/auth/logout` | Bearer | 세션 revoke (멱등) |
 | POST `/api/upload` | Bearer | 이미지 업로드 (base64) → ImageKit URL |
+| GET  `/api/products` | — | 목록 (`?category=&q=&mine=1`) |
+| POST `/api/products` | Bearer | 상품 등록 |
+| GET  `/api/products/[id]` | — | 상세 |
+| PATCH·DELETE `/api/products/[id]` | Bearer (소유자) | 수정·삭제 |
+| GET·POST·DELETE `/api/favorites` | Bearer | 찜 목록·토글 |
+| GET·POST `/api/chats` | Bearer | 채팅방 목록·생성 |
+| GET·POST `/api/chats/[id]/messages` | Bearer (참여자) | 메시지 polling·전송 |
+| GET·POST `/api/orders` | Bearer | 주문 목록·생성 |
+| GET·PATCH `/api/orders/[id]` | Bearer (구매자) | 주문 상세·상태 갱신 |
 | GET  `/api/payment/config` | — | TossPayments client key |
-| POST `/api/payment/confirm` | Bearer | 결제 승인 + tr_orders 동기화 |
+| POST `/api/payment/confirm` | Bearer | 결제 승인 + `tr_orders` 동기화 |
 
 **인증 흐름**:
 1. 로그인 → JWT + `tr_auth_sessions`에 `token_hash`(SHA-256) 저장
@@ -135,22 +149,25 @@ Supabase SQL Editor → [`supabase/schema.sql`](./supabase/schema.sql) 통째 �
 
 ### 4. 환경변수 작성
 
-`.env.local` 생성 ([`.env.example`](./.env.example) 참고):
+`.env.local` 생성 ([`.env.example`](./.env.example) 참고). **실제 코드에서 읽는 키는 5개**:
+
+| 변수 | 사용처 | 발급 |
+|---|---|---|
+| `DATABASE_URL` | `lib/db.ts` (pg Pool) | Supabase Settings → Database → Pooler URL |
+| `JWT_SECRET` | `lib/auth.ts` | `openssl rand -hex 64` |
+| `IMAGEKIT_PRIVATE_KEY` | `lib/upload.ts` | https://imagekit.io → Developer → API Keys |
+| `NEXT_PUBLIC_TOSS_CLIENT_KEY` | `app/api/payment/config` | https://docs.tosspayments.com → 개발자센터 |
+| `TOSS_SECRET_KEY` | `app/api/payment/confirm` | (동일) |
 
 ```
 DATABASE_URL=postgresql://...
-JWT_SECRET=...                          # openssl rand -hex 64
-IMAGEKIT_PUBLIC_KEY=...
+JWT_SECRET=...
 IMAGEKIT_PRIVATE_KEY=...
-IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_id
 NEXT_PUBLIC_TOSS_CLIENT_KEY=test_gck_...
 TOSS_SECRET_KEY=test_gsk_...
 ```
 
-각 키 발급:
-- **JWT_SECRET**: 터미널 `openssl rand -hex 64`
-- **ImageKit**: https://imagekit.io → Developer → API Keys
-- **TossPayments**: https://docs.tosspayments.com → 개발자센터 → 테스트 키
+> `IMAGEKIT_PUBLIC_KEY`·`IMAGEKIT_URL_ENDPOINT`는 `.env.example`에 적혀 있지만 **현재 서버 업로드 경로에서는 사용하지 않음** (PRIVATE_KEY만 쓰임). 클라이언트 직접 업로드로 전환 시에만 필요.
 
 ### 5. 로컬 실행
 
@@ -161,30 +178,47 @@ npm run dev
 
 ### 6. Vercel 배포
 
+**현재 배포 상태**
+
+- 🌐 Production: https://today-room.vercel.app
+- 프로젝트: `mmake7-3440s-projects/today-room` (GitHub `mmake7/harbor-school` 연동)
+- Root Directory: `week7/final/today-room`
+- Framework: Next.js 14 (자동 감지)
+
+**최초 셋업 (한 번만)**
+
 ```powershell
-# 한 번만
 npm install -g vercel
 vercel login
-
-# 프로젝트 연결 + 미리보기 배포
 cd week7/final/today-room
-vercel
+vercel link    # 기존 프로젝트에 연결, 또는 vercel로 새로 생성
+```
 
-# 환경변수 7개 등록 (Production·Preview·Development 모두 선택)
-printf "%s" "<DATABASE_URL>" | vercel env add DATABASE_URL production
-printf "%s" "<JWT_SECRET>" | vercel env add JWT_SECRET production
-printf "%s" "<IMAGEKIT_PUBLIC_KEY>" | vercel env add IMAGEKIT_PUBLIC_KEY production
-printf "%s" "<IMAGEKIT_PRIVATE_KEY>" | vercel env add IMAGEKIT_PRIVATE_KEY production
-printf "%s" "<IMAGEKIT_URL_ENDPOINT>" | vercel env add IMAGEKIT_URL_ENDPOINT production
+**환경변수 등록 (코드에서 사용하는 5개)**
+
+```powershell
+# 각 키를 Production·Development 양쪽에 등록
+printf "%s" "<DATABASE_URL>"                | vercel env add DATABASE_URL production
+printf "%s" "<JWT_SECRET>"                  | vercel env add JWT_SECRET production
+printf "%s" "<IMAGEKIT_PRIVATE_KEY>"        | vercel env add IMAGEKIT_PRIVATE_KEY production
 printf "%s" "<NEXT_PUBLIC_TOSS_CLIENT_KEY>" | vercel env add NEXT_PUBLIC_TOSS_CLIENT_KEY production
-printf "%s" "<TOSS_SECRET_KEY>" | vercel env add TOSS_SECRET_KEY production
-
-# 프로덕션 배포
-vercel --prod
+printf "%s" "<TOSS_SECRET_KEY>"             | vercel env add TOSS_SECRET_KEY production
+# 위 5줄을 development 환경에도 동일하게 (production → development)
 ```
 
 > `printf "%s"`는 `echo`의 trailing newline 문제 회피 (6주차 메모).
 > 또는 Vercel Dashboard → Settings → Environment Variables에서 직접 입력.
+
+**배포 명령**
+
+```powershell
+vercel --prod
+# → https://today-room.vercel.app
+```
+
+**Vercel 빌드 시 알려진 정보성 메시지** (에러 아님)
+
+- `/api/auth/me`에서 `Dynamic server usage: ... used request.headers` — Bearer 토큰 라우트라 Next.js가 자동으로 dynamic 처리. 빌드 통과·배포 정상.
 
 ### 6. 동작 확인 (cURL)
 
@@ -205,26 +239,22 @@ curl http://localhost:3000/api/auth/me -H "Authorization: Bearer <jwt>"
 
 ---
 
-## 1·2단계 결과 (셋업 완료)
+## 배포 검증 시나리오
 
-- Next.js 14 + shadcn 11종 + Tailwind
-- `lib/db.ts` — pg Pool 싱글톤
-- `lib/auth.ts` — JWT 발급·검증·bcrypt·session revoke
-- `lib/upload.ts` — ImageKit base64 업로드
-- `app/api/*` 7개 route (auth 4 + upload 1 + payment 2)
-- `middleware.ts` — 보호 라우트 통과 (실제 가드는 클라이언트 + API)
-- `supabase/schema.sql` — 7 테이블 (RLS X, 트리거 X, Storage X — 모두 서버에서 처리)
-- `types/database.types.ts` — Profile·Product·Order 등
+라이브: https://today-room.vercel.app
 
-## 다음 (3단계 Auth UI)
+| # | 경로 | 동작 | 백엔드 |
+|---|---|---|---|
+| 1 | `/` | 메인 페이지 로딩 | — |
+| 2 | `/auth/signup` | 회원가입 → JWT 발급 | `POST /api/auth/register` → `tr_profiles` INSERT |
+| 3 | `/auth/login` | 로그인 → 헤더에 사용자 표시 | `POST /api/auth/login` + `tr_auth_sessions` INSERT |
+| 4 | `/products/new` | 이미지 업로드 + 상품 등록 | `POST /api/upload` (ImageKit) → `POST /api/products` |
+| 5 | `/products` | 카테고리 5종 + 검색(LIKE) | `GET /api/products?category=&q=` |
+| 6 | `/products/[id]` | 상세 + 찜 토글 + 채팅 시작 | `GET /api/products/[id]`, `POST /api/favorites`, `POST /api/chats` |
+| 7 | `/checkout/[orderId]` → `/payment/success` | TossPayments 테스트 결제 | `GET /api/payment/config` → `POST /api/payment/confirm` → `tr_orders` UPDATE |
+| 8 | `/mypage` | 내 상품·찜·주문 표시 | `GET /api/products?mine=1`, `/api/favorites`, `/api/orders` |
 
-형 "Supabase DB 준비 완료" → 3단계 진입.
-
-3단계 내용:
-- `app/auth/signup/page.tsx` — 회원가입 폼 (shadcn Form + zod 검증)
-- `app/auth/login/page.tsx` — 로그인 폼
-- `lib/auth-client.ts` — 클라이언트 측 토큰 관리 훅 (`useAuth` 등)
-- 헤더에 로그인/로그아웃 상태 표시
+**테스트 결제 카드**: TossPayments 테스트 키(`test_gck_docs_*`)라서 위젯 안에서 임의 카드번호로 진행 가능. 실제 청구되지 않음.
 
 ---
 
