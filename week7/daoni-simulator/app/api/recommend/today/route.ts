@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getTodayRecommendation } from "@/lib/recommend";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 export async function GET(req: NextRequest) {
   const raw = req.nextUrl.searchParams.get("day");

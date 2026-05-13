@@ -3,6 +3,7 @@ import { generateTellContent } from "@/lib/tell";
 import type { Crop } from "@/data/crops";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 const VALID_CROP_IDS: Crop["id"][] = ["strawberry", "blueberry", "melon", "sprout"];
 
@@ -11,7 +12,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const cropId = body?.cropId as Crop["id"];
     const dayRaw = body?.day;
-    const useLiveImage = !!body?.useLiveImage;
+    // Vercel production에서는 gpt-image-2 89초 → 60초 한도 초과로 timeout. 시드 폴백 강제.
+    const useLiveImage = !!body?.useLiveImage && process.env.VERCEL_ENV !== "production";
 
     if (!VALID_CROP_IDS.includes(cropId)) {
       return NextResponse.json({ error: `cropId 비유효: ${cropId}` }, { status: 400 });

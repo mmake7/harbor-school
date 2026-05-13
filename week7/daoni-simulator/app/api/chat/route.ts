@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { callDaoniChat, type ChatMessage } from "@/lib/chat";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
   try {
