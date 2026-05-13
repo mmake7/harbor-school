@@ -1,0 +1,31 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css');
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.40.0/tabler-icons.min.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --base: #FFFFFF;
+  --surface: #F4F7F5;
+  --primary: #10B981;
+  --primary-dark: #047857;
+  --primary-light: #ECFDF5;
+  --ink: #0F172A;
+  --muted: #64748B;
+  --muted-light: #94A3B8;
+  --border: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --season-q1: #FF4757;
+  --season-q2: #4F46E5;
+  --season-q3: #F59E0B;
+  --season-q4: #84CC16;
+}
+
+html,
+body {
+  background: var(--base);
+  color: var(--ink);
+  font-family: 'Pretendard Variable', 'Pretendard', 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
