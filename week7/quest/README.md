@@ -11,10 +11,11 @@
 
 ## 프로젝트
 
-### 🪪 [business-card/](./business-card/) — Q1
-**DAONi (다온이) · 박인수 명함** — Tech Minimal + 한지 톤.
+### 🪪 [business-card/](./business-card/) + [business-card-digital/](./business-card-digital/) — Q1
+**DAONi (다온이) · 박인수 명함** — Tech Minimal + 한지 톤. **아날로그(인쇄) + 디지털(웹)** 두 형식.
 
-- 90×54mm + 3mm 블리드, HTML+CSS → Puppeteer → PNG·PDF 300dpi
+- 아날로그: 90×54mm + 3mm 블리드, HTML+CSS → Puppeteer → PNG·PDF 300dpi
+- 디지털: 정적 사이트 라이브 `https://business-card-digital.vercel.app`
 - 컬러 3색: 한지 `#F5F1E8` · 먹 `#1A1A1A` · 골드 `#B8946B`
 - 폰트: Inter + Pretendard (명조 0)
 - 로고 SVG: DAONi의 **A·i만 Bold**로 "AI" 시각화

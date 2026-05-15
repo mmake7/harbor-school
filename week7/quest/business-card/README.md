@@ -1,14 +1,24 @@
 # 명함 디자인 — DAONi (Q1)
 
-박인수 (DAONi / 다온이) 명함. **HTML+CSS → Puppeteer 렌더 → PNG·PDF 출력**. 6차 디자인 사이클 거쳐 최종 확정.
+박인수 (DAONi / 다온이) 명함. **아날로그(인쇄) + 디지털(웹)** 두 형식 모두 제공. 7차 디자인 사이클 거쳐 최종 확정.
 
 ---
 
 ## 출력
 
+### 아날로그 — HTML+CSS → Puppeteer 렌더
+
 - [output/front.png](./output/front.png) — 앞면 300dpi (단톡방 공유용)
 - [output/back.png](./output/back.png) — 뒷면 300dpi (단톡방 공유용)
 - [output/business-card.pdf](./output/business-card.pdf) — 인쇄용 합본 (90×54mm + 3mm 블리드)
+
+### 디지털 — 별도 정적 사이트
+
+- 🌐 **라이브**: https://business-card-digital.vercel.app
+- 폴더: [`../business-card-digital/`](../business-card-digital/)
+- 같은 톤(Tech Minimal + 한지) · 모바일 우선 1열 카드
+- 인터랙티브: 전화/이메일/카톡/LinkedIn/Portfolio 액션 버튼 + vCard 다운로드 + 클라이언트 사이드 QR
+- 박인수 일러스트(gpt-image-2 1024×1024) + DAONi 본질 톤(도심 빈 공간·동네 식자재 마트·AI 풀 운영) + v2.0 비전 박스
 
 ---
 
@@ -47,7 +57,7 @@
 
 ---
 
-## 디자인 사이클 (6차)
+## 디자인 사이클 (7차)
 
 | 차수 | 핵심 변화 |
 |---|---|
