@@ -1,7 +1,16 @@
+"use client";
+
+import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Crop } from "@/data/crops";
 import type { Quarter } from "@/data/seed-quarters";
+import {
+  saveReservation,
+  hasReserved,
+  makeReservationId,
+  getDaoniReservationMessage,
+} from "@/lib/reserve";
 
 type Props = {
   crops: Crop[];
@@ -75,6 +84,8 @@ function SeasonSection({
     ? { borderColor: crop.color }
     : undefined;
 
+  const reservable = !isCurrent && crop.id !== "sprout";
+
   return (
     <section className={sectionClass} style={sectionStyle}>
       {/* 시즌 헤더 */}
@@ -126,6 +137,8 @@ function SeasonSection({
           />
         )}
       </ul>
+
+      {reservable && <ReserveSlot cropId={crop.id} color={crop.color} />}
     </section>
   );
 }
@@ -188,5 +201,54 @@ function MenuRow({
         </div>
       </Link>
     </li>
+  );
+}
+
+function ReserveSlot({
+  cropId,
+  color,
+}: {
+  cropId: Crop["id"];
+  color: string;
+}) {
+  const [reserved, setReserved] = React.useState(false);
+
+  React.useEffect(() => {
+    if (hasReserved(cropId)) setReserved(true);
+  }, [cropId]);
+
+  function handleReserve() {
+    saveReservation({
+      reservationId: makeReservationId(),
+      cropId,
+      reservedAt: new Date().toISOString(),
+      quantity: 1,
+      status: "pending",
+    });
+    setReserved(true);
+  }
+
+  return (
+    <div className="mt-4 ml-[60px]">
+      {reserved ? (
+        <div className="bg-ink text-white rounded-md p-3 text-sm flex gap-2">
+          <span className="block w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+          <div>
+            <div className="font-medium text-white">✓ 예약 완료</div>
+            <div className="text-white/80 text-xs mt-1">
+              {getDaoniReservationMessage(cropId)}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={handleReserve}
+          className="text-xs rounded-md px-3 py-1.5 border hover:bg-white transition"
+          style={{ borderColor: color, color }}
+        >
+          예약하기
+        </button>
+      )}
+    </div>
   );
 }
