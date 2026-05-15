@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>박인수 — DAONi · 디지털 명함</title>
+  <meta name="description" content="박인수 · DAONi (다온이) Founder & CEO — 도심 빈 공간을 동네 식자재 마트로, AI가 풀 운영합니다." />
+  <meta property="og:title" content="박인수 — DAONi · 디지털 명함" />
+  <meta property="og:description" content="DAONi · 동네 식자재 마트의 AI 운영자" />
+  <meta property="og:type" content="profile" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="card">
+    <!-- 1. 포트레이트 + 이름 -->
+    <header class="header">
+      <div class="portrait">
+        <img src="./assets/portrait.png" alt="박인수 일러스트" width="160" height="160" />
+      </div>
+      <div class="brand">
+        <img class="logo" src="./assets/logo.svg" alt="DAONi" width="120" />
+        <div class="brand-ko">다온이</div>
+      </div>
+      <h1 class="name-row">
+        <span class="name-ko">박인수</span>
+        <span class="name-en">PARK INSOO</span>
+      </h1>
+      <p class="title">Founder &amp; CEO</p>
+    </header>
+
+    <!-- 2. 태그라인 -->
+    <section class="tagline">
+      <p>
+        도심 빈 공간을 <strong>동네 식자재 마트</strong>로.
+        <br />
+        AI가 육종부터 판매까지, 사장 대신 풀로 운영합니다.
+      </p>
+    </section>
+
+    <!-- 3. 액션 버튼 그리드 -->
+    <section class="actions">
+      <a class="action" href="tel:+821026494695" aria-label="전화 걸기">
+        <span class="action-icon">📞</span>
+        <span class="action-label">전화</span>
+        <span class="action-sub">010-2649-4695</span>
+      </a>
+      <a class="action" href="mailto:makehill@naver.com" aria-label="이메일 보내기">
+        <span class="action-icon">✉</span>
+        <span class="action-label">이메일</span>
+        <span class="action-sub">makehill@naver.com</span>
+      </a>
+      <a class="action" href="https://pf.kakao.com/_daoni" target="_blank" rel="noopener" aria-label="카카오톡 채널 (가상)">
+        <span class="action-icon">💬</span>
+        <span class="action-label">카톡</span>
+        <span class="action-sub">@maketour</span>
+      </a>
+      <a class="action" href="https://linkedin.com/in/insoo-park-daoni" target="_blank" rel="noopener" aria-label="LinkedIn (가상)">
+        <span class="action-icon">🔗</span>
+        <span class="action-label">LinkedIn</span>
+        <span class="action-sub">insoo-park-daoni</span>
+      </a>
+      <a class="action action-wide" href="https://daoni.io" target="_blank" rel="noopener" aria-label="포트폴리오 (가상)">
+        <span class="action-icon">🌐</span>
+        <span class="action-label">Portfolio</span>
+        <span class="action-sub">daoni.io</span>
+      </a>
+    </section>
+
+    <!-- 4. vCard 저장 + QR -->
+    <section class="vcard-section">
+      <a class="vcard-btn" href="./assets/insoo-park.vcf" download="insoo-park.vcf">
+        <span class="vcard-icon">📇</span>
+        <span class="vcard-text">
+          <span class="vcard-title">vCard로 저장</span>
+          <span class="vcard-sub">연락처에 한 번에 추가</span>
+        </span>
+      </a>
+      <div class="qr-wrap">
+        <div id="qr"></div>
+        <div class="qr-hint">QR로도 저장 가능</div>
+      </div>
+    </section>
+
+    <!-- 5. DAONi 소개 박스 -->
+    <section class="about">
+      <div class="about-label">About · DAONi</div>
+      <p class="about-body">
+        다오니는 도심 빈 공간(염창동)에 차린 <strong>수직농장 + 동네 식자재 마트</strong>입니다.
+        육종 · 재배 · 환경 관리 · 마케팅 · 홍보 · 판매 · 정산까지,
+        한 명의 AI 운영자가 사장 대신 풀로 운영합니다.
+      </p>
+      <div class="vision">
+        <span class="vision-badge">v2.0 비전 · 검토 중</span>
+        <p class="vision-body">
+          장애인 일자리 사회적기업 모델로의 확장을 검토 중. AI가 의사결정·복잡 업무를 처리하고,
+          사람은 수확 보조·포장·배송처럼 단순·반복 작업에 집중. 마을 단위 푸드 시스템으로 자랄 수 있어요.
+        </p>
+      </div>
+    </section>
+
+    <!-- 6. 푸터 -->
+    <footer class="footer">
+      <a href="https://daoni-simulator.vercel.app" target="_blank" rel="noopener">
+        다오니 시뮬레이터 →
+      </a>
+      <div class="footer-sub">est. 2026 · 서울 강서구 염창동</div>
+    </footer>
+  </main>
+
+  <!-- vCard QR client-side 렌더 -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script>
+    const vcard = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      'N:박;인수;;;',
+      'FN:박인수',
+      'ORG:DAONi (다온이)',
+      'TITLE:Founder & CEO',
+      'TEL;TYPE=CELL:+82-10-2649-4695',
+      'EMAIL:makehill@naver.com',
+      'URL:https://daoni.io',
+      'NOTE:KakaoTalk: maketour',
+      'END:VCARD'
+    ].join('\n');
+
+    QRCode.toCanvas(vcard, {
+      width: 140,
+      margin: 1,
+      color: { dark: '#1A1A1A', light: '#F5F1E8' }
+    }, (err, canvas) => {
+      if (err) {
+        console.error(err);
+        document.getElementById('qr').textContent = 'QR 생성 실패';
+        return;
+      }
+      document.getElementById('qr').appendChild(canvas);
+    });
+  </script>
+</body>
+</html>
