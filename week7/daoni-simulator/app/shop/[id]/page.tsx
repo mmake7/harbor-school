@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CROPS } from "@/data/crops";
 import { RECIPES } from "@/data/recipes";
@@ -16,12 +17,17 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
       <Header variant="customer" />
       <main className="container mx-auto px-4 py-10 space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* 좌: 이미지 자리 */}
-          <div
-            className="aspect-square rounded-lg border-[0.5px] border-border"
-            style={{ background: crop.color, opacity: 0.85 }}
-            aria-label="상품 대표 이미지 자리 (Day 4 Tell 모듈에서 실 이미지)"
-          />
+          {/* 좌: 작물 대표 이미지 */}
+          <div className="relative aspect-square rounded-lg border-[0.5px] border-border overflow-hidden bg-surface">
+            <Image
+              src={`/seed-images/${crop.id}.png`}
+              alt={crop.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              priority
+            />
+          </div>
 
           {/* 우: 정보 */}
           <section>
@@ -75,7 +81,15 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
             </h2>
             <div className="bg-base border-[0.5px] border-border rounded-lg p-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-12 h-12 rounded-md bg-primary-light shrink-0" />
+                <div className="relative w-14 h-14 rounded-md overflow-hidden border-[0.5px] border-border shrink-0 bg-surface">
+                  <Image
+                    src={`/seed-images/${crop.id}-honey.png`}
+                    alt={crop.honey.name}
+                    fill
+                    sizes="56px"
+                    className="object-cover"
+                  />
+                </div>
                 <div className="min-w-0">
                   <div className="text-ink font-medium">{crop.honey.name}</div>
                   <div className="font-mono text-sm text-muted">
