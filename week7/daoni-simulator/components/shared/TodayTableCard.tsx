@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { CROPS } from "@/data/crops";
 import { RECIPES } from "@/data/recipes";
 
@@ -84,11 +85,17 @@ export function TodayTableCard({ day }: { day: number }) {
       <div className="bg-base border-[0.5px] border-border rounded-lg p-4">
         <div className="text-xs text-muted mb-2">오늘의 다온이 식탁</div>
         <div className="flex gap-4">
-          <div
-            className="w-16 h-16 rounded-md shrink-0 border-[0.5px] border-border"
-            style={{ background: crop?.color ?? "var(--surface)" }}
-            aria-label="작물 컬러 자리"
-          />
+          <div className="relative w-16 h-16 rounded-md overflow-hidden shrink-0 border-[0.5px] border-border bg-surface">
+            {crop && (
+              <Image
+                src={`/seed-images/${crop.id}.png`}
+                alt={crop.name}
+                fill
+                sizes="64px"
+                className="object-cover"
+              />
+            )}
+          </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <span
