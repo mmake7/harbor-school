@@ -1,8 +1,15 @@
 # TYPA Poster v2 — 천사 vs 악마 자매 시리즈
 
-v1(단일 라벤더 천사 포스터)이 톤·결이 약했다는 평가 → v2는 **천사 vs 악마 두 panel 시리즈** + 측정 가능한 강화 지시.
+v1(단일 라벤더 천사 포스터)이 톤·결이 약했다는 평가 → v2는 **천사 vs 악마 두 panel 시리즈** + 측정 가능한 강화 지시. (v1 폴더는 폐기)
 
-🌐 미리보기: `file:///D:/Dropbox/workspace/harbor-school/week7/quest/cafe-poster-typa-lavender-v2/index.html`
+## 결과 미리보기
+
+| 🪽 Lavender Angel (라이트, 인쇄용) | ⛧ Lavender Devil (다크, SNS) |
+|---|---|
+| <img src="./assets/angel-visual.png" width="400" alt="angel" /> | <img src="./assets/devil-visual.png" width="400" alt="devil" /> |
+| "세 번째 천사." · 베이비 라벤더 크림 소다 + 천사 날개 | "세 번째 악마." · 크림슨 데빌 칵테일 + 박쥐 날개 (키치 데빌-걸) |
+
+> 위는 메인 비주얼 자산. 최종 포스터(카피·서브·doodles·메타 합본)는 `index.html` 로컬 미리보기 또는 Puppeteer 렌더 후 `output/poster-{dark,light}.png` 참조.
 
 ---
 

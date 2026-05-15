@@ -1,8 +1,38 @@
 # TYPA Menu v2 — 측정 가능한 톤 강화 + 음료 카탈로그
 
-v1(2개월 전)이 모호한 톤 단어로 평균값 결과를 내서, v2는 **측정 가능한 강화 지시 + 12개 음료/디저트 일러스트 카탈로그** 로 재작업.
+v1이 모호한 톤 단어로 평균값 결과를 내서, v2는 **측정 가능한 강화 지시 + 12개 음료/디저트 일러스트 카탈로그** 로 재작업. (v1 폴더는 폐기)
 
-🌐 미리보기: `file:///D:/Dropbox/workspace/harbor-school/week7/quest/cafe-menu-typa-v2/index.html`
+## 결과 미리보기
+
+### 배경 + 시그니처
+
+| 배경 (지브리 결 라인아트, 라이트 톤) | 시그니처 — 베이비 핑크 크림 소다 |
+|---|---|
+| <img src="./assets/bg.png" width="400" alt="bg" /> | <img src="./assets/m-pink-soda.png" width="400" alt="signature" /> |
+
+### 12 음료/디저트 카탈로그
+
+| Coffee | | |
+|---|---|---|
+| <img src="./assets/m-espresso.png" width="220" alt="espresso" /> | <img src="./assets/m-americano.png" width="220" alt="americano" /> | <img src="./assets/m-latte.png" width="220" alt="latte" /> |
+| 에스프레소 ₩4,500 | 아메리카노 ₩5,500 | 카페라떼 ₩6,000 |
+
+| Signature Soda | | |
+|---|---|---|
+| <img src="./assets/m-pink-soda.png" width="220" alt="pink soda" /> | <img src="./assets/m-blue-soda.png" width="220" alt="blue soda" /> | <img src="./assets/m-jelly-soda.png" width="220" alt="jelly soda" /> |
+| ✦ 베이비 핑크 크림 소다 ✦ ₩7,500 | 베이비 블루 크림 소다 ₩7,500 | 러브 젤리 소다 ₩7,500 |
+
+| Cake & Dessert | | |
+|---|---|---|
+| <img src="./assets/m-cake.png" width="220" alt="cake" /> | <img src="./assets/m-brownie.png" width="220" alt="brownie" /> | <img src="./assets/m-lettering-cake.png" width="220" alt="lettering" /> |
+| 시즌 케이크 ₩8,500 | 브라우니 ₩6,000 | 레터링 케이크 ₩45,000~ |
+
+| Bar (18:00~) | | |
+|---|---|---|
+| <img src="./assets/m-cocktail.png" width="220" alt="cocktail" /> | <img src="./assets/m-wine.png" width="220" alt="wine" /> | <img src="./assets/m-typa-special.png" width="220" alt="typa special" /> |
+| 시그니처 칵테일 ₩13,000 | 와인 글래스 ₩9,000 | TYPA 스페셜 ₩15,000 |
+
+> 위는 raw 자산 일러스트. 최종 결과(카드 그리드 + 카피·가격 합본)는 `index.html` 로컬 미리보기 또는 Puppeteer 렌더 후 `output/menu.png` 참조.
 
 ---
 
