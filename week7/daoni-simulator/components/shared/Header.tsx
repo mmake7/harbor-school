@@ -6,6 +6,7 @@ type NavItem = { href: string; label: string; icon?: string };
 const customerNav: NavItem[] = [
   { href: "/", label: "홈" },
   { href: "/shop", label: "상품" },
+  { href: "/about", label: "다온이" },
   { href: "/cart", label: "장바구니", icon: "ti-shopping-cart" },
   { href: "/admin", label: "관리자" },
 ];

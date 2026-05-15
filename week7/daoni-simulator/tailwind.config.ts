@@ -31,6 +31,10 @@ const config: Config = {
           q3: "#F59E0B",
           q4: "#84CC16",
         },
+        hanji: {
+          bg: "#FAF7F0",
+          border: "#E5DDD0",
+        },
       },
       borderRadius: {
         lg: "12px",

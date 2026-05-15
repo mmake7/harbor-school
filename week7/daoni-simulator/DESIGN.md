@@ -19,6 +19,8 @@
 | Muted Light | `#94A3B8` | 더 옅은 부가 텍스트 |
 | Border | `#E2E8F0` | 기본 테두리 |
 | Border Strong | `#CBD5E1` | 강조 테두리 |
+| Hanji Bg | `#FAF7F0` | 브랜드 자산 배경 (명함·메뉴판·포스터) |
+| Hanji Border | `#E5DDD0` | 한지 배경 위 테두리 |
 
 ## 2. 시즌 액센트 (작물 결정 시 자동 적용)
 
@@ -92,6 +94,7 @@ colors: {
   muted:   { DEFAULT: '#64748B', light: '#94A3B8' },
   border:  { DEFAULT: '#E2E8F0', strong: '#CBD5E1' },
   season:  { q1: '#FF4757', q2: '#4F46E5', q3: '#F59E0B', q4: '#84CC16' },
+  hanji:   { bg: '#FAF7F0', border: '#E5DDD0' },
 },
 borderRadius: { lg: '12px', md: '8px' },
 fontFamily: {
