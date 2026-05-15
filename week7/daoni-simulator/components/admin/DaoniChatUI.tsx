@@ -1,12 +1,27 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import {
   getChatHistory,
   appendChatMessage,
   clearChatHistory,
   type ChatMessage,
 } from "@/lib/chat-store";
+
+function DaoniAvatar() {
+  return (
+    <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 bg-surface border-[0.5px] border-border">
+      <Image
+        src="/seed-images/daoni-character.png"
+        alt="다오니"
+        fill
+        sizes="40px"
+        className="object-cover"
+      />
+    </div>
+  );
+}
 
 const SEED_GREETING: ChatMessage = {
   role: "assistant",
@@ -103,7 +118,8 @@ export function DaoniChatUI({ day }: { day: number }) {
         ) : (
           messages.map((m, i) =>
             m.role === "assistant" ? (
-              <div key={i} className="flex justify-start">
+              <div key={i} className="flex justify-start gap-2 items-start">
+                <DaoniAvatar />
                 <div className="bg-ink text-white rounded-lg p-3 max-w-[80%] text-sm flex gap-2">
                   <span className="block w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                   <div className="whitespace-pre-line">{m.content}</div>
@@ -119,7 +135,8 @@ export function DaoniChatUI({ day }: { day: number }) {
           )
         )}
         {isLoading && (
-          <div className="flex justify-start">
+          <div className="flex justify-start gap-2 items-start">
+            <DaoniAvatar />
             <div className="bg-ink text-white rounded-lg p-3 text-sm flex items-center gap-2">
               <span className="block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               <span className="text-white/70 text-xs">다온이가 응답 중…</span>
