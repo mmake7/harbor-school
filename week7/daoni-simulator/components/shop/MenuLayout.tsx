@@ -34,7 +34,7 @@ export function MenuLayout({ crops, quarters, currentQuarterId }: Props) {
           Daoni · Seasonal Menu
         </div>
         <h1 className="text-3xl font-bold text-ink tracking-tight mt-2">
-          다온이의 시즌 메뉴
+          다오니 마트 — 오늘 메뉴
         </h1>
         <p className="text-sm text-muted mt-2">
           지금 수확 중인 작물과 부산물 꿀

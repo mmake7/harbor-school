@@ -67,6 +67,28 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* 4. v2.0 비전 — 사회적기업 확장 가능성 */}
+        <section>
+          <SectionLabel
+            index="04"
+            title="v2.0 Vision"
+            subtitle="사회적기업 확장 가능성"
+          />
+          <div className="mt-6 mx-auto max-w-[560px]">
+            <div className="relative bg-hanji-bg border-2 border-primary rounded-lg p-6">
+              <span className="absolute top-3 right-3 text-[10px] tracking-[0.16em] uppercase bg-primary text-white px-2 py-0.5 rounded-full">
+                검토 중
+              </span>
+              <div className="text-base font-bold text-ink leading-tight pr-16">
+                AI가 경영을 맡으면, 사람은 돌봄 가능한 작업에 집중
+              </div>
+              <p className="mt-3 text-sm text-muted leading-relaxed whitespace-pre-line">
+                {FARM.socialVision}
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* 푸터 — brand story */}
         <section className="max-w-xl mx-auto text-center pt-6 border-t border-border">
           <div className="text-xs tracking-[0.18em] text-muted uppercase mb-3">

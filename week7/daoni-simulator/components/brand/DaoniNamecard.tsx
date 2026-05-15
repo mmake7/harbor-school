@@ -18,9 +18,9 @@ export function DaoniNamecard() {
           </div>
 
           <div>
-            <div className="text-[11px] text-muted leading-relaxed">AI 농부</div>
+            <div className="text-[11px] text-muted leading-relaxed">AI 운영자</div>
             <div className="text-[11px] text-ink font-medium leading-relaxed">
-              {FARM.neighborhood} 옥상농장 운영자
+              동네 식자재 마트 ({FARM.neighborhood})
             </div>
           </div>
         </div>
