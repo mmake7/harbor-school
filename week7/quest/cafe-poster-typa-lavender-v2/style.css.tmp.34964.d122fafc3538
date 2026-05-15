@@ -1,0 +1,198 @@
+/* TYPA · Poster v2 — Lavender Angel
+ * 두 panel 나란히: 다크 (SNS) + 라이트 (인쇄)
+ * 컬러: Black #0A0A0A / Off-white #F8F6F1 / Baby Lavender #D4C5E3
+ * 캔버스: 1080×1350 (인스타 4:5)
+ */
+
+:root {
+  --black: #0A0A0A;
+  --offwhite: #F8F6F1;
+  --lavender: #D4C5E3;
+  --lavender-deep: #A38FBD;  /* 라이트 panel에서 라벤더 가독성 보강 */
+  --crimson: #C0212C;        /* 악마 칵테일 톤 */
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #DDD8CC;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === stage — 두 포스터 가로 나란히 === */
+.stage {
+  display: flex;
+  gap: 40px;
+  padding: 30px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* === 포스터 base (1080×1350) === */
+.poster {
+  position: relative;
+  width: 1080px;
+  height: 1350px;
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 80px 70px 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 톤 라벨 (미리보기용, 인쇄 시 제거) */
+.tone-label {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  z-index: 10;
+  opacity: 0.55;
+}
+
+/* === 다크 panel === */
+.poster.dark {
+  background: var(--black);
+  color: var(--offwhite);
+}
+.poster.dark .tone-label { color: var(--offwhite); }
+
+/* === 라이트 panel === */
+.poster.light {
+  background: var(--offwhite);
+  color: var(--black);
+}
+.poster.light .tone-label { color: var(--black); }
+
+/* === 메인 비주얼 (55% 폭, 가운데 상단) === */
+.visual {
+  width: 594px;     /* 1080 × 0.55 */
+  height: 594px;
+  position: relative;
+  z-index: 2;
+  margin-top: 20px;
+  margin-bottom: 24px;
+}
+
+.visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* 다크 panel 비주얼 뒤 라벤더 글로우 강조 */
+.poster.dark .visual::before {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle, rgba(212, 197, 227, 0.28) 0%, transparent 70%);
+  z-index: -1;
+}
+
+/* === 서브 영문 (UnifrakturMaguntia, 메인 카피 25%) === */
+.sub {
+  font-family: 'UnifrakturMaguntia', serif;
+  font-size: 50px;  /* 메인 카피 200 × 0.25 */
+  margin: 0 0 8px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  z-index: 2;
+  position: relative;
+}
+
+.poster.dark .sub { color: var(--lavender); }
+.poster.light .sub { color: var(--lavender-deep); }
+
+/* === 메인 카피 "세 번째 천사." (폭 85%, Bold Heavy) === */
+.copy {
+  font-family: 'Pretendard Variable', Pretendard, Inter, sans-serif;
+  font-weight: 900;
+  font-size: 200px;
+  line-height: 0.95;
+  margin: 0;
+  letter-spacing: -0.03em;
+  text-align: center;
+  z-index: 2;
+  position: relative;
+}
+
+.poster.dark .copy { color: var(--offwhite); }
+.poster.light .copy { color: var(--black); }
+
+/* === 크레용 낙서 데코 === */
+.doodles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.d {
+  position: absolute;
+  font-size: 48px;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.d1 { top: 90px;  left: 100px;  transform: rotate(-15deg); font-size: 56px; }
+.d2 { top: 140px; right: 130px; transform: rotate(20deg); }
+.d3 { top: 250px; right: 60px;  transform: rotate(-10deg); font-size: 64px; opacity: 0.6; }
+.d4 { top: 330px; left: 70px;   transform: rotate(15deg); font-size: 52px; }
+.d5 { top: 620px; left: 80px;   transform: rotate(-25deg); font-size: 60px; }
+.d6 { top: 660px; right: 80px;  transform: rotate(18deg); }
+.d7 { bottom: 240px; left: 130px; transform: rotate(10deg); font-size: 44px; opacity: 0.65; }
+.d8 { bottom: 200px; right: 110px; transform: rotate(-15deg); font-size: 56px; opacity: 0.6; }
+
+/* === 하단 메타 (우측 하단, 작게) === */
+.meta {
+  position: absolute;
+  right: 60px;
+  bottom: 60px;
+  text-align: right;
+  font-family: Inter, sans-serif;
+  z-index: 3;
+}
+
+.price {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.period {
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  margin-top: 8px;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.brand {
+  font-family: 'UnifrakturMaguntia', serif;
+  font-size: 32px;
+  margin-top: 14px;
+  letter-spacing: 0.02em;
+}
+
+.poster.dark .price,
+.poster.dark .brand { color: var(--offwhite); }
+.poster.light .price,
+.poster.light .brand { color: var(--black); }
+
+/* === 미리보기 자동 스케일 === */
+@media (max-width: 2240px) {
+  body { overflow-x: hidden; }
+  .stage {
+    transform: scale(calc((100vw - 60px) / 2240));
+    transform-origin: top center;
+  }
+}
